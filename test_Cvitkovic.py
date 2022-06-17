@@ -37,17 +37,17 @@ def eps_SHO(omega, eps_inf, omega_TO, omega_LO, gamma):
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):
     """
-    Drude dielectric function model. Function definition from equation (20) of
+    Drude dielectric function model. Function definition from equation (2) of
     reference [2].
     """
     return eps_inf - (omega_plasma**2) / (omega**2 + 1j * gamma * omega)
 
 
-wavenumber = np.linspace(800, 1000, 512)[..., np.newaxis] * 1e2
+wavenumber = np.linspace(885, 955, 512)[..., np.newaxis] * 1e2
 z_0 = np.linspace(0, 100, 21) * 1e-9
 tapping_amplitude = 25e-9
 radius = 35e-9
-harmonic = 3
+harmonic = 2
 
 # Account for anisotropic SiC dielectric function
 eps_par = eps_SHO(wavenumber, 6.78, 782e2, 967e2, 6.6e2)  # values from [1]
@@ -85,18 +85,18 @@ for _z_0, _alpha_SiC_n, _alpha_Au_n in zip(z_0, alpha_SiC_n.T, alpha_Au_n.T):
 
 ax_amp.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
-    ylabel=r"$\left|\frac{{\alpha}_{"
+    ylabel=r"$\left|\frac{{\alpha}_{eff, "
     f"{harmonic}"
-    r", SiC}}{{\alpha}_{"
+    r", SiC}}{{\alpha}_{eff, "
     f"{harmonic}"
     r", Au}}\right|$",
 )
 ax_phase.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
     xlabel=r"${\omega}$ / cm$^{-1}$",
-    ylabel=r"$\mathrm{arg}\left(\frac{{\alpha}_{"
+    ylabel=r"$\mathrm{arg}\left(\frac{{\alpha}_{eff, "
     f"{harmonic}"
-    r", SiC}}{{\alpha}_{"
+    r", SiC}}{{\alpha}_{eff, "
     f"{harmonic}"
     r", Au}}\right)$",
 )
