@@ -1,4 +1,5 @@
 import setuptools
+import versioneer
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -7,7 +8,8 @@ with open("requirements.txt", "r") as fh:
 
 setuptools.setup(
     name="finite-dipole",
-    version="0.1.0",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="Tom Vincent",
     author_email="tom.vincent@manchester.ac.uk",
     description="A Python implementation of the finite dipole model for scanning near-field optical microscopy contrast.",

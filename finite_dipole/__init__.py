@@ -15,3 +15,6 @@ __all__ = [
     Fourier_envelope,
     eff_polarizability_nth,
 ]
+
+from . import _version
+__version__ = _version.get_versions()['version']

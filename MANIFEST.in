@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+graft finite_dipole
+recursive-exclude * *.py[co]
+include versioneer.py
+include finite_dipole/_version.py
