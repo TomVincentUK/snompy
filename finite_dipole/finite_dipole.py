@@ -245,6 +245,7 @@ def eff_polarizability_nth(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
+    return_err=False
 ):
     """
     Effective probe-sample polarizability.
@@ -295,11 +296,16 @@ def eff_polarizability_nth(
         caused by the capacitive interaction of the tip and sample. Defined as
         g in reference [1]. Default value of 0.7*e**(0.06j) taken from
         reference [2].
+    return_err : bool, default False
+        Set to true to return the absolute error in the Fourier integration, as
+        estimated by `scipy.integrate.quad`
 
     Returns
     -------
     alpha_eff : complex
         Effective polarizability of the tip and sample.
+    alpha_eff_err : complex
+        Estimated absolute error from the Fourier integration.
     """
     # beta calculated from eps_sample if not specified
     if eps_sample is None:
@@ -332,4 +338,7 @@ def eff_polarizability_nth(
     alpha_eff /= 2 * np.pi
     alpha_eff_err /= 2 * np.pi
 
-    return alpha_eff, alpha_eff_err
+    if return_err:
+        return alpha_eff, alpha_eff_err
+    else:
+        return alpha_eff
