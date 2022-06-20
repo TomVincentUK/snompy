@@ -245,7 +245,7 @@ def eff_polarizability_nth(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
-    return_err=False
+    return_err=False,
 ):
     """
     Effective probe-sample polarizability.

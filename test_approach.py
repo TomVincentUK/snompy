@@ -20,9 +20,8 @@ References
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
 
-from finite_dipole import refl_coeff, eff_polarizability_nth
+from finite_dipole import eff_polarizability_nth
 
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):
