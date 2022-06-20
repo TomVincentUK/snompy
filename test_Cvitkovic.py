@@ -85,6 +85,7 @@ for _z_0, _alpha_SiC_n, _alpha_Au_n in zip(z_0, alpha_SiC_n.T, alpha_Au_n.T):
 
 ax_amp.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
+    xticklabels=[],
     ylabel=r"$\left|\frac{{\alpha}_{eff, "
     f"{harmonic}"
     r", SiC}}{{\alpha}_{eff, "
