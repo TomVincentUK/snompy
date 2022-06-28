@@ -1,22 +1,22 @@
 """
-Test of finite dipole model (FDM) by reproducing figure 7(a) of reference [1].
-They didn't specify the wavenumber, but the results seem quite insensitive to
-it, particularly after normalisation. This script also shows results for
-multiple harmonics.
+Test of finite dipole model (FDM) by reproducing figure 7(a) of reference
+[1]_. They didn't specify the wavenumber, but the results seem quite
+insensitive to it, particularly after normalisation. This script also shows
+results for multiple harmonics.
 
 References
-==========
-[1] A. Cvitkovic, N. Ocelic, R. Hillenbrand
+----------
+.. [1] A. Cvitkovic, N. Ocelic, R. Hillenbrand
     Analytical model for quantitative prediction of material contrasts in
     scattering-type near-field optical microscopy,
     Opt. Express. 15 (2007) 8550.
     https://doi.org/10.1364/oe.15.008550.
-[2] M.A. Ordal, L.L. Long, R.J. Bell, S.E. Bell, R.R. Bell, R.W. Alexander,
-    C.A. Ward,
-    Optical properties of the metals Al, Co, Cu, Au, Fe, Pb, Ni, Pd, Pt, Ag,
-    Ti, and W in the infrared and far infrared,
-    Appl. Opt. 22 (1983) 1099.
-    https://doi.org/10.1364/AO.22.001099.
+.. [2] M.A. Ordal, L.L. Long, R.J. Bell, S.E. Bell, R.R. Bell, R.W.
+   Alexander, C.A. Ward,
+   Optical properties of the metals Al, Co, Cu, Au, Fe, Pb, Ni, Pd, Pt, Ag,
+   Ti, and W in the infrared and far infrared,
+   Appl. Opt. 22 (1983) 1099.
+   https://doi.org/10.1364/AO.22.001099.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,8 +26,8 @@ from finite_dipole import eff_polarizability_nth
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):
     """
-    Drude dielectric function model. Function definition from equation (2) of
-    reference [2].
+    Drude dielectric function model. Function definition from equation (2)
+    of reference [2]_.
     """
     return eps_inf - (omega_plasma**2) / (omega**2 + 1j * gamma * omega)
 
@@ -38,7 +38,7 @@ tapping_amplitude = 18e-9
 radius = 20e-9
 harmonic = np.arange(1, 5, 1)
 
-eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]
+eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 alpha_Au_n = eff_polarizability_nth(
     z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
 )

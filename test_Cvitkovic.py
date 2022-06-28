@@ -1,20 +1,21 @@
 """
-Test of finite dipole model (FDM) by reproducing figure 8 of reference [1].
-They didn't report the tip height, so this code plots a range of heights.
+Test of finite dipole model (FDM) by reproducing figure 8 of reference
+[1]_. They didn't report the tip height, so this code plots a range of
+heights.
 
 References
-==========
-[1] A. Cvitkovic, N. Ocelic, R. Hillenbrand
+----------
+.. [1] A. Cvitkovic, N. Ocelic, R. Hillenbrand
     Analytical model for quantitative prediction of material contrasts in
     scattering-type near-field optical microscopy,
     Opt. Express. 15 (2007) 8550.
     https://doi.org/10.1364/oe.15.008550.
-[2] M.A. Ordal, L.L. Long, R.J. Bell, S.E. Bell, R.R. Bell, R.W. Alexander,
-    C.A. Ward,
-    Optical properties of the metals Al, Co, Cu, Au, Fe, Pb, Ni, Pd, Pt, Ag,
-    Ti, and W in the infrared and far infrared,
-    Appl. Opt. 22 (1983) 1099.
-    https://doi.org/10.1364/AO.22.001099.
+.. [2] M.A. Ordal, L.L. Long, R.J. Bell, S.E. Bell, R.R. Bell, R.W.
+   Alexander, C.A. Ward,
+   Optical properties of the metals Al, Co, Cu, Au, Fe, Pb, Ni, Pd, Pt, Ag,
+   Ti, and W in the infrared and far infrared,
+   Appl. Opt. 22 (1983) 1099.
+   https://doi.org/10.1364/AO.22.001099.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,8 +26,8 @@ from finite_dipole import refl_coeff, eff_polarizability_nth
 
 def eps_SHO(omega, eps_inf, omega_TO, omega_LO, gamma):
     """
-    Single harmonic oscillator dielectric function model. Function definition
-    from equation (20) of reference [1].
+    Single harmonic oscillator dielectric function model. Function
+    definition from equation (20) of reference [1]_.
     """
     return eps_inf * (
         1
@@ -37,8 +38,8 @@ def eps_SHO(omega, eps_inf, omega_TO, omega_LO, gamma):
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):
     """
-    Drude dielectric function model. Function definition from equation (2) of
-    reference [2].
+    Drude dielectric function model. Function definition from equation (2)
+    of reference [2]_.
     """
     return eps_inf - (omega_plasma**2) / (omega**2 + 1j * gamma * omega)
 
@@ -50,13 +51,13 @@ radius = 35e-9
 harmonic = 2
 
 # Account for anisotropic SiC dielectric function
-eps_par = eps_SHO(wavenumber, 6.78, 782e2, 967e2, 6.6e2)  # values from [1]
-eps_perp = eps_SHO(wavenumber, 6.56, 797e2, 971e2, 6.6e2)  # values from [1]
+eps_par = eps_SHO(wavenumber, 6.78, 782e2, 967e2, 6.6e2)  # values from [1]_
+eps_perp = eps_SHO(wavenumber, 6.56, 797e2, 971e2, 6.6e2)  # values from [1]_
 beta_par = refl_coeff(np.sqrt(eps_par * eps_perp))
 beta_perp = refl_coeff(eps_perp)
 beta_SiC = (beta_par + beta_perp) / 2
 
-eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]
+eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 
 alpha_SiC_n = eff_polarizability_nth(
     z_0, tapping_amplitude, harmonic, beta_0=beta_SiC, radius=radius
