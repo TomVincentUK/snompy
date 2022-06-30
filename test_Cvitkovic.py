@@ -6,10 +6,10 @@ heights.
 References
 ----------
 .. [1] A. Cvitkovic, N. Ocelic, R. Hillenbrand
-    Analytical model for quantitative prediction of material contrasts in
-    scattering-type near-field optical microscopy,
-    Opt. Express. 15 (2007) 8550.
-    https://doi.org/10.1364/oe.15.008550.
+   Analytical model for quantitative prediction of material contrasts in
+   scattering-type near-field optical microscopy,
+   Opt. Express. 15 (2007) 8550.
+   https://doi.org/10.1364/oe.15.008550.
 .. [2] M.A. Ordal, L.L. Long, R.J. Bell, S.E. Bell, R.R. Bell, R.W.
    Alexander, C.A. Ward,
    Optical properties of the metals Al, Co, Cu, Au, Fe, Pb, Ni, Pd, Pt, Ag,
