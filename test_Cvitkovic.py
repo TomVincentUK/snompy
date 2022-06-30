@@ -21,7 +21,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
-from finite_dipole import refl_coeff, eff_pol
+from finite_dipole import eff_pol
+from finite_dipole.tools import refl_coeff
 
 
 def eps_SHO(omega, eps_inf, omega_TO, omega_LO, gamma):

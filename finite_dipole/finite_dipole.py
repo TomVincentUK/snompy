@@ -18,46 +18,16 @@ References
 import warnings
 import numpy as np
 from numba import njit
-from scipy.integrate import quad
 
-
-def complex_quad(func, a, b, **kwargs):
-    """
-    Wrapper to `scipy.integrate.quad` to allow complex integrands.
-    """
-    real_part = quad(lambda t, *args: np.real(func(t, *args)), a, b, **kwargs)
-    imag_part = quad(lambda t, *args: np.imag(func(t, *args)), a, b, **kwargs)
-    return real_part[0] + 1j * imag_part[0], real_part[1] + 1j * imag_part[1]
-
-
-@njit
-def refl_coeff(eps_i, eps_j=1 + 0j):
-    """
-    Electrostatic reflection coefficient for an interface between materials
-    i and j. Defined as :math:`\beta_{ij}`` in equation (7) of reference
-    [1]_.
-
-    Parameters
-    ----------
-    eps_i : complex
-        Dielectric function of material i.
-    eps_j : complex, default 1 + 0j
-        Dielectric function of material j.
-
-    Returns
-    -------
-    beta_ij : complex
-        Electrostatic reflection coefficient of the sample.
-    """
-    return (eps_i - eps_j) / (eps_i + eps_j) + 0j  # + 0j ensures complex
+from .tools import complex_quad, refl_coeff, Fourier_envelope
 
 
 @njit
 def geom_func(z, x, radius, semi_maj_axis, g_factor):
     """
     Function that encapsulates the geometric properties of the tip-sample
-    system. Defined as :math:`f_0` or :math:`f_1` in equations (2) and (11)
-    of reference [1]_, for semi-infinite and multilayer samples.
+    system. Defined as :math:`f_0` or :math:`f_1` in equation (2) of
+    reference [1]_, for semi-infinite samples.
 
     Parameters
     ----------
@@ -67,8 +37,7 @@ def geom_func(z, x, radius, semi_maj_axis, g_factor):
     x : float
         Position of an induced charge within the tip. Specified relative to
         the tip radius. Defined as :math:`W_0` or :math:`W_1` in equation
-        (2) of reference [1]_, and :math:`X_0' or :math:`X_1' in equation
-        (11).
+        (2) of reference [1]_.
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
         :math:`\rho` in reference [1]_.
@@ -145,27 +114,6 @@ def eff_pol_0(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_factor):
     f_0 = geom_func(z, x_0, radius, semi_maj_axis, g_factor)
     f_1 = geom_func(z, x_1, radius, semi_maj_axis, g_factor)
     return 1 + (beta_0 * f_0) / (2 * (1 - beta_1 * f_1))
-
-
-@njit
-def Fourier_envelope(t, n):
-    """
-    A complex sinusoid with frequency 2 * pi * `n`, to be used in an
-    integral that extracts the nth Fourier coefficient.
-
-    Parameters
-    ----------
-    t : float
-        Domain of the function.
-    n : int
-        Order of the Fourier component.
-
-    Returns
-    -------
-    sinusoids : complex
-        A complex sinusoid with frequency 2 * pi * `n`.
-    """
-    return np.exp(-1j * n * t)
 
 
 @njit
