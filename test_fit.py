@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 from tqdm import tqdm
 
-from finite_dipole import eff_polarizability_nth
+from finite_dipole import eff_pol
 
 
 def eps_Lorentz(omega, eps_inf, omega_0, strength, gamma):
@@ -51,7 +51,7 @@ noise_level = 1e-3  # Sigma of Gaussian noise added to both real and imaginary p
 
 # fictitious material
 eps_X = eps_Lorentz(wavenumber, 10, 1100e2, 1, 10e2)
-alpha_X_n = eff_polarizability_nth(
+alpha_X_n = eff_pol(
     z_0, tapping_amplitude, harmonic, eps_sample=eps_X, radius=radius
 )
 SNOM_X = amp_const * alpha_X_n + noise_level * (
@@ -60,7 +60,7 @@ SNOM_X = amp_const * alpha_X_n + noise_level * (
 
 # Using gold as a reference material
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
-alpha_Au_n = eff_polarizability_nth(
+alpha_Au_n = eff_pol(
     z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
 )
 SNOM_Au = amp_const * alpha_Au_n + noise_level * (
@@ -73,7 +73,7 @@ SNOM_ratio = SNOM_X / SNOM_Au
 def min_full(L_params):
     """Minimization function for Lorentzian dielectric function fit"""
     ratio = (
-        eff_polarizability_nth(
+        eff_pol(
             z_0,
             tapping_amplitude,
             harmonic,
@@ -89,7 +89,7 @@ res = minimize(fun=min_full, x0=(10, 1100e2, 1, 10e2))
 L_params = res.x
 start_est = eps_Lorentz(wavenumber, *L_params)
 alpha_fit = (
-    eff_polarizability_nth(
+    eff_pol(
         z_0, tapping_amplitude, harmonic, eps_sample=start_est, radius=radius
     )
     * amp_const
@@ -99,10 +99,10 @@ alpha_fit = (
 def min_pointwise(eps, SNOM_ratio, eps_Au):
     """Minimization function for point-wise dielectric function fit"""
     eps = eps[0] + 1j * eps[1]
-    alpha_X_n = eff_polarizability_nth(
+    alpha_X_n = eff_pol(
         z_0, tapping_amplitude, harmonic, eps_sample=eps, radius=radius
     )
-    alpha_Au_n = eff_polarizability_nth(
+    alpha_Au_n = eff_pol(
         z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
     )
     return np.abs(SNOM_ratio - alpha_X_n / alpha_Au_n)

@@ -21,7 +21,7 @@ References
 import numpy as np
 import matplotlib.pyplot as plt
 
-from finite_dipole import eff_polarizability_nth
+from finite_dipole import eff_pol
 
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):
@@ -39,7 +39,7 @@ radius = 20e-9
 harmonic = np.arange(1, 5, 1)
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
-alpha_Au_n = eff_polarizability_nth(
+alpha_Au_n = eff_pol(
     z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
 )
 

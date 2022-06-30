@@ -53,7 +53,7 @@ def refl_coeff(eps_i, eps_j=1 + 0j):
 
 
 @njit
-def geometry_function(z, x, radius, semi_maj_axis, g_factor):
+def geom_func(z, x, radius, semi_maj_axis, g_factor):
     """
     Function that encapsulates the geometric properties of the tip-sample
     system. Defined as :math:`f_0` or :math:`f_1` in equations (2) and (11)
@@ -96,7 +96,7 @@ def geometry_function(z, x, radius, semi_maj_axis, g_factor):
 
 
 @njit
-def eff_polarizability(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_factor):
+def eff_pol_0(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_factor):
     """
     Effective probe-sample polarizability.
     Defined as :math:`\alpha_{eff}`` in equation (3) of reference [1]_.
@@ -142,8 +142,8 @@ def eff_polarizability(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_fac
     alpha_eff : complex
         Effective polarizability of the tip and sample.
     """
-    f_0 = geometry_function(z, x_0, radius, semi_maj_axis, g_factor)
-    f_1 = geometry_function(z, x_1, radius, semi_maj_axis, g_factor)
+    f_0 = geom_func(z, x_0, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func(z, x_1, radius, semi_maj_axis, g_factor)
     return 1 + (beta_0 * f_0) / (2 * (1 - beta_1 * f_1))
 
 
@@ -184,9 +184,9 @@ def _integrand(
 ):
     """
     Function to be integrated from -pi to pi, to extract the Fourier
-    component of `eff_polarizability()` corresponding to `harmonic`.
+    component of `eff_pol_0()` corresponding to `harmonic`.
     """
-    alpha_eff = eff_polarizability(
+    alpha_eff = eff_pol_0(
         z + tapping_amplitude * (1 + np.cos(t)),
         beta_0,
         beta_1,
@@ -213,7 +213,7 @@ def _integral(
     g_factor,
 ):
     """
-    Function that extracts the Fourier component of `eff_polarizability()`
+    Function that extracts the Fourier component of `eff_pol_0()`
     corresponding to `harmonic`.
     """
     return complex_quad(
@@ -239,7 +239,7 @@ def _integral(
 _integral_vec = np.vectorize(_integral)
 
 
-def eff_polarizability_nth(
+def eff_pol(
     z,
     tapping_amplitude,
     harmonic,
