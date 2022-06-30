@@ -1,19 +1,19 @@
 from .finite_dipole import (
     complex_quad,
     refl_coeff,
-    geometry_function,
-    eff_polarizability,
+    geom_func,
+    eff_pol_0,
     Fourier_envelope,
-    eff_polarizability_nth,
+    eff_pol,
 )
 
 __all__ = [
     complex_quad,
     refl_coeff,
-    geometry_function,
-    eff_polarizability,
+    geom_func,
+    eff_pol_0,
     Fourier_envelope,
-    eff_polarizability_nth,
+    eff_pol,
 ]
 
 from . import _version
