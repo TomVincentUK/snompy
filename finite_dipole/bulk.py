@@ -65,7 +65,7 @@ def geom_func(z, x, radius, semi_maj_axis, g_factor):
 
 
 @njit
-def eff_pol_0(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_factor):
+def eff_pol_0(z, beta, x_0, x_1, radius, semi_maj_axis, g_factor):
     """
     Effective probe-sample polarizability.
     Defined as :math:`\alpha_{eff}`` in equation (3) of reference [1]_.
@@ -75,24 +75,17 @@ def eff_pol_0(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_factor):
     z : float
         Height of the tip above the sample. Defined as :math:`H` in
         reference [1]_.
-    beta_0 : complex
-        Effective electrostatic reflection coefficient for charge 0 of the
-        FDM. Defined as :math:`\beta_0` in equation (11) of reference [1]_,
-        or simply :math:`\beta` in equation (2), where
-        :math:`\beta_0 = \beta_1`.
-    beta_1 : complex
-        Effective electrostatic reflection coefficient for charge 1 of the
-        FDM. Defined as :math:`beta_1` in equation (11) of reference [1]_,
-        or simply :math:`\beta` in equation (2),
-        where :math:`\beta_0 = \beta_1`.
+    beta : complex
+        Effective electrostatic reflection coefficient the interface.
+        Defined as :math:`\beta` in equation (2) of reference [1]_.
     x_0 : float
         Position of induced charge 0 within the tip. Specified relative to
         the tip radius. Defined as :math:`W_0` in equation (2) of reference
-        [1]_, and :math:`X_0` in equation (11).
+        [1]_.
     x_1 : float
         Position of induced charge 1 within the tip. Specified relative to
         the tip radius. Defined as :math:`W_1` in equation (2) of reference
-        [1]_, and :math:`X_1` in equation (11).
+        [1]_.
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
         :math:`\rho` in reference [1]_.
@@ -113,7 +106,7 @@ def eff_pol_0(z, beta_0, beta_1, x_0, x_1, radius, semi_maj_axis, g_factor):
     """
     f_0 = geom_func(z, x_0, radius, semi_maj_axis, g_factor)
     f_1 = geom_func(z, x_1, radius, semi_maj_axis, g_factor)
-    return 1 + (beta_0 * f_0) / (2 * (1 - beta_1 * f_1))
+    return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
 
 
 @njit
@@ -122,8 +115,7 @@ def _integrand(
     z,
     tapping_amplitude,
     harmonic,
-    beta_0,
-    beta_1,
+    beta,
     x_0,
     x_1,
     radius,
@@ -136,8 +128,7 @@ def _integrand(
     """
     alpha_eff = eff_pol_0(
         z + tapping_amplitude * (1 + np.cos(t)),
-        beta_0,
-        beta_1,
+        beta,
         x_0,
         x_1,
         radius,
@@ -152,8 +143,7 @@ def _integral(
     z,
     tapping_amplitude,
     harmonic,
-    beta_0,
-    beta_1,
+    beta,
     x_0,
     x_1,
     radius,
@@ -172,8 +162,7 @@ def _integral(
             z,
             tapping_amplitude,
             harmonic,
-            beta_0,
-            beta_1,
+            beta,
             x_0,
             x_1,
             radius,
@@ -192,8 +181,7 @@ def eff_pol(
     tapping_amplitude,
     harmonic,
     eps_sample=None,
-    beta_0=None,
-    beta_1=None,
+    beta=None,
     x_0=1.31,
     x_1=0.5,
     radius=20e-9,
@@ -220,16 +208,9 @@ def eff_pol(
         Dielectric function of the sample. Defined as :math:`\epsilon_s` in
         reference [1]_. Used to calculate `beta_0`, and ignored if `beta_0`
         is specified.
-    beta_0 : complex
-        Effective electrostatic reflection coefficient for charge 0 of the
-        FDM. Defined as :math:`\beta_0` in equation (11) of reference [1]_,
-        or simply :math:`\beta` in equation (2), where
-        :math:`\beta_0 = \beta_1`.
-    beta_1 : complex
-        Effective electrostatic reflection coefficient for charge 1 of the
-        FDM. Defined as :math:`beta_1` in equation (11) of reference [1]_,
-        or simply :math:`\beta` in equation (2),
-        where :math:`\beta_0 = \beta_1`.
+    beta : complex
+        Effective electrostatic reflection coefficient the interface.
+        Defined as :math:`\beta` in equation (2) of reference [1]_.
     x_0 : float
         Position of induced charge 0 within the tip. Specified relative to
         the tip radius. Defined as :math:`W_0` in equation (2) of reference
@@ -264,24 +245,19 @@ def eff_pol(
     """
     # beta calculated from eps_sample if not specified
     if eps_sample is None:
-        if beta_0 is None:
-            raise ValueError("Either `eps_sample` or `beta_0` must be specified.")
+        if beta is None:
+            raise ValueError("Either `eps_sample` or `beta` must be specified.")
     else:
-        if beta_0 is None:
-            beta_0 = refl_coeff(eps_sample)
+        if beta is None:
+            beta = refl_coeff(eps_sample)
         else:
-            warnings.warn("`beta_0` overrides `eps_sample` when both are specified.")
-
-    # Assume only one beta value unless both specified (for multilayer FDM)
-    if beta_1 is None:
-        beta_1 = beta_0
+            warnings.warn("`beta` overrides `eps_sample` when both are specified.")
 
     alpha_eff, alpha_eff_err = _integral_vec(
         z,
         tapping_amplitude,
         harmonic,
-        beta_0,
-        beta_1,
+        beta,
         x_0,
         x_1,
         radius,

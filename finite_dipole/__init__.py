@@ -1,4 +1,4 @@
-from .finite_dipole import (
+from .bulk import (
     geom_func,
     eff_pol_0,
     eff_pol,
