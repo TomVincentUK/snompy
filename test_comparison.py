@@ -100,7 +100,7 @@ ax_beta_SiC.set_ylabel(r"${\beta}_{SiC}$")
 ax_alpha_SiC.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
     xlabel=r"$\omega$ / cm$^{-1}$",
-    ylabel=r"$\left|{\alpha}_{" f"{harmonic}" r", SiC}\right|$",
+    ylabel=r"$\left|{\alpha}_{eff, " f"{harmonic}" r", SiC}\right|$",
 )
 
 ax_phase_SiC = ax_alpha_SiC.twinx()
@@ -112,7 +112,7 @@ ax_phase_SiC = ax_alpha_SiC.twinx()
     label="phase",
 )
 ax_phase_SiC.set_ylabel(
-    r"$\mathrm{arg}\left({\alpha}_{" f"{harmonic}" r", SiC}\right)$"
+    r"$\mathrm{arg}\left({\alpha}_{eff, " f"{harmonic}" r", SiC}\right)$"
 )
 ax_phase_SiC.legend(handles=(amp_SiC, phase_SiC))
 
@@ -136,7 +136,7 @@ ax_beta_Au.set_ylabel(r"${\beta}_{Au}$")
 ax_alpha_Au.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
     xlabel=r"$\omega$ / cm$^{-1}$",
-    ylabel=r"$\left|{\alpha}_{" f"{harmonic}" r", Au}\right|$",
+    ylabel=r"$\left|{\alpha}_{eff, " f"{harmonic}" r", Au}\right|$",
 )
 
 ax_phase_Au = ax_alpha_Au.twinx()
@@ -147,7 +147,7 @@ ax_phase_Au = ax_alpha_Au.twinx()
     ls=ls_full,
     label="phase",
 )
-ax_phase_Au.set_ylabel(r"$\mathrm{arg}\left({\alpha}_{" f"{harmonic}" r", Au}\right)$")
+ax_phase_Au.set_ylabel(r"$\mathrm{arg}\left({\alpha}_{eff, " f"{harmonic}" r", Au}\right)$")
 ax_phase_Au.legend(handles=(amp_Au, phase_Au))
 
 fig_Au.tight_layout()
@@ -166,9 +166,9 @@ fig_norm, ax_norm = plt.subplots()
 ax_norm.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
     xlabel=r"$\omega$ / cm$^{-1}$",
-    ylabel=r"$\left|\frac{{\alpha}_{"
+    ylabel=r"$\left|\frac{{\alpha}_{eff, "
     f"{harmonic}"
-    r", SiC}}{{\alpha}_{"
+    r", SiC}}{{\alpha}_{eff, "
     f"{harmonic}"
     r", Au}}\right|$",
 )
@@ -182,9 +182,9 @@ ax_phase_norm = ax_norm.twinx()
     label="phase",
 )
 ax_phase_norm.set_ylabel(
-    r"$\mathrm{arg}\left(\frac{{\alpha}_{"
+    r"$\mathrm{arg}\left(\frac{{\alpha}_{eff, "
     f"{harmonic}"
-    r", SiC}}{{\alpha}_{"
+    r", SiC}}{{\alpha}_{eff, "
     f"{harmonic}"
     r", Au}}\right)$"
 )
