@@ -60,12 +60,8 @@ beta_SiC = (beta_par + beta_perp) / 2
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 
-alpha_SiC_n = eff_pol(
-    z_0, tapping_amplitude, harmonic, beta=beta_SiC, radius=radius
-)
-alpha_Au_n = eff_pol(
-    z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
-)
+alpha_SiC_n = eff_pol(z_0, tapping_amplitude, harmonic, beta=beta_SiC, radius=radius)
+alpha_Au_n = eff_pol(z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius)
 
 # Plotting
 fig = plt.figure()

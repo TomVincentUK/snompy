@@ -39,9 +39,7 @@ radius = 20e-9
 harmonic = np.arange(1, 5, 1)
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
-alpha_Au_n = eff_pol(
-    z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
-)
+alpha_Au_n = eff_pol(z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius)
 
 # Normalize to z = 0
 alpha_Au_n *= np.exp(-1j * np.angle(alpha_Au_n[0])) / np.abs(alpha_Au_n[0])

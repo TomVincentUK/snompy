@@ -147,7 +147,9 @@ ax_phase_Au = ax_alpha_Au.twinx()
     ls=ls_full,
     label="phase",
 )
-ax_phase_Au.set_ylabel(r"$\mathrm{arg}\left({\alpha}_{eff, " f"{harmonic}" r", Au}\right)$")
+ax_phase_Au.set_ylabel(
+    r"$\mathrm{arg}\left({\alpha}_{eff, " f"{harmonic}" r", Au}\right)$"
+)
 ax_phase_Au.legend(handles=(amp_Au, phase_Au))
 
 fig_Au.tight_layout()
