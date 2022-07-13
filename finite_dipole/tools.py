@@ -24,7 +24,7 @@ def complex_quad(func, a, b, **kwargs):
 
 
 @njit
-def refl_coeff(eps_i, eps_j=1 + 0j):
+def refl_coeff(eps_i, eps_j):
     """
     Electrostatic reflection coefficient for an interface between materials
     i and j. Defined as :math:`\beta_{ij}`` in equation (7) of reference
@@ -42,7 +42,9 @@ def refl_coeff(eps_i, eps_j=1 + 0j):
     beta_ij : complex
         Electrostatic reflection coefficient of the sample.
     """
-    return (eps_i - eps_j) / (eps_i + eps_j) + 0j  # + 0j ensures complex
+    eps_i = np.asarray(eps_i)
+    eps_j = np.asarray(eps_j)
+    return (eps_j - eps_i) / (eps_j + eps_i)
 
 
 @njit

@@ -249,7 +249,7 @@ def eff_pol(
             raise ValueError("Either `eps_sample` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(eps_sample)
+            beta = refl_coeff(1 + 0j, eps_sample)
         else:
             warnings.warn("`beta` overrides `eps_sample` when both are specified.")
 
