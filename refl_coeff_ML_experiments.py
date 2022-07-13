@@ -23,8 +23,8 @@ def refl_coeff_ML(beta_stack, t_stack):
     Returns
     -------
     beta_q : function
-        A scalar function of momentum, `q`, which returns the effective
-        reflection coefficient for the stack.
+        A scalar function of momentum, `q`, which returns the complex
+        effective reflection coefficient for the stack.
     """
     if len(beta_stack) != len(t_stack) + 1:
         raise ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
