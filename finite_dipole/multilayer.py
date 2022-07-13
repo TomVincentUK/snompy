@@ -17,218 +17,9 @@ References
 """
 import numpy as np
 from numba import njit
-from scipy.special import j0
+# from functools import cache
 
-
-def _init_phi_integrand(beta_stack, width_stack):
-    """
-    Derivations here by Carla. Make sure to add a proper citation.
-    """
-    n_interfaces = len(beta_stack)
-    if len(width_stack) + 1 != n_interfaces:
-        raise ValueError(
-            "`beta_stack` must have length one greater than `width_stack`."
-        )
-
-    full_width = np.sum(width_stack)
-
-    # Ensure stacks are immutable
-    beta_stack = tuple(beta_stack)
-    width_stack = tuple(width_stack)
-
-    if n_interfaces == 2:
-
-        @njit
-        def beta_A(k):
-            return beta_stack[1]
-
-        @njit
-        def beta_B(k):
-            return beta_stack[0] * beta_stack[1]
-
-    elif n_interfaces == 3:
-
-        @njit
-        def beta_A(k):
-            return (
-                beta_stack[2]
-                + beta_stack[1] * np.exp(2 * k * width_stack[1])
-                + beta_stack[0] * beta_stack[1] * beta_stack[2]
-            )
-
-        @njit
-        def beta_B(k):
-            return (
-                beta_stack[0] * beta_stack[2]
-                + beta_stack[0] * beta_stack[1] * np.exp(2 * k * width_stack[0])
-                + beta_stack[1] * beta_stack[2]
-            )
-
-    elif n_interfaces == 4:
-
-        @njit
-        def beta_A(k):
-            return (
-                beta_stack[3]
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[3]
-                * np.exp(2 * k * width_stack[0])
-                + beta_stack[2] * np.exp(2 * k * width_stack[2])
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[2]
-                * np.exp(2 * k * (width_stack[0] + width_stack[2]))
-                + beta_stack[1] * np.exp(2 * k * (width_stack[1] + width_stack[2]))
-                + beta_stack[0]
-                * beta_stack[2]
-                * beta_stack[3]
-                * np.exp(2 * k * (width_stack[0] + width_stack[1]))
-                + beta_stack[1]
-                * beta_stack[2]
-                * beta_stack[3]
-                * np.exp(2 * k * width_stack[1])
-            )
-
-        @njit
-        def beta_B(k):
-            return (
-                beta_stack[0] * beta_stack[3]
-                + beta_stack[1] * beta_stack[3] * np.exp(2 * k * width_stack[0])
-                + beta_stack[0] * beta_stack[2] * np.exp(2 * k * width_stack[2])
-                + beta_stack[1]
-                * beta_stack[2]
-                * np.exp(2 * k * (width_stack[0] + width_stack[2]))
-                + beta_stack[0]
-                * beta_stack[1]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2]))
-                + beta_stack[2]
-                * beta_stack[3]
-                * np.exp(2 * k * (width_stack[0] + width_stack[1]))
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[2]
-                * beta_stack[3]
-                * np.exp(2 * k * width_stack[1])
-            )
-
-    elif n_interfaces == 5:
-
-        @njit
-        def beta_A(k):
-            return (
-                beta_stack[4]
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[2]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[0] + width_stack[2]))
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[4]
-                * np.exp(2 * k * width_stack[0])
-                + beta_stack[1]
-                * beta_stack[2]
-                * beta_stack[4]
-                * np.exp(2 * k * width_stack[1])
-                + beta_stack[0]
-                * beta_stack[2]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[0] + width_stack[1]))
-                + beta_stack[1]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2]))
-                + beta_stack[0]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2] + width_stack[3]))
-                + beta_stack[3] * np.exp(2 * k * width_stack[3])
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[3]
-                * np.exp(2 * k * (width_stack[0] + width_stack[3]))
-                + beta_stack[2] * np.exp(2 * k * (width_stack[2] + width_stack[3]))
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[2]
-                * np.exp(2 * k * (width_stack[0] + width_stack[2] + width_stack[3]))
-                + beta_stack[1]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2] + width_stack[3]))
-                + beta_stack[2]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * width_stack[2])
-            )
-
-        @njit
-        def beta_B(k):
-            return (
-                beta_stack[0] * beta_stack[4]
-                + beta_stack[1]
-                * beta_stack[2]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[0] + width_stack[2]))
-                + beta_stack[1] * beta_stack[4] * np.exp(2 * k * width_stack[0])
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[2]
-                * beta_stack[4]
-                * np.exp(2 * k * width_stack[1])
-                + beta_stack[2]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[0] + width_stack[1]))
-                + beta_stack[0]
-                * beta_stack[1]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2]))
-                + beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2] + width_stack[3]))
-                + beta_stack[0] * beta_stack[3] * np.exp(2 * k * width_stack[3])
-                + beta_stack[1]
-                * beta_stack[3]
-                * np.exp(2 * k * (width_stack[0] + width_stack[3]))
-                + beta_stack[0]
-                * beta_stack[2]
-                * np.exp(2 * k * (width_stack[2] + width_stack[3]))
-                + beta_stack[1]
-                * beta_stack[2]
-                * np.exp(2 * k * (width_stack[0] + width_stack[2] + width_stack[3]))
-                + beta_stack[0]
-                * beta_stack[1]
-                * np.exp(2 * k * (width_stack[1] + width_stack[2] + width_stack[3]))
-                + beta_stack[0]
-                * beta_stack[2]
-                * beta_stack[3]
-                * beta_stack[4]
-                * np.exp(2 * k * width_stack[2])
-            )
-
-    else:
-        raise NotImplementedError(
-            f"Potential cannot be calculated for stacks with {n_interfaces} interfaces"
-        )
-
-    @njit
-    def _A_and_exp(k, z, z_0):
-        """
-        Everything in the integrand from Carla's paper except the Bessel
-        function (which won't work with numba's JIT compilation).
-        """
-        return (
-            np.exp((z - 2 * z_0) * k)
-            * (beta_stack[0] + beta_A(k) * np.exp(-2 * k * full_width))
-            / (1 + beta_B(k) * np.exp(-2 * k * full_width))
-        )
-
-    def _phi_integrand(k, z, z_0, radius):
-        return _A_and_exp(k, z, z_0) * j0(k * radius)
-
-    return _phi_integrand
+from tools import complex_quad
 
 
 @njit
@@ -271,3 +62,76 @@ def geom_func_ML(z, x, radius, semi_maj_axis, g_factor):
         * np.log(4 * semi_maj_axis / (radius + 2 * z + 2 * x * radius))
         / np.log(4 * semi_maj_axis / radius)
     )
+
+
+# @cache
+def refl_coeff_ML(beta_stack, t_stack):
+    """
+    Calculates the momentum-dependent effective reflection coefficient for
+    the first interface in a stack of layers sandwiched between a semi-
+    infinite superstrate and substrate.
+
+    Parameters
+    ----------
+    beta_stack : array like
+        Reflection coefficients of each interface in the stack (with the
+        first element corresponding to the top interface).
+    t_stack : float
+        Thicknesses of each sandwiched layer between the semi-inifinite
+        superstrate and substrate. Must have length one less than the
+        number of interfaces.
+
+    Returns
+    -------
+    beta_q : function
+        A scalar function of momentum, `q`, which returns the complex
+        effective reflection coefficient for the stack.
+    """
+    if len(beta_stack) != len(t_stack) + 1:
+        raise ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
+
+    if len(beta_stack) == 1:
+        beta_final = beta_stack[0]
+
+        @njit
+        def beta_q(q):
+            return beta_final
+
+    else:
+        beta_current = beta_stack[0]
+        t_current = t_stack[0]
+
+        beta_stack_next = beta_stack[1:]
+        t_stack_next = t_stack[1:]
+        beta_next = refl_coeff_ML(beta_stack_next, t_stack_next)
+
+        @njit
+        def beta_q(q):
+            next_layer = beta_next(q) * np.exp(-2 * q * t_current)
+            return (beta_current + next_layer) / (1 + beta_current * next_layer)
+
+    return beta_q
+
+
+# @cache
+def _E_z_integrand(z_a):
+    @njit
+    def E_z_integrand_q(q):
+        return q * np.exp(-2 * q * z_a)
+
+    return E_z_integrand_q
+
+
+def _momentum_integral(beta_q, E_z_integrand_q):
+    numerator, numerator_error = complex_quad(
+        lambda q: beta_q(q) * E_z_integrand_q(q), 0, np.inf
+    )
+    denominator, denominator_error = complex_quad(E_z_integrand_q, 0, np.inf)
+    error = np.linalg.norm(
+        [numerator_error.real, denominator_error.real], axis=0
+    ) + 1j * np.linalg.norm([numerator_error.imag, denominator_error.imag], axis=0)
+    return numerator / denominator, error
+
+
+# Use this vectorized version instead of `_momentum_integral()`.
+_momentum_integral_vec = np.vectorize(_momentum_integral)
