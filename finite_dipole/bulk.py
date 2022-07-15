@@ -139,6 +139,7 @@ def _integrand(
     return alpha_eff * sinusoids
 
 
+@np.vectorize
 def _integral(
     z,
     tapping_amplitude,
@@ -170,10 +171,6 @@ def _integral(
             g_factor,
         ),
     )
-
-
-# Use this vectorized version instead of `_integral()`.
-_integral_vec = np.vectorize(_integral)
 
 
 def eff_pol(
@@ -252,8 +249,11 @@ def eff_pol(
             beta = refl_coeff(1 + 0j, eps_sample)
         else:
             warnings.warn("`beta` overrides `eps_sample` when both are specified.")
+    
+    if x_0 is None:
+        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-    alpha_eff, alpha_eff_err = _integral_vec(
+    alpha_eff, alpha_eff_err = _integral(
         z,
         tapping_amplitude,
         harmonic,

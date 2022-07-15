@@ -17,7 +17,8 @@ References
 """
 import numpy as np
 from numba import njit
-# from functools import cache
+
+from functools import cache
 
 from tools import complex_quad
 
@@ -64,7 +65,7 @@ def geom_func_ML(z, x, radius, semi_maj_axis, g_factor):
     )
 
 
-# @cache
+@cache
 def refl_coeff_ML(beta_stack, t_stack):
     """
     Calculates the momentum-dependent effective reflection coefficient for
@@ -113,25 +114,14 @@ def refl_coeff_ML(beta_stack, t_stack):
     return beta_q
 
 
-# @cache
-def _E_z_integrand(z_a):
+@np.vectorize
+def refl_coeff_eff(beta_q, z):
     @njit
-    def E_z_integrand_q(q):
-        return q * np.exp(-2 * q * z_a)
+    def _integrand(q):
+        return beta_q(q) * q * np.exp(-2 * q * z)
 
-    return E_z_integrand_q
+    integral, error = complex_quad(_integrand, 0, np.inf)
+    integral *= 4 * z**2
+    error *= 4 * z**2
 
-
-def _momentum_integral(beta_q, E_z_integrand_q):
-    numerator, numerator_error = complex_quad(
-        lambda q: beta_q(q) * E_z_integrand_q(q), 0, np.inf
-    )
-    denominator, denominator_error = complex_quad(E_z_integrand_q, 0, np.inf)
-    error = np.linalg.norm(
-        [numerator_error.real, denominator_error.real], axis=0
-    ) + 1j * np.linalg.norm([numerator_error.imag, denominator_error.imag], axis=0)
-    return numerator / denominator, error
-
-
-# Use this vectorized version instead of `_momentum_integral()`.
-_momentum_integral_vec = np.vectorize(_momentum_integral)
+    return integral, error
