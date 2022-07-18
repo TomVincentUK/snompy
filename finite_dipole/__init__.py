@@ -3,9 +3,10 @@ from .bulk import (
     eff_pol_0,
     eff_pol,
 )
+from . import multilayer
 from . import tools
 from . import _version
 
-__all__ = [geom_func, eff_pol_0, eff_pol, tools]
+__all__ = [geom_func, eff_pol_0, eff_pol, multilayer, tools]
 
 __version__ = _version.get_versions()["version"]

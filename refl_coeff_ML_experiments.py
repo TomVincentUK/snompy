@@ -1,58 +1,21 @@
 import numpy as np
-from numba import njit
+import matplotlib.pyplot as plt
 
-from finite_dipole.tools import refl_coeff
+import finite_dipole as fdm
 
+# Values from Lars Mester Nat. Comms. (2020)
+eps_air = 1
+eps_PS = 2.5
+eps_PMMA = 1.52 + 0.83j
+eps_Si = 11.7
+eps_stack = eps_air, eps_PS, eps_Si
 
-def refl_coeff_ML(beta_stack, t_stack):
-    """
-    Calculates the momentum-dependent effective reflection coefficient for
-    the first interface in a stack of layers sandwiched between a semi-
-    infinite superstrate and substrate.
+t_PS = 100e-9
+t_PMMA = 100e-9
+t_stack = [t_PS,]
 
-    Parameters
-    ----------
-    beta_stack : array like
-        Reflection coefficients of each interface in the stack (with the
-        first element corresponding to the top interface).
-    t_stack : float
-        Thicknesses of each sandwiched layer between the semi-inifinite
-        superstrate and substrate. Must have length one less than the
-        number of interfaces.
+beta_stack = fdm.tools.refl_coeff(eps_stack[1:], eps_stack[:1])
+beta_q = fdm.multilayer.refl_coeff_ML(beta_stack, t_stack)
 
-    Returns
-    -------
-    beta_q : function
-        A scalar function of momentum, `q`, which returns the complex
-        effective reflection coefficient for the stack.
-    """
-    if len(beta_stack) != len(t_stack) + 1:
-        raise ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
-
-    if len(beta_stack) == 1:
-        beta_final = beta_stack[0]
-
-        @njit
-        def beta_q(q):
-            return beta_final
-
-    else:
-        beta_current = beta_stack[0]
-        t_current = t_stack[0]
-
-        beta_stack_next = beta_stack[1:]
-        t_stack_next = t_stack[1:]
-        beta_next = refl_coeff_ML(beta_stack_next, t_stack_next)
-
-        @njit
-        def beta_q(q):
-            next_layer = beta_next(q) * np.exp(-2 * q * t_current)
-            return (beta_current + next_layer) / (1 + beta_current * next_layer)
-
-    return beta_q
-
-
-thickness = 10e-9
-eps_stack = 1, 0.1 + 0.1j, 6 - 12j
-beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
-beta_q = refl_coeff_ML(beta_stack, [thickness])
+z_q = 10e-9
+X, beta_X = fdm.multilayer.eff_charge_and_pos(z_q, beta_q)

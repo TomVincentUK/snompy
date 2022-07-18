@@ -18,9 +18,7 @@ References
 import numpy as np
 from numba import njit
 
-from functools import cache
-
-from tools import complex_quad
+from .tools import complex_quad
 
 
 @njit
@@ -65,7 +63,6 @@ def geom_func_ML(z, x, radius, semi_maj_axis, g_factor):
     )
 
 
-@cache
 def refl_coeff_ML(beta_stack, t_stack):
     """
     Calculates the momentum-dependent effective reflection coefficient for
@@ -115,13 +112,31 @@ def refl_coeff_ML(beta_stack, t_stack):
 
 
 @np.vectorize
-def refl_coeff_eff(beta_q, z):
+def potential(z, z_q, beta_q):
     @njit
-    def _integrand(q):
-        return beta_q(q) * q * np.exp(-2 * q * z)
+    def _integrand(xi):
+        return beta_q(xi / z_q) * np.exp(-xi * (2 * z_q + z) / z_q)
 
     integral, error = complex_quad(_integrand, 0, np.inf)
-    integral *= 4 * z**2
-    error *= 4 * z**2
+    return integral / z_q, error / z_q
 
-    return integral, error
+
+def eff_charge_and_pos(z_q, beta_q, d_z=1e-9):
+    phi_0, _ = potential(0, z_q, beta_q)
+    phi_p, _ = potential(d_z, z_q, beta_q)
+    phi_m, _ = potential(-d_z, z_q, beta_q)
+    phi_gradient = (phi_p + phi_m - 2 * phi_0) / d_z**2
+
+    # Need to add in error propagation here too
+
+    X = np.abs(phi_0 / phi_gradient) - z_q
+    beta_X = -(phi_0**2) / phi_gradient
+    return X, beta_X
+
+@njit
+def eff_pol_0_ML(z, beta_q, x_0, x_1, radius, semi_maj_axis, g_factor):
+    X_0, beta_0 = eff_charge_and_pos(x_0, beta_q)
+    X_1, beta_1 = eff_charge_and_pos(x_1, beta_q)
+    f_0 = geom_func_ML(z, X_0, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func_ML(z, X_1, radius, semi_maj_axis, g_factor)
+    return 1 + (beta_0 * f_0) / (2 * (1 - beta_1 * f_1))
