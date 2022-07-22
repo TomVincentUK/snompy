@@ -73,15 +73,20 @@ def refl_coeff_ML(beta_stack, t_stack):
 
 
 @njit
-def _k_phi_weight(k, z_q):
+def _phi_k_weighting(k, z_q):
     """Used by potential_0()"""
     return np.exp(-k * 2 * z_q)
 
 
 def potential_0(z_q, beta_k):
+    """
+    Potential induced at z=0 by a charge q, at height `z_q`, and it's image
+    charge, over an interface with momentum-dependent reflection
+    coefficient `beta_k(k)`.
+    """
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return beta_k(k) * _k_phi_weight(k, z_q)
+        return beta_k(k) * _phi_k_weighting(k, z_q)
 
     integral, error = complex_quad(_integrand, 0, np.inf)
 
@@ -92,15 +97,20 @@ def potential_0(z_q, beta_k):
 
 
 @njit
-def _k_E_weight(k, z_q):
+def _E_k_weighting(k, z_q):
     """Used by E_z_0()"""
     return -k * np.exp(-k * 2 * z_q)
 
 
 def E_z_0(z_q, beta_k):
+    """
+    z-component of the electric field induced at z=0 by a charge q, at
+    height `z_q`, and it's image charge, over an interface with momentum-
+    dependent reflection coefficient `beta_k(k)`.
+    """
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return beta_k(k) * _k_E_weight(k, z_q)
+        return beta_k(k) * _E_k_weighting(k, z_q)
 
     integral, error = complex_quad(_integrand, 0, np.inf)
 
