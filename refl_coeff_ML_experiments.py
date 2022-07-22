@@ -22,6 +22,7 @@ tapping_amplitude = 20e-9
 harmonic = np.arange(2, 4, 1)
 
 import time
+
 start = time.perf_counter()
 alpha = fdm.multilayer.eff_pol_ML(
     z_0, tapping_amplitude, harmonic, beta_stack=beta_stack, t_stack=t_stack

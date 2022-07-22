@@ -20,8 +20,8 @@ from numba import njit
 
 from .tools import refl_coeff, complex_quad, Fourier_envelope
 
-EPS_STACK_ERR = ValueError("`eps_stack` must have length 2 greater than `t_stack`.")
-BETA_STACK_ERR = ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
+_EPS_STACK_ERR = ValueError("`eps_stack` must have length 2 greater than `t_stack`.")
+_BETA_STACK_ERR = ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
 
 
 def refl_coeff_ML(beta_stack, t_stack):
@@ -47,7 +47,7 @@ def refl_coeff_ML(beta_stack, t_stack):
         effective reflection coefficient for the stack.
     """
     if len(beta_stack) != len(t_stack) + 1:
-        raise BETA_STACK_ERR
+        raise _BETA_STACK_ERR
 
     if len(beta_stack) == 1:
         beta_final = beta_stack[0]
@@ -266,13 +266,13 @@ def eff_pol_ML(
     else:
         if beta_stack is None:
             if len(eps_stack) != len(t_stack) + 2:
-                raise EPS_STACK_ERR
+                raise _EPS_STACK_ERR
             beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
         else:
             warnings.warn("`beta_stack` overrides `eps_stack` when both are specified.")
 
     if len(beta_stack) != len(t_stack) + 1:
-        raise BETA_STACK_ERR
+        raise _BETA_STACK_ERR
 
     if W_0 is None:
         W_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
