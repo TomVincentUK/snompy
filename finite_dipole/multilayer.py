@@ -84,6 +84,7 @@ def potential_0(z_q, beta_k):
     charge, over an interface with momentum-dependent reflection
     coefficient `beta_k(k)`.
     """
+
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return beta_k(k) * _phi_k_weighting(k, z_q)
@@ -108,6 +109,7 @@ def E_z_0(z_q, beta_k):
     height `z_q`, and it's image charge, over an interface with momentum-
     dependent reflection coefficient `beta_k(k)`.
     """
+
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return beta_k(k) * _E_k_weighting(k, z_q)
