@@ -14,13 +14,13 @@ from numba import njit
 from scipy.integrate import quad
 
 
-def complex_quad(func, a, b, **kwargs):
-    """
-    Wrapper to `scipy.integrate.quad` to allow complex integrands.
-    """
-    real_part = quad(lambda t, *args: np.real(func(t, *args)), a, b, **kwargs)
-    imag_part = quad(lambda t, *args: np.imag(func(t, *args)), a, b, **kwargs)
-    return real_part[0] + 1j * imag_part[0], real_part[1] + 1j * imag_part[1]
+# def complex_quad(func, a, b, **kwargs):
+#     """
+#     Wrapper to `scipy.integrate.quad` to allow complex integrands.
+#     """
+#     real_part = quad(lambda t, *args: np.real(func(t, *args)), a, b, **kwargs)
+#     imag_part = quad(lambda t, *args: np.imag(func(t, *args)), a, b, **kwargs)
+#     return real_part[0] + 1j * imag_part[0], real_part[1] + 1j * imag_part[1]
 
 
 @njit

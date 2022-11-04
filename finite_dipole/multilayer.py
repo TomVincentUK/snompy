@@ -17,9 +17,10 @@ References
 """
 import warnings
 import numpy as np
+from scipy.integrate import quad_vec
 from numba import njit
 
-from .tools import refl_coeff, complex_quad, Fourier_envelope
+from .tools import refl_coeff, Fourier_envelope
 
 _EPS_STACK_ERR = ValueError("`eps_stack` must have length 2 greater than `t_stack`.")
 _BETA_STACK_ERR = ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
@@ -90,7 +91,7 @@ def potential_0(z_q, beta_k):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return beta_k(k) * _phi_k_weighting(k, z_q)
 
-    integral, error = complex_quad(_integrand, 0, np.inf)
+    integral, error = quad_vec(_integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
@@ -115,7 +116,7 @@ def E_z_0(z_q, beta_k):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return beta_k(k) * _E_k_weighting(k, z_q)
 
-    integral, error = complex_quad(_integrand, 0, np.inf)
+    integral, error = quad_vec(_integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
@@ -230,7 +231,7 @@ def _integral_ML(
     Function that extracts the Fourier component of `eff_pol_0_ML()`
     corresponding to `harmonic`.
     """
-    return complex_quad(
+    return quad_vec(
         _integrand_ML,
         -np.pi,
         np.pi,

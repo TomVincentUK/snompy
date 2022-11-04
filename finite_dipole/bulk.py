@@ -17,9 +17,10 @@ References
 """
 import warnings
 import numpy as np
+from scipy.integrate import quad_vec
 from numba import njit
 
-from .tools import complex_quad, refl_coeff, Fourier_envelope
+from .tools import refl_coeff, Fourier_envelope
 
 
 @njit
@@ -155,7 +156,7 @@ def _integral(
     Function that extracts the Fourier component of `eff_pol_0()`
     corresponding to `harmonic`.
     """
-    return complex_quad(
+    return quad_vec(
         _integrand,
         -np.pi,
         np.pi,
