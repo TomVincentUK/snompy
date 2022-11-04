@@ -15,6 +15,7 @@ References
    Opt. Express. 15 (2007) 8550.
    https://doi.org/10.1364/oe.15.008550.
 """
+import warnings
 import numpy as np
 from numba import njit
 
