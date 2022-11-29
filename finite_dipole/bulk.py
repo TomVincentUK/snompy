@@ -276,7 +276,7 @@ def eff_pol(
         return alpha_eff
 
 
-def _eff_pol_new_version(
+def _eff_pol_new(
     z,
     tapping_amplitude,
     harmonic,
@@ -287,7 +287,7 @@ def _eff_pol_new_version(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
-    return_err=False,
+    demod_method="trapezium",
 ):
     """
     Effective probe-sample polarizability.
@@ -362,9 +362,7 @@ def _eff_pol_new_version(
         tapping_amplitude,
         harmonic,
         f_args=(beta, x_0, x_1, radius, semi_maj_axis, g_factor),
+        method=demod_method
     )
-
-    if return_err:
-        raise NotImplementedError()
-    else:
-        return alpha_eff
+    
+    return alpha_eff

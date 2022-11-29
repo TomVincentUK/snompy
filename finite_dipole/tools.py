@@ -89,7 +89,7 @@ def demodulate(
         raise NotImplementedError()
     else:
         x_0, x_amplitude, harmonic, *f_args = [
-            arr.copy()[..., np.newaxis]
+            np.array(arr)[..., np.newaxis]
             for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
         ]
         f_args = tuple(f_args)
