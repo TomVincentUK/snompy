@@ -20,7 +20,8 @@ import numpy as np
 from scipy.integrate import quad_vec
 from numba import njit
 
-from .tools import refl_coeff, Fourier_envelope, demodulate
+from .tools import refl_coeff, Fourier_envelope
+from .demodulate import demod
 
 
 @njit
@@ -356,13 +357,13 @@ def _eff_pol_new(
     if x_0 is None:
         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-    alpha_eff = demodulate(
+    alpha_eff = demod(
         eff_pol_0,
         z + tapping_amplitude,
         tapping_amplitude,
         harmonic,
         f_args=(beta, x_0, x_1, radius, semi_maj_axis, g_factor),
-        method=demod_method
+        method=demod_method,
     )
-    
+
     return alpha_eff
