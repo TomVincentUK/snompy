@@ -34,10 +34,11 @@ def demod(
         raise NotImplementedError()
     else:
         x_0, x_amplitude, harmonic, *f_args = [
-            np.array(arr)[..., np.newaxis]
+            np.array(arr)[
+                ..., np.newaxis
+            ]  # extra dimension added to arrays for _sampled_integrand to extend along
             for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
         ]
-        print(x_0.shape)
 
         # Function falls back to uncompiled code if not given jitted f_x
         if is_jitted(f_x):
