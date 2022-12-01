@@ -18,7 +18,7 @@ def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
 _sampled_integrand_compiled = njit(_sampled_integrand)
 
 
-def _generate_f_theta(f_x, x_0, x_amplitude, harmonic, f_args):
+def _generate_f_theta(f_x):
     def f_theta(theta, x_0, x_amplitude, harmonic, *f_args):
         x = x_0 + x_amplitude * np.cos(theta)
         f = f_x(x, *f_args)
@@ -47,7 +47,7 @@ def demod(
         ]
         f_args = tuple(f_args)
 
-        f_theta = _generate_f_theta(f_x, x_0, x_amplitude, harmonic, f_args)
+        f_theta = _generate_f_theta(f_x)
 
         result, _ = quad_vec(
             lambda t: f_theta(t, x_0, x_amplitude, harmonic, *f_args), -np.pi, np.pi

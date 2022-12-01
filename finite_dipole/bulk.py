@@ -123,7 +123,7 @@ def eff_pol(
     g_factor=0.7 * np.exp(0.06j),
     demod_method="trapezium",
 ):
-    """
+    r"""
     Effective probe-sample polarizability.
     Defined as :math:`\alpha_{eff, n}` in reference [1]_.
 
