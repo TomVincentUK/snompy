@@ -72,6 +72,7 @@ def test_broadcasting(method):
 
     assert result.shape == target_shape
 
+
 @pytest.mark.parametrize("method", methods)
 def test_jitted_broadcasting(method):
     @njit

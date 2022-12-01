@@ -45,8 +45,8 @@ def demod(
             np.array(arr)
             for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
         ]
-        f_args=tuple(f_args)
-        
+        f_args = tuple(f_args)
+
         f_theta = _generate_f_theta(f_x, x_0, x_amplitude, harmonic, f_args)
 
         result, _ = quad_vec(
