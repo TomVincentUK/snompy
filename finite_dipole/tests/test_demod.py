@@ -3,10 +3,10 @@ import numpy as np
 from numba import njit
 from finite_dipole.demodulate import demod
 
-methods = "trapezium", "simpson", "adaptive"
+METHODS = "trapezium", "simpson", "adaptive"
 
 
-@pytest.mark.parametrize("method", methods)
+@pytest.mark.parametrize("method", METHODS)
 def test_only_zeroth_harmonic_with_constant_function(method):
     def constant_function(x):
         return np.ones_like(x)
@@ -21,7 +21,7 @@ def test_only_zeroth_harmonic_with_constant_function(method):
     np.testing.assert_almost_equal(result, [1, 0, 0])
 
 
-@pytest.mark.parametrize("method", methods)
+@pytest.mark.parametrize("method", METHODS)
 def test_only_first_harmonic_with_linear_function(method):
     def linear_function(x):
         return 2 * x
@@ -32,7 +32,7 @@ def test_only_first_harmonic_with_linear_function(method):
     np.testing.assert_almost_equal(result, [0, 1, 0])
 
 
-@pytest.mark.parametrize("method", methods)
+@pytest.mark.parametrize("method", METHODS)
 def test_jitted_and_nonjitted_f_x(method):
     def nonjitted_function(x):
         return x
@@ -48,7 +48,7 @@ def test_jitted_and_nonjitted_f_x(method):
     assert nonjitted_result == jitted_result
 
 
-@pytest.mark.parametrize("method", methods)
+@pytest.mark.parametrize("method", METHODS)
 def test_broadcasting(method):
     def function_with_args(x, a, b, c):
         return x + a + b + c
@@ -73,7 +73,7 @@ def test_broadcasting(method):
     assert result.shape == target_shape
 
 
-@pytest.mark.parametrize("method", methods)
+@pytest.mark.parametrize("method", METHODS)
 def test_jitted_broadcasting(method):
     @njit
     def jitted_function_with_args(x, a, b, c):
