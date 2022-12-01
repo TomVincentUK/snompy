@@ -116,7 +116,7 @@ def eff_pol(
     harmonic,
     eps_sample=None,
     beta=None,
-    x_0=1.31,
+    x_0=None,
     x_1=0.5,
     radius=20e-9,
     semi_maj_axis=300e-9,
