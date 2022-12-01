@@ -10,7 +10,6 @@ References
    https://doi.org/10.1364/OE.20.013173.
 """
 import numpy as np
-from scipy.integrate import trapezoid, simpson
 from numba import njit
 
 
