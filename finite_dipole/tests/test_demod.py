@@ -3,7 +3,7 @@ import numpy as np
 from numba import njit
 from finite_dipole.demodulate import demod
 
-methods = "trapezium", "simpson"
+methods = "trapezium", "simpson", "adaptive"
 
 
 @pytest.mark.parametrize("method", methods)
@@ -63,6 +63,31 @@ def test_broadcasting(method):
 
     result = demod(
         f_x=function_with_args,
+        x_0=x_0,
+        x_amplitude=x_amplitude,
+        harmonic=harmonic,
+        method=method,
+        f_args=(a, b, c),
+    )
+
+    assert result.shape == target_shape
+
+@pytest.mark.parametrize("method", methods)
+def test_jitted_broadcasting(method):
+    @njit
+    def jitted_function_with_args(x, a, b, c):
+        return x + a + b + c
+
+    x_0 = 0
+    x_amplitude = np.arange(2)
+    harmonic = np.arange(3)[:, np.newaxis]
+    a = np.arange(4)[:, np.newaxis, np.newaxis]
+    b = np.arange(5)[:, np.newaxis, np.newaxis, np.newaxis]
+    c = np.arange(6)[:, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
+    target_shape = (x_0 + x_amplitude + harmonic + a + b + c).shape
+
+    result = demod(
+        f_x=jitted_function_with_args,
         x_0=x_0,
         x_amplitude=x_amplitude,
         harmonic=harmonic,
