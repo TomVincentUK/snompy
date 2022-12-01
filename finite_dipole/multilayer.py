@@ -20,7 +20,8 @@ import numpy as np
 from scipy.integrate import quad_vec
 from numba import njit
 
-from .tools import refl_coeff, Fourier_envelope
+from .demodulate import demod
+from .tools import refl_coeff
 
 _EPS_STACK_ERR = ValueError("`eps_stack` must have length 2 greater than `t_stack`.")
 _BETA_STACK_ERR = ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
@@ -74,6 +75,11 @@ def refl_coeff_ML(beta_stack, t_stack):
     return beta_k
 
 
+@np.vectorize
+def _map_array(f, *args):
+    return f(*args)
+
+
 @njit
 def _phi_k_weighting(k, z_q):
     """Used by potential_0()"""
@@ -89,14 +95,13 @@ def potential_0(z_q, beta_k):
 
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return beta_k(k) * _phi_k_weighting(k, z_q)
+        return _map_array(beta_k, k) * _phi_k_weighting(k, z_q)
 
-    integral, error = quad_vec(_integrand, 0, np.inf)
+    integral, _ = quad_vec(_integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
-    error /= z_q
-    return integral, error
+    return integral
 
 
 @njit
@@ -114,21 +119,18 @@ def E_z_0(z_q, beta_k):
 
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return beta_k(k) * _E_k_weighting(k, z_q)
+        return _map_array(beta_k, k) * _E_k_weighting(k, z_q)
 
-    integral, error = quad_vec(_integrand, 0, np.inf)
+    integral, _ = quad_vec(_integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
-    error /= z_q
-    return integral, error
+    return integral
 
 
 def eff_charge_and_pos(z_q, beta_k):
-    phi, _ = potential_0(z_q, beta_k)
-    E, _ = E_z_0(z_q, beta_k)
-
-    # Add in error propagation here too?
+    phi = potential_0(z_q, beta_k)
+    E = E_z_0(z_q, beta_k)
 
     z_image = np.abs(phi / E) - z_q
     beta_image = -(phi**2) / E
@@ -186,69 +188,6 @@ def eff_pol_0_ML(z, beta_k, W_0, W_1, radius, semi_maj_axis, g_factor):
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
 
-def _integrand_ML(
-    t,
-    z,
-    tapping_amplitude,
-    harmonic,
-    beta_k,
-    W_0,
-    W_1,
-    radius,
-    semi_maj_axis,
-    g_factor,
-):
-    """
-    Function to be integrated from -pi to pi, to extract the Fourier
-    component of `eff_pol_0_ML()` corresponding to `harmonic`.
-    """
-    alpha_eff = eff_pol_0_ML(
-        z + tapping_amplitude * (1 + np.cos(t)),
-        beta_k,
-        W_0,
-        W_1,
-        radius,
-        semi_maj_axis,
-        g_factor,
-    )
-    sinusoids = Fourier_envelope(t, harmonic)
-    return alpha_eff * sinusoids
-
-
-@np.vectorize
-def _integral_ML(
-    z,
-    tapping_amplitude,
-    harmonic,
-    beta_k,
-    W_0,
-    W_1,
-    radius,
-    semi_maj_axis,
-    g_factor,
-):
-    """
-    Function that extracts the Fourier component of `eff_pol_0_ML()`
-    corresponding to `harmonic`.
-    """
-    return quad_vec(
-        _integrand_ML,
-        -np.pi,
-        np.pi,
-        args=(
-            z,
-            tapping_amplitude,
-            harmonic,
-            beta_k,
-            W_0,
-            W_1,
-            radius,
-            semi_maj_axis,
-            g_factor,
-        ),
-    )
-
-
 def eff_pol_ML(
     z,
     tapping_amplitude,
@@ -261,7 +200,7 @@ def eff_pol_ML(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
-    return_err=False,
+    demod_method="trapezium",
 ):
     # beta calculated from eps_sample if not specified
     if eps_stack is None:
@@ -283,23 +222,13 @@ def eff_pol_ML(
 
     beta_k = refl_coeff_ML(beta_stack, t_stack)
 
-    alpha_eff, alpha_eff_err = _integral_ML(
-        z,
+    alpha_eff = demod(
+        eff_pol_0_ML,
+        z + tapping_amplitude,  # add the amplitude so z_0 is at centre of oscillation
         tapping_amplitude,
         harmonic,
-        beta_k,
-        W_0,
-        W_1,
-        radius,
-        semi_maj_axis,
-        g_factor,
+        f_args=(beta_k, W_0, W_1, radius, semi_maj_axis, g_factor),
+        method=demod_method,
     )
 
-    # Normalize to period of integral
-    alpha_eff /= 2 * np.pi
-    alpha_eff_err /= 2 * np.pi
-
-    if return_err:
-        return alpha_eff, alpha_eff_err
-    else:
-        return alpha_eff
+    return alpha_eff

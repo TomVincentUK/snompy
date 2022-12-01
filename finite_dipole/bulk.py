@@ -17,10 +17,9 @@ References
 """
 import warnings
 import numpy as np
-from scipy.integrate import quad_vec
 from numba import njit
 
-from .tools import refl_coeff, Fourier_envelope
+from .tools import refl_coeff
 from .demodulate import demod
 
 
@@ -192,7 +191,7 @@ def eff_pol(
 
     alpha_eff = demod(
         eff_pol_0,
-        z + tapping_amplitude,  # add the amplitude so z_0 is at bottom of oscillation
+        z + tapping_amplitude,  # add the amplitude so z_0 is at centre of oscillation
         tapping_amplitude,
         harmonic,
         f_args=(beta, x_0, x_1, radius, semi_maj_axis, g_factor),

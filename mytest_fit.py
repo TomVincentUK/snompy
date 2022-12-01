@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 from tqdm import tqdm
 
-from finite_dipole import eff_pol
+from finite_dipole.bulk import eff_pol
 
 
 def eps_Lorentz(omega, eps_inf, omega_0, strength, gamma):

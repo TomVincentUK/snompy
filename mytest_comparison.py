@@ -17,9 +17,8 @@ References
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
 
-from finite_dipole import eff_pol
+from finite_dipole.bulk import eff_pol
 from finite_dipole.tools import refl_coeff
 
 
@@ -195,43 +194,3 @@ ax_phase_norm.legend(handles=(amp_norm, phase_norm))
 fig_norm.tight_layout()
 
 plt.show(block=False)
-
-# gs = plt.GridSpec(nrows=2, ncols=2, width_ratios=(1, 0.1))
-# SM = plt.cm.ScalarMappable(
-#     cmap=plt.cm.Spectral, norm=Normalize(vmin=z_0.min() * 1e9, vmax=z_0.max() * 1e9)
-# )
-#
-# ax_amp = fig.add_subplot(gs[0, 0])
-# ax_phase = fig.add_subplot(gs[1, 0])
-# cax = fig.add_subplot(gs[:, -1])
-#
-# for _z_0, _alpha_SiC_n, _alpha_Au_n in zip(z_0, alpha_SiC_n.T, alpha_Au_n.T):
-#     c = SM.to_rgba(_z_0 * 1e9)
-#     ax_amp.plot(wavenumber / 1e2, np.abs(_alpha_SiC_n / _alpha_Au_n), c=c)
-#     ax_phase.plot(
-#         wavenumber / 1e2, np.unwrap(np.angle(_alpha_SiC_n / _alpha_Au_n), axis=0), c=c
-#     )
-#
-# ax_amp.set(
-#     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
-#     xticklabels=[],
-#     ylabel=r"$\left|\frac{{\alpha}_{eff, "
-#     f"{harmonic}"
-#     r", SiC}}{{\alpha}_{eff, "
-#     f"{harmonic}"
-#     r", Au}}\right|$",
-# )
-# ax_phase.set(
-#     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
-#     xlabel=r"${\omega}$ / cm$^{-1}$",
-#     ylabel=r"$\mathrm{arg}\left(\frac{{\alpha}_{eff, "
-#     f"{harmonic}"
-#     r", SiC}}{{\alpha}_{eff, "
-#     f"{harmonic}"
-#     r", Au}}\right)$",
-# )
-#
-# fig.colorbar(SM, cax=cax, label=r"$z_0$ / nm")
-#
-# fig.tight_layout()
-# plt.show()

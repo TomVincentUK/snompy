@@ -21,7 +21,7 @@ References
 import numpy as np
 import matplotlib.pyplot as plt
 
-from finite_dipole import eff_pol
+from finite_dipole.bulk import eff_pol
 
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):

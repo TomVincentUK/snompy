@@ -21,7 +21,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
-from finite_dipole import eff_pol
+from finite_dipole.bulk import eff_pol
 from finite_dipole.tools import refl_coeff
 
 

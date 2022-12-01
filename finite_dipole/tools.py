@@ -35,24 +35,3 @@ def refl_coeff(eps_i, eps_j):
     eps_i = np.asarray(eps_i)
     eps_j = np.asarray(eps_j)
     return (eps_j - eps_i) / (eps_j + eps_i)
-
-
-@njit
-def Fourier_envelope(t, n):
-    """
-    A complex sinusoid with frequency 2 * pi * `n`, to be used in an
-    integral that extracts the nth Fourier coefficient.
-
-    Parameters
-    ----------
-    t : float
-        Domain of the function.
-    n : int
-        Order of the Fourier component.
-
-    Returns
-    -------
-    sinusoids : complex
-        A complex sinusoid with frequency 2 * pi * `n`.
-    """
-    return np.exp(-1j * n * t)
