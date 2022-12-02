@@ -197,8 +197,8 @@ def eff_pol_ML(
     eps_stack=None,
     beta_stack=None,
     t_stack=[],
-    W_0=None,
-    W_1=0.5,
+    x_0=None,
+    x_1=0.5,
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
@@ -219,8 +219,8 @@ def eff_pol_ML(
     if len(beta_stack) != len(t_stack) + 1:
         raise _BETA_STACK_ERR
 
-    if W_0 is None:
-        W_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if x_0 is None:
+        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
     beta_k = refl_coeff_ML(beta_stack, t_stack)
 
@@ -229,7 +229,7 @@ def eff_pol_ML(
         z + tapping_amplitude,  # add the amplitude so z_0 is at centre of oscillation
         tapping_amplitude,
         harmonic,
-        f_args=(beta_k, W_0, W_1, radius, semi_maj_axis, g_factor),
+        f_args=(beta_k, x_0, x_1, radius, semi_maj_axis, g_factor),
         method=demod_method,
     )
 
