@@ -14,7 +14,7 @@ t_PS = 100e-9
 t_PMMA = 100e-9
 t_stack = (t_PS, t_PMMA)
 
-beta_stack = fdm.tools.refl_coeff(eps_stack[:1], eps_stack[1:])
+beta_stack = fdm.tools.refl_coeff(eps_stack[:-1], eps_stack[1:])
 beta_k = fdm.multilayer.refl_coeff_ML(beta_stack, t_stack)
 
 N = 128
