@@ -182,11 +182,11 @@ def eff_pol_0_ML(z, beta_k, W_0, W_1, radius, semi_maj_axis, g_factor):
     z_q_0 = z + radius * W_0
     z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k)
     f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
-    
+
     z_q_1 = z + radius * W_1
     z_im_1, beta_im_1 = eff_charge_and_pos(z_q_1, beta_k)
     f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
-    
+
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
 

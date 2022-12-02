@@ -21,7 +21,7 @@ References
 import numpy as np
 import matplotlib.pyplot as plt
 
-from finite_dipole.bulk import eff_pol
+import finite_dipole as fdm
 
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):
@@ -39,10 +39,12 @@ radius = 20e-9
 harmonic = np.arange(1, 5, 1)
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
-alpha_Au_n = eff_pol(z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius)
+alpha_Au_n = fdm.bulk.eff_pol(
+    z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
+)
 
 # Normalize to z = 0
-alpha_Au_n *= np.exp(-1j * np.angle(alpha_Au_n[0])) / np.abs(alpha_Au_n[0])
+alpha_Au_n /= alpha_Au_n[0]
 
 # Plotting
 fig, (ax_amp, ax_phase) = plt.subplots(nrows=2, sharex=True)
