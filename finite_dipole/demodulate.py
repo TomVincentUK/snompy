@@ -2,9 +2,9 @@
 Demodulation code.
 """
 import numpy as np
-from scipy.integrate import trapezoid, simpson, quad_vec
 from numba import njit
 from numba.extending import is_jitted
+from scipy.integrate import quad_vec, simpson, trapezoid
 
 
 def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):

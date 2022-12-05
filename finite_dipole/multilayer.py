@@ -16,9 +16,10 @@ References
    https://doi.org/10.1364/oe.15.008550.
 """
 import warnings
+
 import numpy as np
-from scipy.integrate import quad_vec
 from numba import njit
+from scipy.integrate import quad_vec
 
 from .demodulate import demod
 from .tools import refl_coeff

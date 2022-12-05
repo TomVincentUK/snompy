@@ -1,8 +1,4 @@
-from . import bulk
-from . import multilayer
-from . import demodulate
-from . import tools
-from . import _version
+from . import _version, bulk, demodulate, multilayer, tools
 
 __all__ = [bulk, multilayer, demodulate, tools]
 

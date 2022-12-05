@@ -18,8 +18,8 @@ References
    Appl. Opt. 22 (1983) 1099.
    https://doi.org/10.1364/AO.22.001099.
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import finite_dipole as fdm
 

@@ -15,8 +15,8 @@ References
    https://doi.org/10.1364/AO.22.001099.
 .. [3] Lars Mester Nat. Comms. (2020).
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import finite_dipole as fdm
 

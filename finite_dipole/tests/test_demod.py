@@ -1,6 +1,7 @@
-import pytest
 import numpy as np
+import pytest
 from numba import njit
+
 from finite_dipole.demodulate import demod
 
 METHODS = "trapezium", "simpson", "adaptive"
