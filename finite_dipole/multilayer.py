@@ -18,17 +18,68 @@ References
 import warnings
 
 import numpy as np
-from numba import njit
+from numba import njit, vectorize
 from scipy.integrate import quad_vec
 
 from .demodulate import demod
 from .tools import refl_coeff
 
-_EPS_STACK_ERR = ValueError("`eps_stack` must have length 2 greater than `t_stack`.")
-_BETA_STACK_ERR = ValueError("`beta_stack` must have length 1 greater than `t_stack`.")
+
+def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
+    if t_stack is None:
+        t_stack = np.array([])
+    else:
+        t_stack = np.asarray(t_stack)
+
+    if eps_stack is None:
+        if beta_stack is None:
+            raise ValueError("Either `eps_stack` or `beta_stack` must be specified.")
+    else:
+        if beta_stack is None:
+            # beta_stack calculated from eps_stack if not specified
+            eps_stack = np.asarray(eps_stack)
+            if eps_stack.shape[0] != t_stack.shape[0] + 2:
+                raise ValueError(
+                    "`eps_stack` must be 2 longer than `t_stack` along the first axis."
+                )
+            beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
+        else:
+            warnings.warn("`beta_stack` overrides `eps_stack` when both are specified.")
+
+    beta_stack = np.asarray(beta_stack)
+    if beta_stack.shape[0] != t_stack.shape[0] + 1:
+        raise ValueError(
+            "`beta_stack` must be 1 longer than `t_stack` along the first axis."
+        )
+
+    return beta_stack, t_stack
 
 
-def refl_coeff_ML(beta_stack, t_stack):
+def _beta_func_from_stack(beta_stack, t_stack):
+    if beta_stack.shape[0] == 1:
+        beta_final = beta_stack[0]
+
+        @njit
+        def beta_k(_):
+            return beta_final
+
+    else:
+        beta_current = beta_stack[0]
+        t_current = t_stack[0]
+
+        beta_stack_next = beta_stack[1:]
+        t_stack_next = t_stack[1:]
+        beta_next = _beta_func_from_stack(beta_stack_next, t_stack_next)
+
+        @njit
+        def beta_k(k):
+            next_layer = beta_next(k) * np.exp(-2 * k * t_current)
+            return (beta_current + next_layer) / (1 + beta_current * next_layer)
+
+    return beta_k
+
+
+def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
     """
     Calculates the momentum-dependent effective reflection coefficient for
     the first interface in a stack of layers sandwiched between a semi-
@@ -36,6 +87,8 @@ def refl_coeff_ML(beta_stack, t_stack):
 
     Parameters
     ----------
+    eps_stack : array like
+        WRITE ME.
     beta_stack : array like
         Reflection coefficients of each interface in the stack (with the
         first element corresponding to the top interface).
@@ -50,29 +103,8 @@ def refl_coeff_ML(beta_stack, t_stack):
         A scalar function of momentum, `q`, which returns the complex
         effective reflection coefficient for the stack.
     """
-    if len(beta_stack) != len(t_stack) + 1:
-        raise _BETA_STACK_ERR
-
-    if len(beta_stack) == 1:
-        beta_final = beta_stack[0]
-
-        @njit
-        def beta_k(k):
-            return beta_final
-
-    else:
-        beta_current = beta_stack[0]
-        t_current = t_stack[0]
-
-        beta_stack_next = beta_stack[1:]
-        t_stack_next = t_stack[1:]
-        beta_next = refl_coeff_ML(beta_stack_next, t_stack_next)
-
-        @njit
-        def beta_k(k):
-            next_layer = beta_next(k) * np.exp(-2 * k * t_current)
-            return (beta_current + next_layer) / (1 + beta_current * next_layer)
-
+    beta_stack, t_stack = _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack)
+    beta_k = _beta_func_from_stack(beta_stack, t_stack)
     return beta_k
 
 
@@ -179,12 +211,12 @@ def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
     )
 
 
-def eff_pol_0_ML(z, beta_k, W_0, W_1, radius, semi_maj_axis, g_factor):
-    z_q_0 = z + radius * W_0
+def eff_pol_0_ML(z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor):
+    z_q_0 = z + radius * x_0
     z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k)
     f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
 
-    z_q_1 = z + radius * W_1
+    z_q_1 = z + radius * x_1
     z_im_1, beta_im_1 = eff_charge_and_pos(z_q_1, beta_k)
     f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
 
@@ -197,7 +229,7 @@ def eff_pol_ML(
     harmonic,
     eps_stack=None,
     beta_stack=None,
-    t_stack=[],
+    t_stack=None,
     x_0=None,
     x_1=0.5,
     radius=20e-9,
@@ -205,25 +237,10 @@ def eff_pol_ML(
     g_factor=0.7 * np.exp(0.06j),
     demod_method="trapezium",
 ):
-    # beta calculated from eps_sample if not specified
-    if eps_stack is None:
-        if beta_stack is None:
-            raise ValueError("Either `eps_stack` or `beta_stack` must be specified.")
-    else:
-        if beta_stack is None:
-            if len(eps_stack) != len(t_stack) + 2:
-                raise _EPS_STACK_ERR
-            beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
-        else:
-            warnings.warn("`beta_stack` overrides `eps_stack` when both are specified.")
-
-    if len(beta_stack) != len(t_stack) + 1:
-        raise _BETA_STACK_ERR
-
     if x_0 is None:
         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-    beta_k = refl_coeff_ML(beta_stack, t_stack)
+    beta_k = refl_coeff_ML(eps_stack, beta_stack, t_stack)
 
     alpha_eff = demod(
         eff_pol_0_ML,

@@ -10,10 +10,10 @@ References
    https://doi.org/10.1364/OE.20.013173.
 """
 import numpy as np
-from numba import njit
+from numba import vectorize
 
 
-@njit
+@vectorize(["float64(float64, float64)", "complex128(complex128, complex128)"])
 def refl_coeff(eps_i, eps_j):
     """
     Electrostatic reflection coefficient for an interface between materials
@@ -32,6 +32,4 @@ def refl_coeff(eps_i, eps_j):
     beta_ij : complex
         Electrostatic reflection coefficient of the sample.
     """
-    eps_i = np.asarray(eps_i)
-    eps_j = np.asarray(eps_j)
     return (eps_j - eps_i) / (eps_j + eps_i)

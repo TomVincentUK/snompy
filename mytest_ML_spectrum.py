@@ -54,3 +54,11 @@ eps_Si = 11.7
 # (My simplified model for the PMMA C=O bond based on fig 5a of [3]_)
 eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-2, 20e2)
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
+
+eps_stack = np.broadcast_arrays(eps_air, eps_PMMA, eps_Si)
+
+t_PMMA = 100e-9
+t_stack = (t_PMMA,)
+
+beta_stack = fdm.tools.refl_coeff(eps_stack[:-1], eps_stack[1:])
+beta_k = [fdm.multilayer.refl_coeff_ML(b, t_stack) for b in beta_stack.T]
