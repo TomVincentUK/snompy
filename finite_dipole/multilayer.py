@@ -55,7 +55,7 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
     return beta_stack, t_stack
 
 
-def _beta_func_from_stack(beta_stack, t_stack):
+def _recursive_beta_k(beta_stack, t_stack):
     if beta_stack.shape[0] == 1:
         beta_final = beta_stack[0]
 
@@ -69,7 +69,7 @@ def _beta_func_from_stack(beta_stack, t_stack):
 
         beta_stack_next = beta_stack[1:]
         t_stack_next = t_stack[1:]
-        beta_next = _beta_func_from_stack(beta_stack_next, t_stack_next)
+        beta_next = _recursive_beta_k(beta_stack_next, t_stack_next)
 
         @njit
         def beta_k(k):
@@ -77,6 +77,12 @@ def _beta_func_from_stack(beta_stack, t_stack):
             return (beta_current + next_layer) / (1 + beta_current * next_layer)
 
     return beta_k
+
+
+def _beta_func_from_stack(beta_stack, t_stack):
+    return np.apply_along_axis(
+        func1d=_recursive_beta_k, axis=0, arr=beta_stack, t_stack=t_stack
+    )
 
 
 def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):

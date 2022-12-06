@@ -16,7 +16,7 @@ t_stack = (t_PS, t_PMMA)
 
 beta_stack = fdm.tools.refl_coeff(eps_stack[:-1], eps_stack[1:])
 
-N = 5
+N = 512
 z_0 = np.linspace(0, 35, N)[..., np.newaxis] * 1e-9
 tapping_amplitude = 20e-9
 harmonic = np.arange(1, 5, 1)
