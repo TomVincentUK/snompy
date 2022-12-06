@@ -1,5 +1,8 @@
 """
-This is not finished.
+Simulated PMMA on Si spectra with different thickness for PMMA.
+
+Currently this relies on an external loop. It would be better to have it
+vectorised eventually.
 
 References
 ----------
@@ -17,6 +20,7 @@ References
 """
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import Normalize
 
 import finite_dipole as fdm
 
@@ -39,7 +43,7 @@ def eps_Drude(omega, eps_inf, omega_plasma, gamma):
     return eps_inf - (omega_plasma**2) / (omega**2 + 1j * gamma * omega)
 
 
-wavenumber = np.linspace(1680, 1780, 129) * 1e2
+wavenumber = np.linspace(1680, 1780, 128) * 1e2
 z_0 = 50e-9
 tapping_amplitude = 50e-9
 radius = 20e-9
@@ -52,13 +56,70 @@ eps_Si = 11.7
 
 # Dispersive dielectric functions
 # (My simplified model for the PMMA C=O bond based on fig 5a of [3]_)
-eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-2, 20e2)
+eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-3, 20e2)
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 
 eps_stack = np.broadcast_arrays(eps_air, eps_PMMA, eps_Si)
+eps_stack_ref = np.broadcast_arrays(eps_air, eps_Au)
 
-t_PMMA = 100e-9
-t_stack = (t_PMMA,)
+t_PMMA = np.linspace(0, 100, 10) * 1e-9
 
-beta_stack = fdm.tools.refl_coeff(eps_stack[:-1], eps_stack[1:])
-beta_k = [fdm.multilayer.refl_coeff_ML(b, t_stack) for b in beta_stack.T]
+alpha_eff = [
+    fdm.multilayer.eff_pol_ML(
+        z_0, tapping_amplitude, harmonic, eps_stack=eps_stack, t_stack=(t,)
+    )
+    for t in t_PMMA
+]
+alpha_eff_ref = fdm.multilayer.eff_pol_ML(
+    z_0, tapping_amplitude, harmonic, eps_stack=eps_stack_ref
+)
+
+# Plotting
+fig = plt.figure()
+gs = plt.GridSpec(nrows=3, ncols=2, width_ratios=(1, 0.1))
+SM = plt.cm.ScalarMappable(
+    cmap=plt.cm.Spectral,
+    norm=Normalize(vmin=t_PMMA.min() * 1e9, vmax=t_PMMA.max() * 1e9),
+)
+ax_eps = fig.add_subplot(gs[0, 0])
+ax_eps.plot(wavenumber / 1e2, eps_PMMA.real, label="real")
+ax_eps.plot(wavenumber / 1e2, eps_PMMA.imag, label="imaginary")
+
+ax_amp = fig.add_subplot(gs[1, 0])
+ax_phase = fig.add_subplot(gs[2, 0])
+cax = fig.add_subplot(fig.add_subplot(gs[1:, -1]))
+for t, alpha_t in zip(t_PMMA, alpha_eff):
+    signal = alpha_t / alpha_eff_ref
+    c = SM.to_rgba(t * 1e9)
+    ax_amp.plot(wavenumber / 1e2, np.abs(signal), c=c)
+    ax_phase.plot(wavenumber / 1e2, np.unwrap(np.angle(signal), axis=0), c=c)
+
+ax_eps.set(
+    xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
+    xticklabels=[],
+    ylabel=r"$\varepsilon_{PMMA}$",
+)
+ax_eps.legend()
+ax_amp.set(
+    xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
+    xticklabels=[],
+    ylabel=r"$\left|\frac{{\alpha}_{eff, "
+    f"{harmonic}"
+    r", PMMA-Si}}{{\alpha}_{eff, "
+    f"{harmonic}"
+    r", Au}}\right|$",
+)
+ax_phase.set(
+    xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
+    xlabel=r"${\omega}$ / cm$^{-1}$",
+    ylabel=r"$\mathrm{arg}\left(\frac{{\alpha}_{eff, "
+    f"{harmonic}"
+    r", PMMA-Si}}{{\alpha}_{eff, "
+    f"{harmonic}"
+    r", Au}}\right)$",
+)
+
+fig.colorbar(SM, cax=cax, label=r"$t_{PMMA}$ / nm")
+
+fig.tight_layout()
+plt.show()

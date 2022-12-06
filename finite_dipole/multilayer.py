@@ -127,11 +127,10 @@ def _phi_k_weighting(k, z_q):
 
 def potential_0(z_q, beta_k):
     """
-    Potential induced at z=0 by a charge q, at height `z_q`, and it's image
+    Potential induced at z=0 by a charge q, at height `z_q`, and its image
     charge, over an interface with momentum-dependent reflection
     coefficient `beta_k(k)`.
     """
-
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return _map_array(beta_k, k) * _phi_k_weighting(k, z_q)
@@ -152,7 +151,7 @@ def _E_k_weighting(k, z_q):
 def E_z_0(z_q, beta_k):
     """
     z-component of the electric field induced at z=0 by a charge q, at
-    height `z_q`, and it's image charge, over an interface with momentum-
+    height `z_q`, and its image charge, over an interface with momentum-
     dependent reflection coefficient `beta_k(k)`.
     """
 
