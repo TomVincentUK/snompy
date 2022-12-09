@@ -1,7 +1,6 @@
 """
 Demodulation code.
 """
-
 import numpy as np
 from numba import njit
 from numba.extending import is_jitted
@@ -10,7 +9,7 @@ from scipy.integrate import quad_vec, simpson, trapezoid
 
 def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
     theta = np.linspace(-np.pi, np.pi, n_samples)
-    x = x_0 + np.cos(theta) * x_amplitude
+    x = x_0 + x_amplitude * np.cos(theta)
     f = f_x(x, *f_args)
     envelope = np.exp(-1j * harmonic * theta)
     return f * envelope
@@ -29,16 +28,6 @@ def _generate_f_theta(f_x):
     return njit(f_theta) if is_jitted(f_x) else f_theta
 
 
-def append_dim_to_arrays(*args):
-    out_args = []
-    for arg in args:
-        if type(arg) == np.ndarray:
-            out_args.append(arg[..., np.newaxis])
-        else:
-            out_args.append(arg)
-    return out_args
-
-
 def demod(
     f_x,
     x_0,
@@ -52,22 +41,29 @@ def demod(
         raise ValueError("`method` must be 'trapezium', 'simpson' or 'adaptive'.")
 
     if method == "adaptive":
+        x_0, x_amplitude, harmonic, *f_args = [
+            np.array(arr)
+            for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
+        ]
+        f_args = tuple(f_args)
+
         f_theta = _generate_f_theta(f_x)
+
         result, _ = quad_vec(
             lambda t: f_theta(t, x_0, x_amplitude, harmonic, *f_args), -np.pi, np.pi
         )
         result /= 2 * np.pi
     else:
-        x_0, x_amplitude, harmonic, *f_args = append_dim_to_arrays(
-            x_0, x_amplitude, harmonic, *f_args
-        )
-        # Function falls back to uncompiled code if not given jitted f_x
-        if is_jitted(f_x):
-            si = _sampled_integrand_compiled
-            f_args = tuple(f_args)
-        else:
-            si = _sampled_integrand
+        x_0, x_amplitude, harmonic, *f_args = [
+            np.array(arr)[
+                ..., np.newaxis
+            ]  # extra dimension added to arrays for _sampled_integrand to extend along
+            for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
+        ]
+        f_args = tuple(f_args)
 
+        # Function falls back to uncompiled code if not given jitted f_x
+        si = _sampled_integrand_compiled if is_jitted(f_x) else _sampled_integrand
         integrand = si(f_x, x_0, x_amplitude, harmonic, f_args, n_samples)
 
         if method == "trapezium":
