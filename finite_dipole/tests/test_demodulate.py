@@ -19,7 +19,7 @@ def test_only_zeroth_harmonic_with_constant_function(method):
         harmonic=np.arange(3),
         method=method,
     )
-    np.testing.assert_almost_equal(result, [1, 0, 0])
+    np.testing.assert_almost_equal(result, np.array([1, 0, 0]))
 
 
 @pytest.mark.parametrize("method", METHODS)

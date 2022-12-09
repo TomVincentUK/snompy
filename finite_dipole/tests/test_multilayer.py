@@ -103,4 +103,4 @@ def test_beta_and_t_stack_from_inputs_beta_leaves_beta_unchanged(beta_stack, t_s
 @pytest.mark.parametrize("beta_stack, t_stack", VALID_BETA_AND_T_STACK_PAIRS)
 def test_beta_func_from_stack_creates_right_shape(beta_stack, t_stack):
     beta_k = _beta_func_from_stack(np.asarray(beta_stack), np.asarray(t_stack))
-    assert np.shape(beta_k) == np.shape(beta_stack)[1:]
+    assert np.shape(beta_k(1)) == np.shape(beta_stack)[1:]
