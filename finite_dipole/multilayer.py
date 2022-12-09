@@ -55,7 +55,7 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
     return beta_stack, t_stack
 
 
-def _recursive_beta_k(beta_stack, t_stack):
+def _beta_func_from_stack(beta_stack, t_stack):
     if beta_stack.shape[0] == 1:
         beta_final = beta_stack[0]
 
@@ -69,7 +69,7 @@ def _recursive_beta_k(beta_stack, t_stack):
 
         beta_stack_next = beta_stack[1:]
         t_stack_next = t_stack[1:]
-        beta_next = _recursive_beta_k(beta_stack_next, t_stack_next)
+        beta_next = _beta_func_from_stack(beta_stack_next, t_stack_next)
 
         @njit
         def beta_k(k):
@@ -77,12 +77,6 @@ def _recursive_beta_k(beta_stack, t_stack):
             return (beta_current + next_layer) / (1 + beta_current * next_layer)
 
     return beta_k
-
-
-def _beta_func_from_stack(beta_stack, t_stack):
-    return np.apply_along_axis(
-        func1d=_recursive_beta_k, axis=0, arr=beta_stack, t_stack=t_stack
-    )
 
 
 def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
@@ -131,9 +125,10 @@ def potential_0(z_q, beta_k):
     charge, over an interface with momentum-dependent reflection
     coefficient `beta_k(k)`.
     """
+
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return _map_array(beta_k, k) * _phi_k_weighting(k, z_q)
+        return beta_k(k) * _phi_k_weighting(k, z_q)
 
     integral, _ = quad_vec(_integrand, 0, np.inf)
 
@@ -157,7 +152,7 @@ def E_z_0(z_q, beta_k):
 
     def _integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return _map_array(beta_k, k) * _E_k_weighting(k, z_q)
+        return beta_k(k) * _E_k_weighting(k, z_q)
 
     integral, _ = quad_vec(_integrand, 0, np.inf)
 
