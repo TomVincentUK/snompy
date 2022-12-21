@@ -6,14 +6,6 @@ from finite_dipole.multilayer import (
     _beta_func_from_stack,
 )
 
-
-def test_beta_and_t_stack_from_inputs_error_when_eps_and_beta_are_None():
-    with pytest.raises(
-        ValueError, match="Either `eps_stack` or `beta_stack` must be specified."
-    ):
-        _beta_and_t_stack_from_inputs(eps_stack=None, beta_stack=None, t_stack=None)
-
-
 VALID_EPS_AND_T_STACK_PAIRS = [
     ([1, 2], []),
     ([1, 2], None),
@@ -25,6 +17,25 @@ VALID_EPS_AND_T_STACK_PAIRS = [
     ([[1, 2], [3, 4]], []),
     ([[1, 2], [3, 4]], None),
 ]
+
+VALID_BETA_AND_T_STACK_PAIRS = [
+    ([1], []),
+    ([1], None),
+    ([1, 2], [1]),
+    ([1, 2, 3], [1, 2]),
+    ([[1]], []),
+    ([[1]], None),
+    ([[1, 2]], []),
+    ([[1, 2]], None),
+    ([[1, 2], [3, 4]], [1]),
+]
+
+
+def test_beta_and_t_stack_from_inputs_error_when_eps_and_beta_are_None():
+    with pytest.raises(
+        ValueError, match="Either `eps_stack` or `beta_stack` must be specified."
+    ):
+        _beta_and_t_stack_from_inputs(eps_stack=None, beta_stack=None, t_stack=None)
 
 
 @pytest.mark.parametrize("eps_stack, t_stack", VALID_EPS_AND_T_STACK_PAIRS)
@@ -53,19 +64,6 @@ def test_beta_and_t_stack_from_inputs_eps_leaves_t_unchanged(eps_stack, t_stack)
         eps_stack=eps_stack, beta_stack=None, t_stack=t_stack
     )
     np.testing.assert_equal(t_stack_new, t_stack)
-
-
-VALID_BETA_AND_T_STACK_PAIRS = [
-    ([1], []),
-    ([1], None),
-    ([1, 2], [1]),
-    ([1, 2, 3], [1, 2]),
-    ([[1]], []),
-    ([[1]], None),
-    ([[1, 2]], []),
-    ([[1, 2]], None),
-    ([[1, 2], [3, 4]], [1]),
-]
 
 
 @pytest.mark.parametrize("beta_stack, t_stack", VALID_BETA_AND_T_STACK_PAIRS)

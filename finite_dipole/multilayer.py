@@ -34,6 +34,7 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
     if eps_stack is None:
         if beta_stack is None:
             raise ValueError("Either `eps_stack` or `beta_stack` must be specified.")
+        beta_stack = np.asarray(beta_stack)
     else:
         if beta_stack is None:
             # beta_stack calculated from eps_stack if not specified
@@ -45,8 +46,8 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
             beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
         else:
             warnings.warn("`beta_stack` overrides `eps_stack` when both are specified.")
+            beta_stack = np.asarray(beta_stack)
 
-    beta_stack = np.asarray(beta_stack)
     if beta_stack.shape[0] != t_stack.shape[0] + 1:
         raise ValueError(
             "`beta_stack` must be 1 longer than `t_stack` along the first axis."
@@ -106,11 +107,6 @@ def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
     beta_stack, t_stack = _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack)
     beta_k = _beta_func_from_stack(beta_stack, t_stack)
     return beta_k
-
-
-@np.vectorize
-def _map_array(f, *args):
-    return f(*args)
 
 
 @njit
