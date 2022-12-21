@@ -36,7 +36,7 @@ def test_only_first_harmonic_with_linear_function(method):
 @pytest.mark.parametrize("method", METHODS)
 def test_jitted_and_nonjitted_f_x(method):
     def nonjitted_function(x):
-        return x
+        return np.exp(-x)
 
     jitted_function = njit(nonjitted_function)
 
@@ -52,7 +52,7 @@ def test_jitted_and_nonjitted_f_x(method):
 @pytest.mark.parametrize("method", METHODS)
 def test_broadcasting(method):
     def function_with_args(x, a, b, c):
-        return x + a + b + c
+        return a * x**2 + b * x + c
 
     x_0 = 0
     x_amplitude = np.arange(2)
@@ -78,7 +78,7 @@ def test_broadcasting(method):
 def test_jitted_broadcasting(method):
     @njit
     def jitted_function_with_args(x, a, b, c):
-        return x + a + b + c
+        return a * x**2 + b * x + c
 
     x_0 = 0
     x_amplitude = np.arange(2)

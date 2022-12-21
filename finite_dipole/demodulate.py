@@ -9,14 +9,24 @@ from scipy.integrate import quad_vec, simpson, trapezoid
 
 
 def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
-    theta = np.linspace(-np.pi, np.pi, n_samples)
+    max_dim = np.max([np.ndim(arg) for arg in (x_0, x_amplitude, harmonic, *f_args)])
+    theta = np.linspace(-np.pi, np.pi, n_samples).reshape(
+        -1, *np.ones(max_dim, dtype=int)
+    )
     x = x_0 + np.cos(theta) * x_amplitude
     f = f_x(x, *f_args)
     envelope = np.exp(-1j * harmonic * theta)
     return f * envelope
 
 
-_sampled_integrand_compiled = njit(_sampled_integrand)
+@njit
+def _sampled_integrand_compiled(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
+    theta = np.linspace(-np.pi, np.pi, n_samples)
+    stack = [
+        f_x(x_0 + np.cos(t) * x_amplitude, *f_args) * np.exp(-1j * harmonic * t)
+        for t in theta
+    ]
+    return stack
 
 
 def _generate_f_theta(f_x):
@@ -27,16 +37,6 @@ def _generate_f_theta(f_x):
         return f * envelope
 
     return njit(f_theta) if is_jitted(f_x) else f_theta
-
-
-def append_dim_to_arrays(*args):
-    out_args = []
-    for arg in args:
-        if type(arg) == np.ndarray:
-            out_args.append(arg[..., np.newaxis])
-        else:
-            out_args.append(arg)
-    return out_args
 
 
 def demod(
@@ -58,10 +58,6 @@ def demod(
         )
         result /= 2 * np.pi
     else:
-        x_0, x_amplitude, harmonic, *f_args = append_dim_to_arrays(
-            x_0, x_amplitude, harmonic, *f_args
-        )
-        # Function falls back to uncompiled code if not given jitted f_x
         if is_jitted(f_x):
             si = _sampled_integrand_compiled
             f_args = tuple(f_args)
@@ -71,8 +67,8 @@ def demod(
         integrand = si(f_x, x_0, x_amplitude, harmonic, f_args, n_samples)
 
         if method == "trapezium":
-            result = trapezoid(integrand) / (n_samples - 1)
+            result = trapezoid(integrand, axis=0) / (n_samples - 1)
         elif method == "simpson":
-            result = simpson(integrand) / (n_samples - 1)
+            result = simpson(integrand, axis=0) / (n_samples - 1)
 
     return result
