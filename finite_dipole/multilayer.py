@@ -122,11 +122,12 @@ def potential_0(z_q, beta_k):
     coefficient `beta_k(k)`.
     """
 
-    def _integrand(xi):
+    @njit
+    def integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return beta_k(k) * _phi_k_weighting(k, z_q)
 
-    integral, _ = quad_vec(_integrand, 0, np.inf)
+    integral, _ = quad_vec(integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
@@ -136,7 +137,7 @@ def potential_0(z_q, beta_k):
 @njit
 def _E_k_weighting(k, z_q):
     """Used by E_z_0()"""
-    return -k * np.exp(-k * 2 * z_q)
+    return k * np.exp(-k * 2 * z_q)
 
 
 def E_z_0(z_q, beta_k):
@@ -146,11 +147,12 @@ def E_z_0(z_q, beta_k):
     dependent reflection coefficient `beta_k(k)`.
     """
 
-    def _integrand(xi):
+    @njit
+    def integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
         return beta_k(k) * _E_k_weighting(k, z_q)
 
-    integral, _ = quad_vec(_integrand, 0, np.inf)
+    integral, _ = quad_vec(integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
@@ -162,7 +164,7 @@ def eff_charge_and_pos(z_q, beta_k):
     E = E_z_0(z_q, beta_k)
 
     z_image = np.abs(phi / E) - z_q
-    beta_image = -(phi**2) / E
+    beta_image = phi**2 / E
     return z_image, beta_image
 
 
