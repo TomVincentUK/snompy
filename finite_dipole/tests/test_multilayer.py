@@ -2,8 +2,11 @@ import numpy as np
 import pytest
 
 from finite_dipole.bulk import eff_pol
-from finite_dipole.multilayer import (_beta_and_t_stack_from_inputs,
-                                      _beta_func_from_stack, eff_pol_ML)
+from finite_dipole.multilayer import (
+    _beta_and_t_stack_from_inputs,
+    _beta_func_from_stack,
+    eff_pol_ML,
+)
 
 VALID_EPS_AND_T_STACK_PAIRS = [
     ([1, 2], []),
