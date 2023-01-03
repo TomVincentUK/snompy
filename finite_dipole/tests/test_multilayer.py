@@ -1,11 +1,9 @@
 import numpy as np
 import pytest
 
-from finite_dipole.multilayer import (
-    _beta_and_t_stack_from_inputs,
-    _beta_func_from_stack,
-    eff_pol_ML,
-)
+from finite_dipole.bulk import eff_pol
+from finite_dipole.multilayer import (_beta_and_t_stack_from_inputs,
+                                      _beta_func_from_stack, eff_pol_ML)
 
 VALID_EPS_AND_T_STACK_PAIRS = [
     ([1, 2], []),
@@ -121,3 +119,59 @@ def test_eff_pol_ML_broadcasting():
         t_stack=(thickness,),
     )
     assert alpha_eff.shape == target_shape
+
+
+def test_eff_pol_ML_approach_curve_decays():
+    alpha_eff = eff_pol_ML(
+        z=np.linspace(0, 100, 128) * 1e-9,
+        tapping_amplitude=50e-9,
+        harmonic=np.arange(2, 10)[:, np.newaxis],
+        eps_stack=(1, 2 + 1j, 11.7),
+        t_stack=(100e-9,),
+    )
+    assert (np.diff(np.abs(alpha_eff)) < 0).all()
+
+
+def test_eff_pol_ML_harmonics_decay():
+    alpha_eff = eff_pol_ML(
+        z=50e-9,
+        tapping_amplitude=50e-9,
+        harmonic=np.arange(2, 10),
+        eps_stack=(1, 2 + 1j, 11.7),
+        t_stack=(100e-9,),
+    )
+    assert (np.diff(np.abs(alpha_eff)) < 0).all()
+
+
+def test_eff_pol_ML_zero_thickness_layer_invisible():
+    alpha_eff = eff_pol_ML(
+        z=50e-9,
+        tapping_amplitude=50e-9,
+        harmonic=np.arange(2, 10),
+        eps_stack=(1, 2 + 1j, 11.7),
+        t_stack=(100e-9,),
+    )
+    alpha_eff_with_zero_thickness_layer = eff_pol_ML(
+        z=50e-9,
+        tapping_amplitude=50e-9,
+        harmonic=np.arange(2, 10),
+        eps_stack=(1, 2 + 1j, 3, 11.7),
+        t_stack=(100e-9, 0),
+    )
+    np.testing.assert_almost_equal(alpha_eff, alpha_eff_with_zero_thickness_layer)
+
+
+def test_eff_pol_ML_two_layers_same_as_bulk():
+    alpha_eff_bulk = eff_pol(
+        z=50e-9,
+        tapping_amplitude=50e-9,
+        harmonic=np.arange(2, 10),
+        eps_sample=11.7,
+    )
+    alpha_eff_ML = eff_pol_ML(
+        z=50e-9,
+        tapping_amplitude=50e-9,
+        harmonic=np.arange(2, 10),
+        eps_stack=(1, 11.7),
+    )
+    np.testing.assert_almost_equal(alpha_eff_bulk, alpha_eff_ML)
