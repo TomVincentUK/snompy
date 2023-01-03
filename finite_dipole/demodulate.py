@@ -1,6 +1,7 @@
 """
 Demodulation code.
 """
+
 import numpy as np
 from numba import njit
 from numba.extending import is_jitted
@@ -8,14 +9,24 @@ from scipy.integrate import quad_vec, simpson, trapezoid
 
 
 def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
-    theta = np.linspace(-np.pi, np.pi, n_samples)
-    x = x_0 + x_amplitude * np.cos(theta)
+    max_dim = np.max([np.ndim(arg) for arg in (x_0, x_amplitude, harmonic, *f_args)])
+    theta = np.linspace(-np.pi, np.pi, n_samples).reshape(
+        -1, *np.ones(max_dim, dtype=int)
+    )
+    x = x_0 + np.cos(theta) * x_amplitude
     f = f_x(x, *f_args)
     envelope = np.exp(-1j * harmonic * theta)
     return f * envelope
 
 
-_sampled_integrand_compiled = njit(_sampled_integrand)
+@njit
+def _sampled_integrand_compiled(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
+    theta = np.linspace(-np.pi, np.pi, n_samples)
+    stack = [
+        f_x(x_0 + np.cos(t) * x_amplitude, *f_args) * np.exp(-1j * harmonic * t)
+        for t in theta
+    ]
+    return stack
 
 
 def _generate_f_theta(f_x):
@@ -41,34 +52,23 @@ def demod(
         raise ValueError("`method` must be 'trapezium', 'simpson' or 'adaptive'.")
 
     if method == "adaptive":
-        x_0, x_amplitude, harmonic, *f_args = [
-            np.array(arr)
-            for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
-        ]
-        f_args = tuple(f_args)
-
         f_theta = _generate_f_theta(f_x)
-
         result, _ = quad_vec(
             lambda t: f_theta(t, x_0, x_amplitude, harmonic, *f_args), -np.pi, np.pi
         )
         result /= 2 * np.pi
     else:
-        x_0, x_amplitude, harmonic, *f_args = [
-            np.array(arr)[
-                ..., np.newaxis
-            ]  # extra dimension added to arrays for _sampled_integrand to extend along
-            for arr in np.broadcast_arrays(*(x_0, x_amplitude, harmonic) + f_args)
-        ]
-        f_args = tuple(f_args)
+        if is_jitted(f_x):
+            si = _sampled_integrand_compiled
+            f_args = tuple(f_args)
+        else:
+            si = _sampled_integrand
 
-        # Function falls back to uncompiled code if not given jitted f_x
-        si = _sampled_integrand_compiled if is_jitted(f_x) else _sampled_integrand
         integrand = si(f_x, x_0, x_amplitude, harmonic, f_args, n_samples)
 
         if method == "trapezium":
-            result = trapezoid(integrand) / (n_samples - 1)
+            result = trapezoid(integrand, axis=0) / (n_samples - 1)
         elif method == "simpson":
-            result = simpson(integrand) / (n_samples - 1)
+            result = simpson(integrand, axis=0) / (n_samples - 1)
 
     return result

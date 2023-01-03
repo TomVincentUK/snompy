@@ -29,15 +29,16 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
     if t_stack is None:
         t_stack = np.array([])
     else:
-        t_stack = np.asarray(t_stack)
+        t_stack = np.asarray(np.broadcast_arrays(*t_stack))
 
     if eps_stack is None:
         if beta_stack is None:
             raise ValueError("Either `eps_stack` or `beta_stack` must be specified.")
+        beta_stack = np.asarray(np.broadcast_arrays(*beta_stack))
     else:
         if beta_stack is None:
             # beta_stack calculated from eps_stack if not specified
-            eps_stack = np.asarray(eps_stack)
+            eps_stack = np.asarray(np.broadcast_arrays(*eps_stack))
             if eps_stack.shape[0] != t_stack.shape[0] + 2:
                 raise ValueError(
                     "`eps_stack` must be 2 longer than `t_stack` along the first axis."
@@ -45,8 +46,8 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
             beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
         else:
             warnings.warn("`beta_stack` overrides `eps_stack` when both are specified.")
+            beta_stack = np.asarray(np.broadcast_arrays(*beta_stack))
 
-    beta_stack = np.asarray(beta_stack)
     if beta_stack.shape[0] != t_stack.shape[0] + 1:
         raise ValueError(
             "`beta_stack` must be 1 longer than `t_stack` along the first axis."
@@ -55,7 +56,7 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
     return beta_stack, t_stack
 
 
-def _recursive_beta_k(beta_stack, t_stack):
+def _beta_func_from_stack(beta_stack, t_stack):
     if beta_stack.shape[0] == 1:
         beta_final = beta_stack[0]
 
@@ -69,7 +70,7 @@ def _recursive_beta_k(beta_stack, t_stack):
 
         beta_stack_next = beta_stack[1:]
         t_stack_next = t_stack[1:]
-        beta_next = _recursive_beta_k(beta_stack_next, t_stack_next)
+        beta_next = _beta_func_from_stack(beta_stack_next, t_stack_next)
 
         @njit
         def beta_k(k):
@@ -77,12 +78,6 @@ def _recursive_beta_k(beta_stack, t_stack):
             return (beta_current + next_layer) / (1 + beta_current * next_layer)
 
     return beta_k
-
-
-def _beta_func_from_stack(beta_stack, t_stack):
-    return np.apply_along_axis(
-        func1d=_recursive_beta_k, axis=0, arr=beta_stack, t_stack=t_stack
-    )
 
 
 def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
@@ -111,12 +106,11 @@ def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
     """
     beta_stack, t_stack = _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack)
     beta_k = _beta_func_from_stack(beta_stack, t_stack)
+
+    # Ensure np.ndim(beta_k) = np.ndim(beta_k(scalar))
+    beta_k.ndim = np.ndim(beta_k(0))
+
     return beta_k
-
-
-@np.vectorize
-def _map_array(f, *args):
-    return f(*args)
 
 
 @njit
@@ -131,11 +125,13 @@ def potential_0(z_q, beta_k):
     charge, over an interface with momentum-dependent reflection
     coefficient `beta_k(k)`.
     """
-    def _integrand(xi):
-        k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return _map_array(beta_k, k) * _phi_k_weighting(k, z_q)
 
-    integral, _ = quad_vec(_integrand, 0, np.inf)
+    @njit
+    def integrand(xi):
+        k = xi / z_q  # xi is just k adjusted to the characteristic length scale
+        return beta_k(k) * _phi_k_weighting(k, z_q)
+
+    integral, _ = quad_vec(integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
@@ -145,7 +141,7 @@ def potential_0(z_q, beta_k):
 @njit
 def _E_k_weighting(k, z_q):
     """Used by E_z_0()"""
-    return -k * np.exp(-k * 2 * z_q)
+    return k * np.exp(-k * 2 * z_q)
 
 
 def E_z_0(z_q, beta_k):
@@ -155,11 +151,12 @@ def E_z_0(z_q, beta_k):
     dependent reflection coefficient `beta_k(k)`.
     """
 
-    def _integrand(xi):
+    @njit
+    def integrand(xi):
         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return _map_array(beta_k, k) * _E_k_weighting(k, z_q)
+        return beta_k(k) * _E_k_weighting(k, z_q)
 
-    integral, _ = quad_vec(_integrand, 0, np.inf)
+    integral, _ = quad_vec(integrand, 0, np.inf)
 
     # Rescale from xi to k
     integral /= z_q
@@ -171,7 +168,7 @@ def eff_charge_and_pos(z_q, beta_k):
     E = E_z_0(z_q, beta_k)
 
     z_image = np.abs(phi / E) - z_q
-    beta_image = -(phi**2) / E
+    beta_image = phi**2 / E
     return z_image, beta_image
 
 

@@ -1,9 +1,6 @@
 """
 Simulated PMMA on Si spectra with different thickness for PMMA.
 
-Currently this relies on an external loop. It would be better to have it
-vectorised eventually.
-
 References
 ----------
 .. [1] Z. M. Zhang, G. Lefever-Button, F. R. Powell,
@@ -59,20 +56,18 @@ eps_Si = 11.7
 eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-3, 20e2)
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 
-eps_stack = np.broadcast_arrays(eps_air, eps_PMMA, eps_Si)
-eps_stack_ref = np.broadcast_arrays(eps_air, eps_Au)
+eps_stack = eps_air, eps_PMMA, eps_Si
+eps_stack_ref = eps_air, eps_Au
 
-t_PMMA = np.linspace(0, 100, 10) * 1e-9
+t_PMMA = np.linspace(0, 100, 10)[:, np.newaxis] * 1e-9
 
-alpha_eff = [
-    fdm.multilayer.eff_pol_ML(
-        z_0, tapping_amplitude, harmonic, eps_stack=eps_stack, t_stack=(t,)
-    )
-    for t in t_PMMA
-]
+alpha_eff = fdm.multilayer.eff_pol_ML(
+    z_0, tapping_amplitude, harmonic, eps_stack=eps_stack, t_stack=(t_PMMA,)
+)
 alpha_eff_ref = fdm.multilayer.eff_pol_ML(
     z_0, tapping_amplitude, harmonic, eps_stack=eps_stack_ref
 )
+signal = alpha_eff / alpha_eff_ref
 
 # Plotting
 fig = plt.figure()
@@ -88,11 +83,10 @@ ax_eps.plot(wavenumber / 1e2, eps_PMMA.imag, label="imaginary")
 ax_amp = fig.add_subplot(gs[1, 0])
 ax_phase = fig.add_subplot(gs[2, 0])
 cax = fig.add_subplot(fig.add_subplot(gs[1:, -1]))
-for t, alpha_t in zip(t_PMMA, alpha_eff):
-    signal = alpha_t / alpha_eff_ref
+for t, s in zip(t_PMMA, signal):
     c = SM.to_rgba(t * 1e9)
-    ax_amp.plot(wavenumber / 1e2, np.abs(signal), c=c)
-    ax_phase.plot(wavenumber / 1e2, np.unwrap(np.angle(signal), axis=0), c=c)
+    ax_amp.plot(wavenumber / 1e2, np.abs(s), c=c)
+    ax_phase.plot(wavenumber / 1e2, np.unwrap(np.angle(s), axis=0), c=c)
 
 ax_eps.set(
     xlim=wavenumber[0 :: wavenumber.size - 1] * 1e-2,
