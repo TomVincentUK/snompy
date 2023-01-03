@@ -9,7 +9,6 @@ References
    Opt. Express. 20 (2012) 13173.
    https://doi.org/10.1364/OE.20.013173.
 """
-import numpy as np
 from numba import vectorize
 
 

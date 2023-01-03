@@ -18,7 +18,7 @@ References
 import warnings
 
 import numpy as np
-from numba import njit, vectorize
+from numba import njit
 from scipy.integrate import quad_vec
 
 from .demodulate import demod
