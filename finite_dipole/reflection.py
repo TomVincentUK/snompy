@@ -1,13 +1,4 @@
-"""
-General tools used by other modules.
-
-References
-----------
-.. [1] B. Hauer, A.P. Engelhardt, T. Taubner,
-   Quasi-analytical model for scattering infrared near-field microscopy on
-   layered systems,
-   Opt. Express. 20 (2012) 13173.
-   https://doi.org/10.1364/OE.20.013173.
+"""Functions for calculating reflection coefficients.
 """
 import warnings
 
@@ -17,10 +8,8 @@ from numba import njit, vectorize
 
 @vectorize(["float64(float64, float64)", "complex128(complex128, complex128)"])
 def refl_coeff(eps_i, eps_j):
-    """
-    Electrostatic reflection coefficient for an interface between materials
-    i and j. Defined as :math:`\beta_{ij}`` in equation (7) of reference
-    [1]_.
+    """Electrostatic reflection coefficient for an interface between
+    materials i and j.
 
     Parameters
     ----------
@@ -33,6 +22,27 @@ def refl_coeff(eps_i, eps_j):
     -------
     beta_ij : complex
         Electrostatic reflection coefficient of the sample.
+
+    Examples
+    --------
+    Works with real inputs:
+
+    >>> refl_coeff(1, 3)
+    0.5
+
+    Works with complex inputs:
+
+    >>> refl_coeff(1, 1 + 1j)
+    (0.2+0.4j)
+
+    Copes with vectorised operations:
+
+    >>> refl_coeff([1, 3], [3, 5])
+    array([0.5 , 0.25])
+
+    >>> refl_coeff([1, 3], [[1], [3]])
+    array([[ 0. , -0.5],
+          [ 0.5,  0. ]])
     """
     return (eps_j - eps_i) / (eps_j + eps_i)
 
