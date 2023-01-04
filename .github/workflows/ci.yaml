@@ -1,16 +1,21 @@
 name: CI
 
-on: [push]
+on: [pull_request, push, workflow_dispatch]
 
 jobs:
   test:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.9, 3.10, 3.11]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
-      - run: pip install -e .
-      - run: pip install -r requirements_test.txt
-      - run: pytest
+      - run: |
+          pip install -e .
+          pip install -r requirements_test.txt
+          pytest
