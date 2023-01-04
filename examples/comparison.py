@@ -50,12 +50,12 @@ harmonic = 2
 # Account for anisotropic SiC dielectric function
 eps_par = eps_SHO(wavenumber, 6.78, 782e2, 967e2, 6.6e2)  # values from [1]_
 eps_perp = eps_SHO(wavenumber, 6.56, 797e2, 971e2, 6.6e2)  # values from [1]_
-beta_par = fdm.tools.refl_coeff(1 + 0j, np.sqrt(eps_par * eps_perp))
-beta_perp = fdm.tools.refl_coeff(1 + 0j, eps_perp)
+beta_par = fdm.reflection.refl_coeff(1 + 0j, np.sqrt(eps_par * eps_perp))
+beta_perp = fdm.reflection.refl_coeff(1 + 0j, eps_perp)
 beta_SiC = (beta_par + beta_perp) / 2
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
-beta_Au = fdm.tools.refl_coeff(1 + 0j, eps_Au)  # Not used except for comparison
+beta_Au = fdm.reflection.refl_coeff(1 + 0j, eps_Au)  # Not used except for comparison
 
 alpha_SiC_n = fdm.bulk.eff_pol(
     z_0, tapping_amplitude, harmonic, beta=beta_SiC, radius=radius

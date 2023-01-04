@@ -21,7 +21,7 @@ import numpy as np
 from numba import njit
 
 from .demodulate import demod
-from .tools import refl_coeff
+from .reflection import refl_coeff
 
 
 @njit

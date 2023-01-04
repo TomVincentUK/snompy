@@ -14,7 +14,7 @@ t_PS = 100e-9
 t_PMMA = 100e-9
 t_stack = (t_PS, t_PMMA)
 
-beta_stack = fdm.tools.refl_coeff(eps_stack[:-1], eps_stack[1:])
+beta_stack = fdm.reflection.refl_coeff(eps_stack[:-1], eps_stack[1:])
 
 N = 512
 z_0 = np.linspace(0, 35, N)[..., np.newaxis] * 1e-9
