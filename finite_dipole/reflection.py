@@ -9,7 +9,7 @@ from numba import njit, vectorize
 @vectorize(["float64(float64, float64)", "complex128(complex128, complex128)"])
 def refl_coeff(eps_i, eps_j):
     """Electrostatic reflection coefficient for an interface between
-    materials i and j.
+    materials `i` and `j`.
 
     Parameters
     ----------
@@ -39,7 +39,6 @@ def refl_coeff(eps_i, eps_j):
 
     >>> refl_coeff([1, 3], [3, 5])
     array([0.5 , 0.25])
-
     >>> refl_coeff([1, 3], [[1], [3]])
     array([[ 0. , -0.5],
           [ 0.5,  0. ]])

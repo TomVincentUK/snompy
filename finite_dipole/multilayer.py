@@ -2,18 +2,18 @@
 Finite dipole model (FDM) for predicting contrasts in scanning near-field
 optical microscopy (SNOM) measurements.
 
-References
+Notes
 ----------
-.. [1] B. Hauer, A.P. Engelhardt, T. Taubner,
-   Quasi-analytical model for scattering infrared near-field microscopy on
-   layered systems,
-   Opt. Express. 20 (2012) 13173.
-   https://doi.org/10.1364/OE.20.013173.
-.. [2] A. Cvitkovic, N. Ocelic, R. Hillenbrand
-   Analytical model for quantitative prediction of material contrasts in
-   scattering-type near-field optical microscopy,
-   Opt. Express. 15 (2007) 8550.
-   https://doi.org/10.1364/oe.15.008550.
+[1] B. Hauer, A.P. Engelhardt, T. Taubner,
+Quasi-analytical model for scattering infrared near-field microscopy on
+layered systems,
+Opt. Express. 20 (2012) 13173.
+https://doi.org/10.1364/OE.20.013173.
+[2] A. Cvitkovic, N. Ocelic, R. Hillenbrand
+Analytical model for quantitative prediction of material contrasts in
+scattering-type near-field optical microscopy,
+Opt. Express. 15 (2007) 8550.
+https://doi.org/10.1364/oe.15.008550.
 """
 import numpy as np
 from numba import njit
@@ -84,31 +84,30 @@ def eff_charge_and_pos(z_q, beta_k):
 
 @njit
 def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
-    """
-    Function that encapsulates the geometric properties of the tip-sample
-    system. Defined as :math:`f_0` or :math:`f_1` in equation (11) of
-    reference [1]_, for multilayer samples.
+    """Function that encapsulates the geometric properties of the tip-
+    sample system. Defined as `f_0` or `f_1` in equation (11) of reference
+    [1], for multilayer samples.
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as :math:`H` in
-        reference [1]_.
+        Height of the tip above the sample. Defined as `H` in
+        reference [1].
     z_q : float
         Position of an image charge below the surface. Defined as
-        :math:`X_0` or :math:`X_1` in equation (11) of reference [1]_.
+        `X_0` or `X_1` in equation (11) of reference [1].
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
-        :math:`\rho` in reference [1]_.
+        `rho` in reference [1].
     semi_maj_axis : float
         Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as :math:`L` in reference [1]_.
+        Defined as `L` in reference [1].
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as :math:`g` in reference [1]_.
+        sample. Defined as `g` in reference [1].
 
     Returns
     -------

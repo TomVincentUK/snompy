@@ -2,18 +2,18 @@
 Finite dipole model (FDM) for predicting contrasts in scanning near-field
 optical microscopy (SNOM) measurements.
 
-References
-----------
-.. [1] B. Hauer, A.P. Engelhardt, T. Taubner,
-   Quasi-analytical model for scattering infrared near-field microscopy on
-   layered systems,
-   Opt. Express. 20 (2012) 13173.
-   https://doi.org/10.1364/OE.20.013173.
-.. [2] A. Cvitkovic, N. Ocelic, R. Hillenbrand
-   Analytical model for quantitative prediction of material contrasts in
-   scattering-type near-field optical microscopy,
-   Opt. Express. 15 (2007) 8550.
-   https://doi.org/10.1364/oe.15.008550.
+Notes
+-----
+[1] B. Hauer, A.P. Engelhardt, T. Taubner,
+Quasi-analytical model for scattering infrared near-field microscopy on
+layered systems,
+Opt. Express. 20 (2012) 13173.
+https://doi.org/10.1364/OE.20.013173.
+[2] A. Cvitkovic, N. Ocelic, R. Hillenbrand
+Analytical model for quantitative prediction of material contrasts in
+scattering-type near-field optical microscopy,
+Opt. Express. 15 (2007) 8550.
+https://doi.org/10.1364/oe.15.008550.
 """
 import warnings
 
@@ -28,30 +28,30 @@ from .reflection import refl_coeff
 def geom_func(z, x, radius, semi_maj_axis, g_factor):
     """
     Function that encapsulates the geometric properties of the tip-sample
-    system. Defined as :math:`f_0` or :math:`f_1` in equation (2) of
-    reference [1]_, for semi-infinite samples.
+    system. Defined as `f_0` or `f_1` in equation (2) of
+    reference [1], for semi-infinite samples.
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as :math:`H` in
-        reference [1]_.
+        Height of the tip above the sample. Defined as `H` in
+        reference [1].
     x : float
         Position of an induced charge within the tip. Specified relative to
-        the tip radius. Defined as :math:`W_0` or :math:`W_1` in equation
-        (2) of reference [1]_.
+        the tip radius. Defined as `W_0` or `W_1` in equation
+        (2) of reference [1].
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
-        :math:`\rho` in reference [1]_.
+        `rho` in reference [1].
     semi_maj_axis : float
         Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as :math:`L` in reference [1]_.
+        Defined as `L` in reference [1].
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as :math:`g` in reference [1]_.
+        sample. Defined as `g` in reference [1].
 
     Returns
     -------
@@ -70,36 +70,36 @@ def geom_func(z, x, radius, semi_maj_axis, g_factor):
 def eff_pol_0(z, beta, x_0, x_1, radius, semi_maj_axis, g_factor):
     """
     Effective probe-sample polarizability.
-    Defined as :math:`\alpha_{eff}`` in equation (3) of reference [1]_.
+    Defined as `\alpha_{eff}`` in equation (3) of reference [1].
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as :math:`H` in
-        reference [1]_.
+        Height of the tip above the sample. Defined as `H` in
+        reference [1].
     beta : complex
         Effective electrostatic reflection coefficient the interface.
-        Defined as :math:`\beta` in equation (2) of reference [1]_.
+        Defined as `\beta` in equation (2) of reference [1].
     x_0 : float
         Position of induced charge 0 within the tip. Specified relative to
-        the tip radius. Defined as :math:`W_0` in equation (2) of reference
-        [1]_.
+        the tip radius. Defined as `W_0` in equation (2) of reference
+        [1].
     x_1 : float
         Position of induced charge 1 within the tip. Specified relative to
-        the tip radius. Defined as :math:`W_1` in equation (2) of reference
-        [1]_.
+        the tip radius. Defined as `W_1` in equation (2) of reference
+        [1].
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
-        :math:`\rho` in reference [1]_.
+        `rho` in reference [1].
     semi_maj_axis : float
         Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as :math:`L` in reference [1]_.
+        Defined as `L` in reference [1].
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as :math:`g` in reference [1]_.
+        sample. Defined as `g` in reference [1].
 
     Returns
     -------
@@ -126,47 +126,47 @@ def eff_pol(
 ):
     r"""
     Effective probe-sample polarizability.
-    Defined as :math:`\alpha_{eff, n}` in reference [1]_.
+    Defined as `\alpha_{eff, n}` in reference [1].
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as :math:`H` in
-        reference [1]_.
+        Height of the tip above the sample. Defined as `H` in
+        reference [1].
     tapping_amplitude : float
-        The tapping amplitude of the AFM tip. Defined as :math:`A` in
-        reference [1]_.
+        The tapping amplitude of the AFM tip. Defined as `A` in
+        reference [1].
     harmonic : int
         The harmonic of the AFM tip tapping frequency at which to
-        demodulate. Defined as :math:`n` in reference [1]_.
+        demodulate. Defined as `n` in reference [1].
     eps_sample : complex
-        Dielectric function of the sample. Defined as :math:`\epsilon_s` in
-        reference [1]_. Used to calculate `beta_0`, and ignored if `beta_0`
+        Dielectric function of the sample. Defined as `\epsilon_s` in
+        reference [1]. Used to calculate `beta_0`, and ignored if `beta_0`
         is specified.
     beta : complex
         Effective electrostatic reflection coefficient the interface.
-        Defined as :math:`\beta` in equation (2) of reference [1]_.
+        Defined as `\beta` in equation (2) of reference [1].
     x_0 : float
         Position of induced charge 0 within the tip. Specified relative to
-        the tip radius. Defined as :math:`W_0` in equation (2) of reference
-        [1]_, and :math:`X_0` in equation (11).
+        the tip radius. Defined as `W_0` in equation (2) of reference
+        [1], and `X_0` in equation (11).
     x_1 : float
         Position of induced charge 1 within the tip. Specified relative to
-        the tip radius. Defined as :math:`W_1` in equation (2) of reference
-        [1]_, and :math:`X_1` in equation (11).
+        the tip radius. Defined as `W_1` in equation (2) of reference
+        [1], and `X_1` in equation (11).
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
-        :math:`\rho` in reference [1]_.
+        `\rho` in reference [1].
     semi_maj_axis : float
         Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as :math:`L` in reference [1]_.
+        Defined as `L` in reference [1].
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as :math:`g` in reference [1]_. Default value of
-        :math:`0.7 e^{0.06i}`` taken from reference [2]_.
+        sample. Defined as `g` in reference [1]. Default value of
+        `0.7 e^{0.06i}`` taken from reference [2].
     demod_method : {'trapezium', 'simpson' or 'adaptive'}
         Integration method used to demodulate the signal.
 
