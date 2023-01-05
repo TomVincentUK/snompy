@@ -84,7 +84,7 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
 
 
 def _beta_func_from_stack(beta_stack, t_stack):
-    """Recursive function which returns `beta_k(q)`, the momentum-dependent
+    """Recursive function which returns `beta_k(k)`, the momentum-dependent
     effective reflection coefficient for a stack of interfaces with
     electrostatic reflection coefficients `beta_stack` and interface
     separations `t_stack`.
