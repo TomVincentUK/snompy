@@ -46,7 +46,7 @@ def test_jitted_and_nonjitted_f_x(method):
     jitted_result = demod(
         f_x=jitted_function, x_0=0, x_amplitude=1, harmonic=1, method=method
     )
-    np.testing.assert_almost_equal(nonjitted_result,jitted_result)
+    np.testing.assert_almost_equal(nonjitted_result, jitted_result)
 
 
 @pytest.mark.parametrize("method", METHODS)
