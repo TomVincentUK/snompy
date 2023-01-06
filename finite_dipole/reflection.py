@@ -152,7 +152,7 @@ def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
     as an expression for :math:`\beta_{12}`, where :math:`\beta_{ij}` is
     the electrostatic reflection coefficient between layers :math:`i` and
     :math:`j`, and :math:`t_{i}` is the thickness of the :math:`i^{th}`
-    layer._[1]
+    layer_[1].
 
     References
     ----------
