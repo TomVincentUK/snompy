@@ -154,9 +154,12 @@ def eff_pol_ML(
 
     beta_k = refl_coeff_ML(eps_stack, beta_stack, t_stack)
 
+    # Set oscillation centre  so AFM tip touches sample at z = 0
+    z_0 = z + tapping_amplitude + radius
+
     alpha_eff = demod(
         eff_pol_0_ML,
-        z + tapping_amplitude,  # add the amplitude so z_0 is at centre of oscillation
+        z_0,
         tapping_amplitude,
         harmonic,
         f_args=(beta_k, x_0, x_1, radius, semi_maj_axis, g_factor),
