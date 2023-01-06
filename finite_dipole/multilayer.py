@@ -6,9 +6,6 @@ Multilayer finite dipole model (:mod:`finite_dipole.multilayer`)
 
 WRITE A DESCRIPTION HERE.
 
-Functions
----------
-
 .. autosummary::
     :nosignatures:
     :toctree: generated/

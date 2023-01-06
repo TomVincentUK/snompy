@@ -4,10 +4,9 @@ Reflection coefficients (:mod:`finite_dipole.reflection`)
 
 .. currentmodule:: finite_dipole.reflection
 
-WRITE A DESCRIPTION HERE.
-
-Functions
----------
+This module provides functions for calculating reflection coefficients of
+interfaces between two materials, or the momentum-dependent effective
+reflection coefficient for a stack of three or more materials.
 
 .. autosummary::
     :nosignatures:
@@ -24,8 +23,11 @@ from numba import njit, vectorize
 
 @vectorize(["float64(float64, float64)", "complex128(complex128, complex128)"])
 def refl_coeff(eps_i, eps_j):
-    """Electrostatic reflection coefficient for an interface between
-    materials `i` and `j`.
+    """Return the electrostatic reflection coefficient for an interface
+    between two materials.
+
+    Calculated using ``(eps_j - eps_i) / (eps_j + eps_i)``, where `eps_i`
+    and `eps_j` are the dielectric functions of two materials `i` and `j`. 
 
     Parameters
     ----------
@@ -128,9 +130,9 @@ def _beta_func_from_stack(beta_stack, t_stack):
 
 
 def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
-    r"""Calculates the momentum-dependent effective reflection coefficient
-    for the first interface in a stack of layers sandwiched between a semi-
-    infinite superstrate and substrate.
+    r"""Return a function for the momentum-dependent effective reflection
+    coefficient for the first interface in a stack of layers sandwiched
+    between a semi-infinite superstrate and substrate.
 
     Parameters
     ----------
@@ -167,8 +169,8 @@ def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
 
     as an expression for :math:`\beta_{12}`, where :math:`\beta_{ij}` is
     the electrostatic reflection coefficient between layers :math:`i` and
-    :math:`j`, and :math:`t_{i}` is the thickness of the :math:`i^{th}`
-    layer_[1].
+    :math:`j`, :math:`t_{i}` is the thickness of the :math:`i^{th}`
+    layer, and :math:`k` is the in-plane momentum_[1].
 
     References
     ----------

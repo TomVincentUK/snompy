@@ -6,8 +6,6 @@ Bulk finite dipole model (:mod:`finite_dipole.bulk`)
 
 WRITE A DESCRIPTION HERE.
 
-Functions
----------
 
 .. autosummary::
     :nosignatures:

@@ -4,10 +4,8 @@ Demodulation (:mod:`finite_dipole.demodulate`)
 
 .. currentmodule:: finite_dipole.demodulate
 
-WRITE A DESCRIPTION HERE.
-
-Functions
----------
+This module provides a function to simulate lock-in amplifier measurements
+of arbitrary functions.
 
 .. autosummary::
     :nosignatures:
@@ -62,6 +60,36 @@ def demod(
     method="trapezium",
     n_samples=65,
 ):
+    """Return the result of a simulated lock-in amplifier measurement by
+    modulating then demodulating an arbitrary function.
+
+    Parameters
+    ----------
+    f_x : callable
+        A function, ``f(x, *args)``, where `x` is a scalar quantity.
+        WRITE ME.
+    x_0 : float
+        WRITE ME.
+    x_amplitude : float
+        WRITE ME.
+    harmonic : int
+        WRITE ME.
+    f_args : tuple
+        WRITE ME.
+    method : {"trapezium", "simpson", "adaptive"}
+        WRITE ME.
+    n_samples : int
+        WRITE ME.
+
+    Returns
+    -------
+    result : complex
+        WRITE ME.
+
+    Examples
+    --------
+    WRITE ME.
+    """
     if method not in ["trapezium", "simpson", "adaptive"]:
         raise ValueError("`method` must be 'trapezium', 'simpson' or 'adaptive'.")
 
