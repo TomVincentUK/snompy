@@ -1,4 +1,20 @@
-"""Functions for calculating reflection coefficients.
+"""
+Reflection coefficients (:mod:`finite_dipole.reflection`)
+=========================================================
+
+.. currentmodule:: finite_dipole.reflection
+
+WRITE A DESCRIPTION HERE.
+
+Functions
+---------
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    refl_coeff
+    refl_coeff_ML
 """
 import warnings
 

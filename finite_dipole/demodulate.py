@@ -1,5 +1,19 @@
 """
-Demodulation code.
+Demodulation (:mod:`finite_dipole.demodulate`)
+==============================================
+
+.. currentmodule:: finite_dipole.demodulate
+
+WRITE A DESCRIPTION HERE.
+
+Functions
+---------
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    demod
 """
 
 import numpy as np

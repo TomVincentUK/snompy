@@ -33,3 +33,5 @@ html_theme_options = {
 html_static_path = ["_static"]
 html_css_files = ["finite-dipole.css"]
 html_context = {"default_mode": "light"}
+
+autosummary_generate = True

@@ -1,9 +1,8 @@
-API
-==========
+API reference
+=============
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
 
    bulk <bulk>
    multilayer <multilayer>

@@ -1,19 +1,23 @@
 """
-Finite dipole model (FDM) for predicting contrasts in scanning near-field
-optical microscopy (SNOM) measurements.
+Multilayer finite dipole model (:mod:`finite_dipole.multilayer`)
+================================================================
 
-Notes
-----------
-[1] B. Hauer, A.P. Engelhardt, T. Taubner,
-Quasi-analytical model for scattering infrared near-field microscopy on
-layered systems,
-Opt. Express. 20 (2012) 13173.
-https://doi.org/10.1364/OE.20.013173.
-[2] A. Cvitkovic, N. Ocelic, R. Hillenbrand
-Analytical model for quantitative prediction of material contrasts in
-scattering-type near-field optical microscopy,
-Opt. Express. 15 (2007) 8550.
-https://doi.org/10.1364/oe.15.008550.
+.. currentmodule:: finite_dipole.multilayer
+
+WRITE A DESCRIPTION HERE.
+
+Functions
+---------
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    potential_0
+    E_z_0
+    geom_func_ML
+    eff_pol_0_ML
+    eff_pol_ML
 """
 import numpy as np
 from numba import njit
