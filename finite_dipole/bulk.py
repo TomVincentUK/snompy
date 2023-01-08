@@ -190,7 +190,7 @@ def eff_pol(
     if x_0 is None:
         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-    z_0 = z + tapping_amplitude + radius # Ensures that 
+    z_0 = z + tapping_amplitude + radius  # Ensures that
     alpha_eff = demod(
         eff_pol_0,
         z_0,  # add the amplitude so z_0 is at centre of oscillation

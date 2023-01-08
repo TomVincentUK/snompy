@@ -27,7 +27,7 @@ def refl_coeff(eps_i, eps_j):
     between two materials.
 
     Calculated using ``(eps_j - eps_i) / (eps_j + eps_i)``, where `eps_i`
-    and `eps_j` are the dielectric functions of two materials `i` and `j`. 
+    and `eps_j` are the dielectric functions of two materials `i` and `j`.
 
     Parameters
     ----------
