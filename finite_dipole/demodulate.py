@@ -60,24 +60,32 @@ def demod(
     method="trapezium",
     n_samples=65,
 ):
-    """Return the result of a simulated lock-in amplifier measurement by
-    modulating then demodulating an arbitrary function.
+    """Simulate a lock-in amplifier measurement by modulating the input of
+    an arbitrary function and demodulating the output.
+
+    For a function `f_x` in the form ``f(x, *args)``, `demod` calculates
+    the integral of
+    ``f_x(x_0 + x_amplitude * cos(theta)) * exp(-1j * harmonic * theta)``
+    for `theta` between -pi and pi.
+
+    Arguments `x_0`, `x_amplitude`, `harmonic` and all `*f_args` should be
+    broadcastable according to usual ``numpy`` rules.
 
     Parameters
     ----------
     f_x : callable
-        A function, ``f(x, *args)``, where `x` is a scalar quantity.
-        WRITE ME.
+        The function to demodulate. Must be of the form ``f(x, *args)``,
+        where `x` is a scalar quantity.
     x_0 : float
-        WRITE ME.
+        The centre of modulation for the parameter `x`.
     x_amplitude : float
-        WRITE ME.
+        The modulation amplitude for the parameter `x`.
     harmonic : int
-        WRITE ME.
+        The harmonic at which to demodulate.
     f_args : tuple
-        WRITE ME.
+        A tuple of extra arguments to the function `f_x`.
     method : {"trapezium", "simpson", "adaptive"}
-        WRITE ME.
+        The method to use for the integration. MORE DETAILS HERE.
     n_samples : int
         WRITE ME.
 
@@ -85,6 +93,9 @@ def demod(
     -------
     result : complex
         WRITE ME.
+
+    Notes
+    -----
 
     Examples
     --------
