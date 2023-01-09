@@ -31,10 +31,15 @@ html_theme_options = {
     "secondary_sidebar_items": ["page-toc"],
     "navbar_end": ["navbar-icon-links"],
     "footer_items": ["copyright"],
+    "logo": {
+        "image_light": "placeholderlogo.svg",
+        "image_dark": "placeholderlogo.svg",
+    },  # Not sure why this is needed, but it errors without
 }
 
-html_logo = "_static/placeholderlogo.svg"
 html_static_path = ["_static"]
+html_logo = "_static/placeholderlogo.svg"
+html_favicon = "_static/placeholderlogo.svg"
 html_css_files = ["finite-dipole.css"]
 html_context = {"default_mode": "light"}
 
