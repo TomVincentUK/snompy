@@ -24,59 +24,80 @@ from .demodulate import demod
 from .reflection import refl_coeff_ML
 
 
+# @njit
+# def _phi_k_weighting(k, z_q):
+#     """Used by potential_0()"""
+#     return np.exp(-k * 2 * z_q)
+
+
+# def potential_0(z_q, beta_k):
+#     """
+#     Potential induced at z=0 by a charge q, at height `z_q`, and its image
+#     charge, over an interface with momentum-dependent reflection
+#     coefficient `beta_k(k)`.
+#     """
+
+#     @njit
+#     def integrand(xi):
+#         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
+#         return beta_k(k) * _phi_k_weighting(k, z_q)
+
+#     integral, _ = quad_vec(integrand, 0, np.inf)
+
+#     # Rescale from xi to k
+#     integral /= z_q
+#     return integral
+
+
+# @njit
+# def _E_k_weighting(k, z_q):
+#     """Used by E_z_0()"""
+#     return k * np.exp(-k * 2 * z_q)
+
+
+# def E_z_0(z_q, beta_k):
+#     """
+#     z-component of the electric field induced at z=0 by a charge q, at
+#     height `z_q`, and its image charge, over an interface with momentum-
+#     dependent reflection coefficient `beta_k(k)`.
+#     """
+
+#     @njit
+#     def integrand(xi):
+#         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
+#         return beta_k(k) * _E_k_weighting(k, z_q)
+
+#     integral, _ = quad_vec(integrand, 0, np.inf)
+
+#     # Rescale from xi to k
+#     integral /= z_q
+#     return integral
+
+
 @njit
-def _phi_k_weighting(k, z_q):
-    """Used by potential_0()"""
-    return np.exp(-k * 2 * z_q)
-
-
-def potential_0(z_q, beta_k):
+def potential_0(z_q, beta_k, x_n, w_n):
     """
     Potential induced at z=0 by a charge q, at height `z_q`, and its image
     charge, over an interface with momentum-dependent reflection
     coefficient `beta_k(k)`.
     """
-
-    @njit
-    def integrand(xi):
-        k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return beta_k(k) * _phi_k_weighting(k, z_q)
-
-    integral, _ = quad_vec(integrand, 0, np.inf)
-
-    # Rescale from xi to k
-    integral /= z_q
-    return integral
+    return (w_n * beta_k(x_n / (2 * z_q))).sum() / (2 * z_q)
 
 
 @njit
-def _E_k_weighting(k, z_q):
-    """Used by E_z_0()"""
-    return k * np.exp(-k * 2 * z_q)
-
-
-def E_z_0(z_q, beta_k):
+def E_z_0(z_q, beta_k, x_n, w_n):
     """
     z-component of the electric field induced at z=0 by a charge q, at
     height `z_q`, and its image charge, over an interface with momentum-
     dependent reflection coefficient `beta_k(k)`.
     """
-
-    @njit
-    def integrand(xi):
-        k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-        return beta_k(k) * _E_k_weighting(k, z_q)
-
-    integral, _ = quad_vec(integrand, 0, np.inf)
-
-    # Rescale from xi to k
-    integral /= z_q
-    return integral
+    return (w_n * beta_k(x_n / (2 * z_q)) * x_n).sum() / (4 * z_q**2)
 
 
-def eff_charge_and_pos(z_q, beta_k):
-    phi = potential_0(z_q, beta_k)
-    E = E_z_0(z_q, beta_k)
+@njit
+def eff_charge_and_pos(z_q, beta_k, x_n, w_n):
+    phi = potential_0(z_q, beta_k, x_n, w_n)
+    E = E_z_0(z_q, beta_k, x_n, w_n)
 
     z_image = np.abs(phi / E) - z_q
     beta_image = phi**2 / E
@@ -123,13 +144,14 @@ def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
     )
 
 
-def eff_pol_0_ML(z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor):
+@njit
+def eff_pol_0_ML(z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_n, w_n):
     z_q_0 = z + radius * x_0
-    z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k)
+    z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k, x_n, w_n)
     f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
 
     z_q_1 = z + radius * x_1
-    z_im_1, beta_im_1 = eff_charge_and_pos(z_q_1, beta_k)
+    z_im_1, beta_im_1 = eff_charge_and_pos(z_q_1, beta_k, x_n, w_n)
     f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
@@ -148,6 +170,7 @@ def eff_pol_ML(
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
     demod_method="trapezium",
+    N_Laguerre=64,
 ):
     if x_0 is None:
         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
@@ -157,12 +180,14 @@ def eff_pol_ML(
     # Set oscillation centre  so AFM tip touches sample at z = 0
     z_0 = z + tapping_amplitude + radius
 
+    x_n, w_n = np.polynomial.laguerre.laggauss(N_Laguerre)
+
     alpha_eff = demod(
         eff_pol_0_ML,
         z_0,
         tapping_amplitude,
         harmonic,
-        f_args=(beta_k, x_0, x_1, radius, semi_maj_axis, g_factor),
+        f_args=(beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_n, w_n),
         method=demod_method,
     )
 
