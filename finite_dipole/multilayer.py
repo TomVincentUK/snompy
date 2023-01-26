@@ -22,39 +22,19 @@ from numba import njit
 from .demodulate import demod
 from .reflection import refl_coeff_ML
 
-X_N, W_N = np.polynomial.laguerre.laggauss(64)
+
+@njit
+def _pad_ax(x):
+    return np.expand_dims(np.asarray(x), -1)
 
 
 @njit
-def potential_0(z_q, beta_k, x_n=X_N, w_n=W_N):
-    """
-    Potential induced at z=0 by a charge q, at height `z_q`, and its image
-    charge, over an interface with momentum-dependent reflection
-    coefficient `beta_k(k)`.
-    """
-    phi = np.zeros_like(z_q + beta_k(0)) + 0j
-    for x, w in zip(x_n, w_n):
-        phi += w * beta_k(x / (2 * z_q))
-    return phi / (2 * z_q)
-
-
-@njit
-def E_z_0(z_q, beta_k, x_n=X_N, w_n=W_N):
-    """
-    z-component of the electric field induced at z=0 by a charge q, at
-    height `z_q`, and its image charge, over an interface with momentum-
-    dependent reflection coefficient `beta_k(k)`.
-    """
-    E = np.zeros_like(z_q + beta_k(0)) + 0j
-    for x, w in zip(x_n, w_n):
-        E += w * beta_k(x / (2 * z_q)) * x
-    return E / (4 * z_q**2)
-
-
-@njit
-def eff_charge_and_pos(z_q, beta_k, x_n=X_N, w_n=W_N):
-    phi = potential_0(z_q, beta_k, x_n, w_n)
-    E = E_z_0(z_q, beta_k, x_n, w_n)
+def eff_pos_and_charge(z_q, beta_stack, t_stack, x_Lag, w_Lag):
+    beta_k = refl_coeff_ML(
+        x_Lag / _pad_ax(2 * z_q), _pad_ax(beta_stack), _pad_ax(t_stack)
+    )
+    phi = np.sum(w_Lag * beta_k, axis=-1) / (2 * z_q)
+    E = np.sum(w_Lag * x_Lag * beta_k, axis=-1) / (4 * z_q**2)
 
     z_image = np.abs(phi / E) - z_q
     beta_image = phi**2 / E
@@ -62,7 +42,7 @@ def eff_charge_and_pos(z_q, beta_k, x_n=X_N, w_n=W_N):
 
 
 @njit
-def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
+def geom_func_ML(z, z_image, radius, semi_maj_axis, g_factor):
     """Function that encapsulates the geometric properties of the tip-
     sample system. Defined as `f_0` or `f_1` in equation (11) of reference
     [1], for multilayer samples.
@@ -72,9 +52,8 @@ def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
     z : float
         Height of the tip above the sample. Defined as `H` in
         reference [1].
-    z_q : float
-        Position of an image charge below the surface. Defined as
-        `X_0` or `X_1` in equation (11) of reference [1].
+    z_image : float
+        Position of an image charge below the surface.
     radius : float
         Radius of curvature of the AFM tip in metres. Defined as
         `rho` in reference [1].
@@ -101,53 +80,51 @@ def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
     )
 
 
-@njit
-def eff_pol_0_ML(
-    z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_n=X_N, w_n=W_N
-):
-    z_q_0 = z + radius * x_0
-    z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k, x_n, w_n)
-    f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
+# @njit
+# def eff_pol_0_ML(z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_Lag, w_Lag):
+#     z_q_0 = z + radius * x_0
+#     z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k, x_Lag, w_Lag)
+#     f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
 
-    z_q_1 = z + radius * x_1
-    z_im_1, beta_im_1 = eff_charge_and_pos(z_q_1, beta_k, x_n, w_n)
-    f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
+#     z_q_1 = z + radius * x_1
+#     z_im_1, beta_im_1 = eff_charge_and_pos(z_q_1, beta_k, x_Lag, w_Lag)
+#     f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
 
-    return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
+#     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
 
-def eff_pol_ML(
-    z,
-    tapping_amplitude,
-    harmonic,
-    eps_stack=None,
-    beta_stack=None,
-    t_stack=None,
-    x_0=None,
-    x_1=0.5,
-    radius=20e-9,
-    semi_maj_axis=300e-9,
-    g_factor=0.7 * np.exp(0.06j),
-    demod_method="trapezium",
-    N_Laguerre=64,
-):
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+# def eff_pol_ML(
+#     z,
+#     tapping_amplitude,
+#     harmonic,
+#     eps_stack=None,
+#     beta_stack=None,
+#     t_stack=None,
+#     x_0=None,
+#     x_1=0.5,
+#     radius=20e-9,
+#     semi_maj_axis=300e-9,
+#     g_factor=0.7 * np.exp(0.06j),
+#     demod_method="trapezium",
+#     N_Lag=64,
+# ):
+#     if x_0 is None:
+#         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-    beta_k = refl_coeff_ML(eps_stack, beta_stack, t_stack)
+#     beta_k = refl_coeff_ML(eps_stack, beta_stack, t_stack)
 
-    # Set oscillation centre  so AFM tip touches sample at z = 0
-    z_0 = z + tapping_amplitude + radius
+#     # Set oscillation centre  so AFM tip touches sample at z = 0
+#     z_0 = z + tapping_amplitude + radius
 
-    x_n, w_n = np.polynomial.laguerre.laggauss(N_Laguerre)
+#     x_Lag, w_Lag = np.polynomial.laguerre.laggauss(N_Lag)
 
-    alpha_eff = demod(
-        eff_pol_0_ML,
-        z_0,
-        tapping_amplitude,
-        harmonic,
-        f_args=(beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_n, w_n),
-        method=demod_method,
-    )
+#     alpha_eff = demod(
+#         eff_pol_0_ML,
+#         z_0,
+#         tapping_amplitude,
+#         harmonic,
+#         f_args=(beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_Lag, w_Lag),
+#         method=demod_method,
+#     )
 
-    return alpha_eff
+#     return alpha_eff
