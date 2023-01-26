@@ -24,6 +24,7 @@ from .reflection import refl_coeff_ML
 
 X_N, W_N = np.polynomial.laguerre.laggauss(64)
 
+
 @njit
 def potential_0(z_q, beta_k, x_n=X_N, w_n=W_N):
     """
@@ -51,7 +52,7 @@ def E_z_0(z_q, beta_k, x_n=X_N, w_n=W_N):
 
 
 @njit
-def eff_charge_and_pos(z_q, beta_k, x_n, w_n):
+def eff_charge_and_pos(z_q, beta_k, x_n=X_N, w_n=W_N):
     phi = potential_0(z_q, beta_k, x_n, w_n)
     E = E_z_0(z_q, beta_k, x_n, w_n)
 
@@ -101,7 +102,9 @@ def geom_func_ML(z, z_q, radius, semi_maj_axis, g_factor):
 
 
 @njit
-def eff_pol_0_ML(z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_n, w_n):
+def eff_pol_0_ML(
+    z, beta_k, x_0, x_1, radius, semi_maj_axis, g_factor, x_n=X_N, w_n=W_N
+):
     z_q_0 = z + radius * x_0
     z_im_0, beta_im_0 = eff_charge_and_pos(z_q_0, beta_k, x_n, w_n)
     f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
