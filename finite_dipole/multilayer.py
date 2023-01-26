@@ -18,60 +18,9 @@ WRITE A DESCRIPTION HERE.
 """
 import numpy as np
 from numba import njit
-from scipy.integrate import quad_vec
 
 from .demodulate import demod
 from .reflection import refl_coeff_ML
-
-
-# @njit
-# def _phi_k_weighting(k, z_q):
-#     """Used by potential_0()"""
-#     return np.exp(-k * 2 * z_q)
-
-
-# def potential_0(z_q, beta_k):
-#     """
-#     Potential induced at z=0 by a charge q, at height `z_q`, and its image
-#     charge, over an interface with momentum-dependent reflection
-#     coefficient `beta_k(k)`.
-#     """
-
-#     @njit
-#     def integrand(xi):
-#         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-#         return beta_k(k) * _phi_k_weighting(k, z_q)
-
-#     integral, _ = quad_vec(integrand, 0, np.inf)
-
-#     # Rescale from xi to k
-#     integral /= z_q
-#     return integral
-
-
-# @njit
-# def _E_k_weighting(k, z_q):
-#     """Used by E_z_0()"""
-#     return k * np.exp(-k * 2 * z_q)
-
-
-# def E_z_0(z_q, beta_k):
-#     """
-#     z-component of the electric field induced at z=0 by a charge q, at
-#     height `z_q`, and its image charge, over an interface with momentum-
-#     dependent reflection coefficient `beta_k(k)`.
-#     """
-
-#     @njit
-#     def integrand(xi):
-#         k = xi / z_q  # xi is just k adjusted to the characteristic length scale
-#         return beta_k(k) * _E_k_weighting(k, z_q)
-
-#     integral, _ = quad_vec(integrand, 0, np.inf)
-
-#     # Rescale from xi to k
-#     integral /= z_q
-#     return integral
 
 
 @njit
@@ -81,7 +30,10 @@ def potential_0(z_q, beta_k, x_n, w_n):
     charge, over an interface with momentum-dependent reflection
     coefficient `beta_k(k)`.
     """
-    return (w_n * beta_k(x_n / (2 * z_q))).sum() / (2 * z_q)
+    phi = np.zeros_like(z_q + beta_k(0)) + 0j
+    for x, w in zip(x_n, w_n):
+        phi += w * beta_k(x / (2 * z_q))
+    return phi / (2 * z_q)
 
 
 @njit
@@ -91,7 +43,10 @@ def E_z_0(z_q, beta_k, x_n, w_n):
     height `z_q`, and its image charge, over an interface with momentum-
     dependent reflection coefficient `beta_k(k)`.
     """
-    return (w_n * beta_k(x_n / (2 * z_q)) * x_n).sum() / (4 * z_q**2)
+    E = np.zeros_like(z_q + beta_k(0)) + 0j
+    for x, w in zip(x_n, w_n):
+        E += w * beta_k(x / (2 * z_q)) * x
+    return E / (4 * z_q**2)
 
 
 @njit
