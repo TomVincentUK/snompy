@@ -22,9 +22,10 @@ from numba import njit
 from .demodulate import demod
 from .reflection import refl_coeff_ML
 
+X_N, W_N = np.polynomial.laguerre.laggauss(64)
 
 @njit
-def potential_0(z_q, beta_k, x_n, w_n):
+def potential_0(z_q, beta_k, x_n=X_N, w_n=W_N):
     """
     Potential induced at z=0 by a charge q, at height `z_q`, and its image
     charge, over an interface with momentum-dependent reflection
@@ -37,7 +38,7 @@ def potential_0(z_q, beta_k, x_n, w_n):
 
 
 @njit
-def E_z_0(z_q, beta_k, x_n, w_n):
+def E_z_0(z_q, beta_k, x_n=X_N, w_n=W_N):
     """
     z-component of the electric field induced at z=0 by a charge q, at
     height `z_q`, and its image charge, over an interface with momentum-
