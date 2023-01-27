@@ -3,7 +3,7 @@ import pytest
 
 from finite_dipole.bulk import eff_pol
 from finite_dipole.multilayer import eff_pos_and_charge
-from finite_dipole.reflection import _beta_and_t_stack_from_inputs, refl_coeff_ML
+from finite_dipole.reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
 
 
 def test_eff_charge_and_pos_broadcasting():
@@ -28,7 +28,7 @@ def test_eff_charge_and_pos_broadcasting():
         osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
     )
 
-    beta_stack, t_stack = _beta_and_t_stack_from_inputs(
+    beta_stack, t_stack = beta_and_t_stack_from_inputs(
         eps_stack=(eps_super, eps_middle, eps_sub), t_stack=(thickness,)
     )
     z_image, beta_image = eff_pos_and_charge(

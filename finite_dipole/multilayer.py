@@ -89,7 +89,7 @@ def eff_pol_0_ML(
     z,
     beta_stack=None,
     t_stack=None,
-    x_0=None,
+    x_0=1.31 * 15 / 16,
     x_1=0.5,
     radius=20e-9,
     semi_maj_axis=300e-9,

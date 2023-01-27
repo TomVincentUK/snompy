@@ -28,12 +28,12 @@ def test_beta_and_t_stack_from_inputs_error_when_eps_and_beta_are_None():
     with pytest.raises(
         ValueError, match="Either `eps_stack` or `beta_stack` must be specified."
     ):
-        _beta_and_t_stack_from_inputs(eps_stack=None, beta_stack=None, t_stack=None)
+        beta_and_t_stack_from_inputs(eps_stack=None, beta_stack=None, t_stack=None)
 
 
 @pytest.mark.parametrize("eps_stack, t_stack", VALID_EPS_AND_T_STACK_PAIRS)
 def test_beta_and_t_stack_from_inputs_eps_creates_right_shape(eps_stack, t_stack):
-    beta_stack, t_stack_new = _beta_and_t_stack_from_inputs(
+    beta_stack, t_stack_new = beta_and_t_stack_from_inputs(
         eps_stack=eps_stack, beta_stack=None, t_stack=t_stack
     )
     assert (
@@ -45,7 +45,7 @@ def test_beta_and_t_stack_from_inputs_eps_creates_right_shape(eps_stack, t_stack
 
 @pytest.mark.parametrize("eps_stack, t_stack", VALID_EPS_AND_T_STACK_PAIRS)
 def test_beta_and_t_stack_from_inputs_eps_returns_arrays(eps_stack, t_stack):
-    beta_stack, t_stack_new = _beta_and_t_stack_from_inputs(
+    beta_stack, t_stack_new = beta_and_t_stack_from_inputs(
         eps_stack=eps_stack, beta_stack=None, t_stack=t_stack
     )
     assert type(beta_stack) == type(t_stack_new) == np.ndarray
@@ -53,7 +53,7 @@ def test_beta_and_t_stack_from_inputs_eps_returns_arrays(eps_stack, t_stack):
 
 @pytest.mark.parametrize("beta_stack, t_stack", VALID_BETA_AND_T_STACK_PAIRS)
 def test_beta_and_t_stack_from_inputs_beta_creates_right_shape(beta_stack, t_stack):
-    beta_stack_new, t_stack_new = _beta_and_t_stack_from_inputs(
+    beta_stack_new, t_stack_new = beta_and_t_stack_from_inputs(
         eps_stack=None, beta_stack=beta_stack, t_stack=t_stack
     )
     assert np.shape(beta_stack_new)[0] == np.shape(t_stack_new)[0] + 1
@@ -61,7 +61,7 @@ def test_beta_and_t_stack_from_inputs_beta_creates_right_shape(beta_stack, t_sta
 
 @pytest.mark.parametrize("beta_stack, t_stack", VALID_BETA_AND_T_STACK_PAIRS)
 def test_beta_and_t_stack_from_inputs_beta_returns_arrays(beta_stack, t_stack):
-    beta_stack_new, t_stack_new = _beta_and_t_stack_from_inputs(
+    beta_stack_new, t_stack_new = beta_and_t_stack_from_inputs(
         eps_stack=None, beta_stack=beta_stack, t_stack=t_stack
     )
     assert type(beta_stack_new) == type(t_stack_new) == np.ndarray
@@ -69,7 +69,7 @@ def test_beta_and_t_stack_from_inputs_beta_returns_arrays(beta_stack, t_stack):
 
 @pytest.mark.parametrize("beta_stack, t_stack", VALID_BETA_AND_T_STACK_PAIRS)
 def test_beta_and_t_stack_from_inputs_beta_leaves_beta_unchanged(beta_stack, t_stack):
-    beta_stack_new, t_stack_new = _beta_and_t_stack_from_inputs(
+    beta_stack_new, t_stack_new = beta_and_t_stack_from_inputs(
         eps_stack=None, beta_stack=beta_stack, t_stack=t_stack
     )
     np.testing.assert_equal(beta_stack_new, beta_stack)
@@ -94,7 +94,7 @@ def test_refl_coeff_ML_broadcasting():
         osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
     )
 
-    beta_stack, t_stack = _beta_and_t_stack_from_inputs(
+    beta_stack, t_stack = beta_and_t_stack_from_inputs(
         eps_stack=(eps_super, eps_middle, eps_sub), t_stack=(layer_thickness,)
     )
     target_shape = (k + beta_stack[0] + t_stack[0]).shape
