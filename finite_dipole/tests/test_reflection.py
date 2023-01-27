@@ -3,7 +3,6 @@ import pytest
 
 from finite_dipole.reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
 
-
 VALID_EPS_AND_T_STACK_PAIRS = [
     ([1, 2], []),
     ([1, 2], None),
@@ -99,4 +98,3 @@ def test_refl_coeff_ML_broadcasting():
     )
     target_shape = (k + beta_stack[0] + t_stack[0]).shape
     assert refl_coeff_ML(k, beta_stack, t_stack).shape == target_shape
-

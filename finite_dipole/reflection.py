@@ -83,6 +83,15 @@ def beta_and_t_stack_from_inputs(eps_stack=None, beta_stack=None, t_stack=None):
     else:
         t_stack = np.asarray(np.broadcast_arrays(*t_stack))
 
+    if (t_stack == 0).any():
+        warnings.warn(
+            " ".join(
+                "`t_stack` contains 0 values.",
+                "Zero-thickness dielectric layers are unphysical.",
+                "Results may not be as expected.",
+            )
+        )
+
     if eps_stack is None:
         if beta_stack is None:
             raise ValueError("Either `eps_stack` or `beta_stack` must be specified.")
