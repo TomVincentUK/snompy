@@ -64,7 +64,7 @@ def refl_coeff(eps_i, eps_j):
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-@njit
+@njit(cache=True)
 def refl_coeff_ML(k, beta_stack, t_stack):
     """Write me."""
     beta_effective = beta_stack[0] * np.ones_like(k * t_stack[0])

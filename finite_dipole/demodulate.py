@@ -31,7 +31,7 @@ def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
     return f * envelope
 
 
-@njit
+@njit(cache=True)
 def _sampled_integrand_compiled(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
     theta = np.linspace(-np.pi, np.pi, n_samples)
     stack = [
