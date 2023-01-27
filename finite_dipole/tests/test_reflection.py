@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from finite_dipole.reflection import _beta_and_t_stack_from_inputs, refl_coeff_ML
+from finite_dipole.reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
 
 
 VALID_EPS_AND_T_STACK_PAIRS = [
@@ -100,8 +100,3 @@ def test_refl_coeff_ML_broadcasting():
     target_shape = (k + beta_stack[0] + t_stack[0]).shape
     assert refl_coeff_ML(k, beta_stack, t_stack).shape == target_shape
 
-
-# @pytest.mark.parametrize("beta_stack, t_stack", VALID_BETA_AND_T_STACK_PAIRS)
-# def test_beta_func_from_stack_creates_right_shape(beta_stack, t_stack):
-#     beta_k = _beta_func_from_stack(np.asarray(beta_stack), np.asarray(t_stack))
-#     assert np.shape(beta_k(1)) == np.shape(beta_stack)[1:]
