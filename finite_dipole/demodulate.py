@@ -15,8 +15,6 @@ of arbitrary functions.
 """
 
 import numpy as np
-from numba import njit
-from numba.extending import is_jitted
 from scipy.integrate import quad_vec, simpson, trapezoid
 
 
@@ -31,7 +29,6 @@ def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
     return f * envelope
 
 
-@njit(cache=True)
 def _sampled_integrand_compiled(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
     theta = np.linspace(-np.pi, np.pi, n_samples)
     stack = [
@@ -48,7 +45,7 @@ def _generate_f_theta(f_x):
         envelope = np.exp(-1j * harmonic * theta)
         return f * envelope
 
-    return njit(f_theta) if is_jitted(f_x) else f_theta
+    return f_theta
 
 
 def demod(
@@ -111,11 +108,7 @@ def demod(
         )
         result /= 2 * np.pi
     else:
-        if is_jitted(f_x):
-            si = _sampled_integrand_compiled
-            f_args = tuple(f_args)
-        else:
-            si = _sampled_integrand
+        si = _sampled_integrand
 
         integrand = si(f_x, x_0, x_amplitude, harmonic, f_args, n_samples)
 

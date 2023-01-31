@@ -17,7 +17,6 @@ WRITE A DESCRIPTION HERE.
     eff_pol_ML
 """
 import numpy as np
-from numba import njit
 
 from .demodulate import demod
 from .reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
@@ -26,12 +25,10 @@ from .reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
 X_LAG, W_LAG = np.polynomial.laguerre.laggauss(64)
 
 
-@njit
 def _pad_ax(x):
     return np.expand_dims(np.asarray(x), -1)
 
 
-@njit(cache=True)
 def phi_E_0(z_q, beta_stack, t_stack, x_Lag=X_LAG, w_Lag=W_LAG):
     """Calculate phi and E using Gauss-Laguerre quadrature"""
     # Evaluate integral in terms of x = k * 2 * z_q
@@ -45,7 +42,6 @@ def phi_E_0(z_q, beta_stack, t_stack, x_Lag=X_LAG, w_Lag=W_LAG):
     return phi, E
 
 
-@njit(cache=True)
 def eff_pos_and_charge(z_q, beta_stack, t_stack, x_Lag=X_LAG, w_Lag=W_LAG):
     phi, E = phi_E_0(z_q, beta_stack, t_stack, x_Lag=X_LAG, w_Lag=W_LAG)
     z_image = np.abs(phi / E) - z_q
@@ -53,7 +49,6 @@ def eff_pos_and_charge(z_q, beta_stack, t_stack, x_Lag=X_LAG, w_Lag=W_LAG):
     return z_image, beta_image
 
 
-@njit(cache=True)
 def geom_func_ML(z, z_image, radius, semi_maj_axis, g_factor):
     """Function that encapsulates the geometric properties of the tip-
     sample system. Defined as `f_0` or `f_1` in equation (11) of reference
@@ -92,7 +87,6 @@ def geom_func_ML(z, z_image, radius, semi_maj_axis, g_factor):
     )
 
 
-@njit(cache=True)
 def eff_pol_0_ML(
     z,
     beta_stack=None,
