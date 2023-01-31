@@ -24,7 +24,7 @@ from .demodulate import demod
 from .reflection import refl_coeff
 
 
-@njit
+@njit(cache=True)
 def geom_func(z, x, radius, semi_maj_axis, g_factor):
     """
     Function that encapsulates the geometric properties of the tip-sample
@@ -66,7 +66,7 @@ def geom_func(z, x, radius, semi_maj_axis, g_factor):
     )
 
 
-@njit
+@njit(cache=True)
 def eff_pol_0(z, beta, x_0, x_1, radius, semi_maj_axis, g_factor):
     """
     Effective probe-sample polarizability.

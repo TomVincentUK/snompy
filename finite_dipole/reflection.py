@@ -64,16 +64,33 @@ def refl_coeff(eps_i, eps_j):
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
-    """Function to convert stacks of dielectric functions, reflection
-    coefficients and layer thicknesses to a stack of reflection
-    coefficients and layer thicknesses in the desired format for
-    _beta_func_from_stack.
-    """
+@njit(cache=True)
+def refl_coeff_ML(k, beta_stack, t_stack):
+    """Write me."""
+    beta_effective = beta_stack[0] * np.ones_like(k * t_stack[0])
+    for i in range(t_stack.shape[0]):
+        layer_decay = np.exp(-2 * k * t_stack[i])
+        beta_effective = (beta_effective + beta_stack[i + 1] * layer_decay) / (
+            1 + beta_effective * beta_stack[i + 1] * layer_decay
+        )
+    return beta_effective
+
+
+def beta_and_t_stack_from_inputs(eps_stack=None, beta_stack=None, t_stack=None):
+    """Write me."""
     if t_stack is None:
         t_stack = np.array([])
     else:
         t_stack = np.asarray(np.broadcast_arrays(*t_stack))
+
+    if (t_stack == 0).any():
+        warnings.warn(
+            " ".join(
+                "`t_stack` contains 0 values.",
+                "Zero-thickness dielectric layers are unphysical.",
+                "Results may not be as expected.",
+            )
+        )
 
     if eps_stack is None:
         if beta_stack is None:
@@ -98,125 +115,3 @@ def _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack):
         )
 
     return beta_stack, t_stack
-
-
-def _beta_func_from_stack(beta_stack, t_stack):
-    """Recursive function which returns `beta_k(k)`, the momentum-dependent
-    effective reflection coefficient for a stack of interfaces with
-    electrostatic reflection coefficients `beta_stack` and interface
-    separations `t_stack`.
-    """
-    if beta_stack.shape[0] == 1:
-        beta_final = beta_stack[0]
-
-        @njit
-        def beta_k(_):
-            return beta_final
-
-    else:
-        beta_current = beta_stack[0]
-        t_current = t_stack[0]
-
-        beta_stack_next = beta_stack[1:]
-        t_stack_next = t_stack[1:]
-        beta_next = _beta_func_from_stack(beta_stack_next, t_stack_next)
-
-        @njit
-        def beta_k(k):
-            next_layer = beta_next(k) * np.exp(-2 * k * t_current)
-            return (beta_current + next_layer) / (1 + beta_current * next_layer)
-
-    return beta_k
-
-
-def refl_coeff_ML(eps_stack=None, beta_stack=None, t_stack=None):
-    r"""Return a function for the momentum-dependent effective reflection
-    coefficient for the first interface in a stack of layers sandwiched
-    between a semi-infinite superstrate and substrate.
-
-    Parameters
-    ----------
-    eps_stack : array like
-        Dielectric functions of each layer in the stack. Layers should be
-        arranged from the top down, starting with the semi-infinite
-        superstrate and ending with the semi-infinite substrate. Ignored
-        if `beta_stack` is specified.
-    beta_stack : array like
-        Electrostatic reflection coefficients of each interface in the
-        stack (with the first element corresponding to the top interface).
-        Used instead of `eps_stack`, if both are specified
-    t_stack : float
-        Thicknesses of each sandwiched layer between the semi-inifinite
-        superstrate and substrate. Must have length one less than
-        `beta_stack` or two less than `eps_stack`. An empty list can be
-        used for the case of a single interface.
-
-    Returns
-    -------
-    beta_k : function
-        A scalar function of momentum, `k`, which returns the complex
-        effective reflection coefficient for the stack.
-
-    Notes
-    -----
-    This function works by recursively applying the equation
-
-    .. math::
-
-        \beta(k) =
-        \frac{\beta_{01} + \beta_{12}e^{-2kt_1}}
-        {1 + \beta_{01}\beta_{12}e^{-2kt_1}}
-
-    as an expression for :math:`\beta_{12}`, where :math:`\beta_{ij}` is
-    the electrostatic reflection coefficient between layers :math:`i` and
-    :math:`j`, :math:`t_{i}` is the thickness of the :math:`i^{th}`
-    layer, and :math:`k` is the in-plane momentum_[1].
-
-    References
-    ----------
-    .. [1] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
-       R. Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR
-       spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020,
-       doi: 10.1038/s41467-020-17034-6.
-
-    Examples
-    --------
-    Dielectric function specified:
-
-    >>> beta_k = refl_coeff_ML(eps_stack=(1, 2, 3), t_stack=(1,))
-    >>> [beta_k(k) for k in range(5)]
-    [0.500, 0.357, 0.337, 0.334, 0.333]
-
-    Reflection coefficients specified:
-
-    >>> beta_k = refl_coeff_ML(beta_stack=(1 / 3, 1 / 5), t_stack=(1,))
-    >>> [beta_k(k) for k in range(5)]
-    [0.500, 0.357, 0.337, 0.334, 0.333]
-
-    Complex inputs:
-
-    >>> beta_k = refl_coeff_ML(eps_stack=(1, 1 + 1j, 3), t_stack=(1,))
-    >>> [beta_k(k) for k in range(4)]
-    [(0.500+0.000j), (0.252+0.339j), (0.207+0.392j), (0.201+0.399j)]
-
-    Non-scalar inputs:
-
-    >>> eps_stack = 1, (2, 3, 4, 5, 6, 7, 8), 9
-    >>> beta_k = refl_coeff_ML(eps_stack=eps_stack, t_stack=(1,))
-    >>> beta_k(0)
-    array([0.800, 0.800, 0.800, 0.800, 0.800, 0.800, 0.800])
-
-    Single interface:
-
-    >>> beta_k = refl_coeff_ML(beta_stack=(0.5,))
-    >>> [beta_k(k) for k in range(5)]
-    [0.500, 0.500, 0.500, 0.500, 0.500]
-    """
-    beta_stack, t_stack = _beta_and_t_stack_from_inputs(eps_stack, beta_stack, t_stack)
-    beta_k = _beta_func_from_stack(beta_stack, t_stack)
-
-    beta_k.ndim = np.ndim(
-        beta_k(0)
-    )  # Ensures np.ndim(beta_k) = np.ndim(beta_k(scalar))
-
-    return beta_k
