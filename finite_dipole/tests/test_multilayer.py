@@ -119,16 +119,18 @@ def test_eff_pol_ML_harmonics_decay():
 
 
 def test_eff_pol_ML_two_layers_same_as_bulk():
+    eps_stack = 1, 11.7
     alpha_eff_bulk = eff_pol(
         z=Z,
         tapping_amplitude=TAPPING_AMPLITUDE,
         harmonic=HARMONIC,
-        eps_sample=11.7,
+        eps_sample=eps_stack[-1],
+        eps_environment=eps_stack[0],
     )
     alpha_eff_ML = eff_pol_ML(
         z=Z,
         tapping_amplitude=TAPPING_AMPLITUDE,
         harmonic=HARMONIC,
-        eps_stack=(1, 11.7),
+        eps_stack=eps_stack,
     )
     np.testing.assert_almost_equal(alpha_eff_bulk, alpha_eff_ML)
