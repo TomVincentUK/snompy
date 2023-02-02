@@ -8,7 +8,7 @@ from finite_dipole.multilayer import (
     eff_pos_and_charge,
     phi_E_0,
 )
-from finite_dipole.reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
+from finite_dipole.reflection import interface_stack, refl_coeff_ML
 
 # Measurement parameters
 Z = 40e-9
@@ -16,7 +16,7 @@ Z_Q = 60e-9
 Z_APPROACH = np.linspace(0, 100, 8) * 1e-9
 
 # Beta and t for single calculation
-BETA_STACK_SINGLE, T_STACK_SINGLE = beta_and_t_stack_from_inputs(
+BETA_STACK_SINGLE, T_STACK_SINGLE = interface_stack(
     eps_stack=(1, 2 + 1j, 11.7), t_stack=(100e-9,)
 )
 
@@ -33,7 +33,7 @@ eps_middle = eps_inf + (osc_strength * osc_freq**2) / (
     osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
 )
 thickness = np.arange(1, 100, 8)[:, np.newaxis] * 1e-9
-BETA_STACK_VECTOR, T_STACK_VECTOR = beta_and_t_stack_from_inputs(
+BETA_STACK_VECTOR, T_STACK_VECTOR = interface_stack(
     eps_stack=(eps_super, eps_middle, eps_sub), t_stack=(thickness,)
 )
 

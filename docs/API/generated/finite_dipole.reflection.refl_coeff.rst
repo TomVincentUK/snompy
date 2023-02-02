@@ -3,4 +3,4 @@
 
 .. currentmodule:: finite_dipole.reflection
 
-.. autodata:: refl_coeff
+.. autofunction:: refl_coeff

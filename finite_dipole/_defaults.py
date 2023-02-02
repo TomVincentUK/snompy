@@ -7,6 +7,6 @@ defaults = dict(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
-    demod_trapz=64,
+    N_demod_trapz=64,
     Laguerre_order=64,
 )

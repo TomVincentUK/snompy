@@ -31,38 +31,56 @@ def geom_func(
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
 ):
-    """
-    Function that encapsulates the geometric properties of the tip-sample
-    system. Defined as `f_0` or `f_1` in equation (2) of
-    reference [1], for semi-infinite samples.
+    r"""Return a complex number that encapsulates various geometric
+    properties of the tip-sample system for bulk FDM.
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as `H` in
-        reference [1].
+        Height of the tip above the sample.
     x : float
         Position of an induced charge within the tip. Specified relative to
-        the tip radius. Defined as `W_0` or `W_1` in equation
-        (2) of reference [1].
+        the tip radius.
     radius : float
-        Radius of curvature of the AFM tip in metres. Defined as
-        `rho` in reference [1].
+        Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as `L` in reference [1].
+        Semi-major axis length of the effective spheroid from the FDM.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as `g` in reference [1].
+        sample.
 
     Returns
     -------
     f_n : complex
         A complex number encapsulating geometric properties of the tip-
         sample system.
+
+    Notes
+    -----
+    This function implements the equation
+
+    .. math::
+
+        f_{geom} =
+        \left(
+            g - \frac{r + 2 z + W}{2 L}
+        \right)
+        \frac{\ln{\left(\frac{4 L}{r + 4 z + 2 W}\right)}}
+        {\ln{\left(\frac{4 L}{r}\right)}}
+
+    where :math:`z` is `z`, :math:`W` is `x * radius`, :math:`r` is
+    `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
+    This is given as equation (2) in reference_[1].
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+       model for scattering infrared near-field microscopy on layered
+       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+       doi: 10.1364/OE.20.013173.
     """
     return (
         (g_factor - (radius + 2 * z + x * radius) / (2 * semi_maj_axis))
@@ -80,43 +98,61 @@ def eff_pol_0(
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
 ):
-    """
-    Effective probe-sample polarizability.
-    Defined as `\alpha_{eff}`` in equation (3) of reference [1].
+    r"""Return the effective probe-sample polarizability using the bulk
+    finite dipole model.
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as `H` in
-        reference [1].
+        Height of the tip above the sample.
     beta : complex
-        Effective electrostatic reflection coefficient the interface.
-        Defined as `\beta` in equation (2) of reference [1].
+        Electrostatic reflection coefficient of the interface.
     x_0 : float
-        Position of induced charge 0 within the tip. Specified relative to
-        the tip radius. Defined as `W_0` in equation (2) of reference
-        [1].
+        Position of an induced charge 0 within the tip. Specified relative
+        to the tip radius.
     x_1 : float
-        Position of induced charge 1 within the tip. Specified relative to
-        the tip radius. Defined as `W_1` in equation (2) of reference
-        [1].
+        Position of an induced charge 1 within the tip. Specified relative
+        to the tip radius.
     radius : float
-        Radius of curvature of the AFM tip in metres. Defined as
-        `rho` in reference [1].
+        Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as `L` in reference [1].
+        Semi-major axis length of the effective spheroid from the FDM.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as `g` in reference [1].
+        sample.
 
     Returns
     -------
-    alpha_eff : complex
+    alpha_eff_0 : complex
         Effective polarizability of the tip and sample.
+
+    Notes
+    -----
+    This function implements the equation
+
+    .. math::
+
+        \alpha_{eff} =
+        1
+        + \frac{\beta f_{geom}(z, x_0, r, L, g)}
+        {2 (1 - \beta f_{geom}(z, x_1, r, L, g))}
+
+    where :math:`\alpha_{eff}` is `\alpha_eff`, :math:`\beta` is `beta`,
+    :math:`r` is `radius`, :math:`L` is `semi_maj_axis`, :math:`g` is
+    `g_factor`, and :math:`f_{geom}` is a function encapsulating the
+    geometric properties of the tip-sample system. This is given as
+    equation (3) in reference_[1]. The function :math:`f_{geom}` is
+    implemented here as `finite_dipole.bulk.geom_func`.
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+       model for scattering infrared near-field microscopy on layered
+       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+       doi: 10.1364/OE.20.013173.
     """
     f_0 = geom_func(z, x_0, radius, semi_maj_axis, g_factor)
     f_1 = geom_func(z, x_1, radius, semi_maj_axis, g_factor)
@@ -136,59 +172,65 @@ def eff_pol(
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
 ):
-    r"""
-    Effective probe-sample polarizability.
-    Defined as `\alpha_{eff, n}` in reference [1].
+    r"""Return the effective probe-sample polarizability, demodulated at
+    higher harmonics, using the bulk finite dipole model.
 
     Parameters
     ----------
     z : float
-        Height of the tip above the sample. Defined as `H` in
-        reference [1].
+        Height of the tip above the sample.
     tapping_amplitude : float
-        The tapping amplitude of the AFM tip. Defined as `A` in
-        reference [1].
+        The tapping amplitude of the AFM tip.
     harmonic : int
         The harmonic of the AFM tip tapping frequency at which to
-        demodulate. Defined as `n` in reference [1].
+        demodulate.
     eps_sample : complex
-        Dielectric function of the sample. Defined as `\epsilon_s` in
-        reference [1]. Used to calculate `beta_0`, and ignored if `beta_0`
-        is specified.
+        Dielectric function of the sample. Used to calculate `beta_0`, and
+        ignored if `beta_0` is specified.
     eps_environment : complex
         Dielectric function of the environment (superstrate). Used to
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
-        Effective electrostatic reflection coefficient the interface.
-        Defined as `\beta` in equation (2) of reference [1].
+        Electrostatic reflection coefficient of the interface.
     x_0 : float
-        Position of induced charge 0 within the tip. Specified relative to
-        the tip radius. Defined as `W_0` in equation (2) of reference
-        [1], and `X_0` in equation (11).
+        Position of an induced charge 0 within the tip. Specified relative
+        to the tip radius.
     x_1 : float
-        Position of induced charge 1 within the tip. Specified relative to
-        the tip radius. Defined as `W_1` in equation (2) of reference
-        [1], and `X_1` in equation (11).
+        Position of an induced charge 1 within the tip. Specified relative
+        to the tip radius.
     radius : float
-        Radius of curvature of the AFM tip in metres. Defined as
-        `\rho` in reference [1].
+        Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis in metres of the effective spheroid from the FDM.
-        Defined as `L` in reference [1].
+        Semi-major axis length of the effective spheroid from the FDM.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
-        sample. Defined as `g` in reference [1]. Default value of
-        `0.7 e^{0.06i}`` taken from reference [2].
+        sample.
 
     Returns
     -------
     alpha_eff : complex
-        Effective polarizability of the tip and sample.
-    alpha_eff_err : complex
-        Estimated absolute error from the Fourier integration.
+        Effective polarizability of the tip and sample, demodulated at
+        `harmonic`.
+
+    Notes
+    -----
+    This function implements
+    :math:`\alpha_{eff, n} = \hat{F_n}(\alpha_{eff})`, where
+    :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
+    coefficient of the effective polarizability of the tip and sample,
+    :math:`\alpha_{eff}`, as described in reference_[1]. The function
+    :math:`\alpha_{eff}` is implemented here as
+    `finite_dipole.bulk.eff_pol_0`.
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+       model for scattering infrared near-field microscopy on layered
+       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+       doi: 10.1364/OE.20.013173.
     """
     # beta calculated from eps_sample if not specified
     if eps_sample is None:
@@ -208,7 +250,7 @@ def eff_pol(
 
     alpha_eff = demod(
         eff_pol_0,
-        z_0,  # add the amplitude so z_0 is at centre of oscillation
+        z_0,
         tapping_amplitude,
         harmonic,
         f_args=(beta, x_0, x_1, radius, semi_maj_axis, g_factor),
