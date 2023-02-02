@@ -24,9 +24,79 @@ from .reflection import interface_stack, refl_coeff_ML
 
 
 def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]):
-    """Write me!
+    r"""Return the electric potential and field at the sample surface,
+    induced by a charge above a stack of interfaces.
 
-    Calculate phi and E using Gauss-Laguerre quadrature"""
+    This function works by performing integrals over all values of in-plane
+    electromagnetic wave momentum `k`, using Gauss-Laguerre quadrature.
+
+    Parameters
+    ----------
+    z_q : float
+        Height of the charge above the sample.
+    beta_stack : array_like
+        Electrostatic reflection coefficients of each interface in the
+        stack (with the first element corresponding to the top interface).
+        Used instead of `eps_stack`, if both are specified.
+    t_stack : array_like
+        Thicknesses of each sandwiched layer between the semi-inifinite
+        superstrate and substrate. Must have length one fewer than
+        `beta_stack` or two fewer than `eps_stack`. An empty list can be
+        used for the case of a single interface.
+    Laguerre_order : int
+        The order of the Laguerre polynomial used to evaluate the integrals
+        over all 'k'.
+
+    Returns
+    -------
+    phi : complex
+        The electric potential induced at the sample surface by a the
+        charge.
+    phi : complex
+        The component of the surface electric field perpendicular to the
+        surface.
+
+    Notes
+    -----
+
+    This function evaluates the integrals
+
+    .. math::
+
+        \begin{align*}
+            \phi \rvert_{z=0} &= \int_0^\infty \beta(k) e^{-2 z_q k} dk,
+            \quad \text{and}\\
+            E_z \rvert_{z=0} &= \int_0^\infty \beta(k) k e^{-2 z_q k} dk,
+        \end{align*}
+
+    where :math:`\phi` is the electric potential, :math:`E_z` is the
+    vertical component of the electric field, :math:`k` is the
+    electromagnetic wave momentum, :math:`\beta(k)` is the
+    momentum-dependent effective reflection coefficient for the surface,
+    and :math:`z_q` is the height of the inducing charge above the
+    surface_[1].
+
+    To do this, it first makes the substitution :math:`x = 2 z_q k`, such
+    that the integrals become
+
+    .. math::
+
+        \begin{align*}
+            \phi \rvert_{z=0}
+            & = \frac{1}{2 z_q} \int_0^\infty
+            \beta\left(\frac{x}{2 z_q}\right) e^{-x} dx, \quad \text{and}\\
+            E_z \rvert_{z=0}
+            & = \frac{1}{4 z_q^2} \int_0^\infty
+            \beta\left(\frac{x}{2 z_q}\right) x e^{-x} dx.
+        \end{align*}
+
+    References
+    ----------
+    .. [1] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
+       R. Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR
+       spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020,
+       doi: 10.1038/s41467-020-17034-6.
+    """
     # Evaluate integral in terms of x = k * 2 * z_q
     x_Lag, w_Lag = np.polynomial.laguerre.laggauss(Laguerre_order)
     k = x_Lag / np.asarray(2 * z_q)[..., np.newaxis]
@@ -132,8 +202,15 @@ def eff_pol_0_ML(
     ----------
     z : float
         Height of the tip above the sample.
-    beta : complex
-        Electrostatic reflection coefficient of the interface.
+    beta_stack : array_like
+        Electrostatic reflection coefficients of each interface in the
+        stack (with the first element corresponding to the top interface).
+        Used instead of `eps_stack`, if both are specified.
+    t_stack : array_like
+        Thicknesses of each sandwiched layer between the semi-inifinite
+        superstrate and substrate. Must have length one fewer than
+        `beta_stack` or two fewer than `eps_stack`. An empty list can be
+        used for the case of a single interface.
     x_0 : float
         Position of an induced charge 0 within the tip. Specified relative
         to the tip radius.
@@ -151,7 +228,8 @@ def eff_pol_0_ML(
         phase shifts caused by the capacitive interaction of the tip and
         sample.
     Laguerre_order : int
-        Write me!
+        The order of the Laguerre polynomial used to evaluate the integrals
+        over all 'k'.
 
     Returns
     -------
@@ -254,8 +332,9 @@ def eff_pol_ML(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    Laguerre_order : int
-        Write me!
+    Laguerre_order : complex
+        The order of the Laguerre polynomial used to evaluate the integrals
+        over all 'k'.
 
     Returns
     -------
