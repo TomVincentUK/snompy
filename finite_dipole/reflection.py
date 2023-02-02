@@ -66,10 +66,7 @@ def refl_coeff(eps_i, eps_j):
 
 def refl_coeff_ML(k, beta_stack, t_stack):
     """Write me."""
-    if t_stack.size > 0:
-        beta_effective = beta_stack[0] * np.ones_like(k * t_stack[0])
-    else:
-        beta_effective = beta_stack[0] * np.ones_like(k)
+    beta_effective = beta_stack[0]
     for i in range(t_stack.shape[0]):
         layer_decay = np.exp(-2 * k * t_stack[i])
         beta_effective = (beta_effective + beta_stack[i + 1] * layer_decay) / (

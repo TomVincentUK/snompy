@@ -67,9 +67,7 @@ def test_phi_E_0_integrals():
 
 def test_eff_pos_and_charge_broadcasting():
     target_shape = (Z_Q * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0]).shape
-    z_image, beta_image = eff_pos_and_charge(
-        Z_Q, BETA_STACK_VECTOR, T_STACK_VECTOR, *np.polynomial.laguerre.laggauss(64)
-    )
+    z_image, beta_image = eff_pos_and_charge(Z_Q, BETA_STACK_VECTOR, T_STACK_VECTOR)
     assert z_image.shape == beta_image.shape == target_shape
 
 
