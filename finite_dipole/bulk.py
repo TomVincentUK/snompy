@@ -113,6 +113,7 @@ def eff_pol(
     tapping_amplitude,
     harmonic,
     eps_sample=None,
+    eps_environment=1 + 0j,
     beta=None,
     x_0=None,
     x_1=0.5,
@@ -139,6 +140,9 @@ def eff_pol(
         Dielectric function of the sample. Defined as `\epsilon_s` in
         reference [1]. Used to calculate `beta_0`, and ignored if `beta_0`
         is specified.
+    eps_environment : complex
+        Dielectric function of the environment (superstrate). Used to
+        calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
         Effective electrostatic reflection coefficient the interface.
         Defined as `\beta` in equation (2) of reference [1].
@@ -177,7 +181,7 @@ def eff_pol(
             raise ValueError("Either `eps_sample` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(1 + 0j, eps_sample)
+            beta = refl_coeff(eps_environment, eps_sample)
         else:
             warnings.warn("`beta` overrides `eps_sample` when both are specified.")
 
