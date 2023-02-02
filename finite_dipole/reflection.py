@@ -18,10 +18,8 @@ reflection coefficient for a stack of three or more materials.
 import warnings
 
 import numpy as np
-from numba import njit, vectorize
 
 
-@vectorize(["float64(float64, float64)", "complex128(complex128, complex128)"])
 def refl_coeff(eps_i, eps_j):
     """Return the electrostatic reflection coefficient for an interface
     between two materials.
@@ -61,13 +59,14 @@ def refl_coeff(eps_i, eps_j):
     array([[ 0. , -0.5],
           [ 0.5,  0. ]])
     """
+    eps_i = np.asarray(eps_i)
+    eps_j = np.asarray(eps_j)
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-@njit(cache=True)
 def refl_coeff_ML(k, beta_stack, t_stack):
     """Write me."""
-    beta_effective = beta_stack[0] * np.ones_like(k * t_stack[0])
+    beta_effective = beta_stack[0]
     for i in range(t_stack.shape[0]):
         layer_decay = np.exp(-2 * k * t_stack[i])
         beta_effective = (beta_effective + beta_stack[i + 1] * layer_decay) / (
