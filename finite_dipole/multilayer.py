@@ -118,7 +118,6 @@ def eff_pol_ML(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
-    demod_method="trapezium",
     N_Lag=N_LAG,
 ):
     if x_0 is None:
@@ -143,7 +142,6 @@ def eff_pol_ML(
             g_factor,
             N_Lag,
         ),
-        method=demod_method,
     )
 
     return alpha_eff

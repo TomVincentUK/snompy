@@ -1,13 +1,9 @@
 import numpy as np
-import pytest
 
 from finite_dipole.demodulate import demod
 
-METHODS = "trapezium", "simpson", "adaptive"
 
-
-@pytest.mark.parametrize("method", METHODS)
-def test_only_zeroth_harmonic_with_constant_function(method):
+def test_only_zeroth_harmonic_with_constant_function():
     def constant_function(x):
         return np.ones_like(x)
 
@@ -16,24 +12,19 @@ def test_only_zeroth_harmonic_with_constant_function(method):
         x_0=0,
         x_amplitude=1,
         harmonic=np.arange(3),
-        method=method,
     )
     np.testing.assert_almost_equal(result, np.array([1, 0, 0]))
 
 
-@pytest.mark.parametrize("method", METHODS)
-def test_only_first_harmonic_with_linear_function(method):
+def test_only_first_harmonic_with_linear_function():
     def linear_function(x):
         return 2 * x
 
-    result = demod(
-        f_x=linear_function, x_0=0, x_amplitude=1, harmonic=np.arange(3), method=method
-    )
+    result = demod(f_x=linear_function, x_0=0, x_amplitude=1, harmonic=np.arange(3))
     np.testing.assert_almost_equal(result, [0, 1, 0])
 
 
-@pytest.mark.parametrize("method", METHODS)
-def test_broadcasting(method):
+def test_broadcasting():
     def function_with_args(x, a, b, c):
         return a * x**2 + b * x + c
 
@@ -50,7 +41,6 @@ def test_broadcasting(method):
         x_0=x_0,
         x_amplitude=x_amplitude,
         harmonic=harmonic,
-        method=method,
         f_args=(a, b, c),
     )
 

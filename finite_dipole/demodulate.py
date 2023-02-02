@@ -15,7 +15,6 @@ of arbitrary functions.
 """
 
 import numpy as np
-from scipy.integrate import quad_vec, simpson, trapezoid
 
 
 def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
@@ -29,32 +28,12 @@ def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
     return f * envelope
 
 
-def _sampled_integrand_compiled(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
-    theta = np.linspace(-np.pi, np.pi, n_samples)
-    stack = [
-        f_x(x_0 + np.cos(t) * x_amplitude, *f_args) * np.exp(-1j * harmonic * t)
-        for t in theta
-    ]
-    return stack
-
-
-def _generate_f_theta(f_x):
-    def f_theta(theta, x_0, x_amplitude, harmonic, *f_args):
-        x = x_0 + x_amplitude * np.cos(theta)
-        f = f_x(x, *f_args)
-        envelope = np.exp(-1j * harmonic * theta)
-        return f * envelope
-
-    return f_theta
-
-
 def demod(
     f_x,
     x_0,
     x_amplitude,
     harmonic,
     f_args=(),
-    method="trapezium",
     n_samples=65,
 ):
     """Simulate a lock-in amplifier measurement by modulating the input of
@@ -81,8 +60,6 @@ def demod(
         The harmonic at which to demodulate.
     f_args : tuple
         A tuple of extra arguments to the function `f_x`.
-    method : {"trapezium", "simpson", "adaptive"}
-        The method to use for the integration. MORE DETAILS HERE.
     n_samples : int
         WRITE ME.
 
@@ -98,23 +75,13 @@ def demod(
     --------
     WRITE ME.
     """
-    if method not in ["trapezium", "simpson", "adaptive"]:
-        raise ValueError("`method` must be 'trapezium', 'simpson' or 'adaptive'.")
+    output_ndim = (f_x(x_0 + 0 * x_amplitude, *f_args) * harmonic).ndim
+    theta = np.linspace(-np.pi, np.pi, n_samples).reshape(-1, *(1,) * output_ndim)
+    x = x_0 + np.cos(theta) * x_amplitude
+    f = f_x(x, *f_args)
+    envelope = np.exp(-1j * harmonic * theta)
+    integrand = f * envelope
 
-    if method == "adaptive":
-        f_theta = _generate_f_theta(f_x)
-        result, _ = quad_vec(
-            lambda t: f_theta(t, x_0, x_amplitude, harmonic, *f_args), -np.pi, np.pi
-        )
-        result /= 2 * np.pi
-    else:
-        si = _sampled_integrand
-
-        integrand = si(f_x, x_0, x_amplitude, harmonic, f_args, n_samples)
-
-        if method == "trapezium":
-            result = trapezoid(integrand, axis=0) / (n_samples - 1)
-        elif method == "simpson":
-            result = simpson(integrand, axis=0) / (n_samples - 1)
+    result = np.trapz(integrand, axis=0) / (n_samples - 1)
 
     return result

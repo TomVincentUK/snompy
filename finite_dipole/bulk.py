@@ -119,7 +119,6 @@ def eff_pol(
     radius=20e-9,
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
-    demod_method="trapezium",
 ):
     r"""
     Effective probe-sample polarizability.
@@ -164,8 +163,6 @@ def eff_pol(
         phase shifts caused by the capacitive interaction of the tip and
         sample. Defined as `g` in reference [1]. Default value of
         `0.7 e^{0.06i}`` taken from reference [2].
-    demod_method : {'trapezium', 'simpson' or 'adaptive'}
-        Integration method used to demodulate the signal.
 
     Returns
     -------
@@ -196,7 +193,6 @@ def eff_pol(
         tapping_amplitude,
         harmonic,
         f_args=(beta, x_0, x_1, radius, semi_maj_axis, g_factor),
-        method=demod_method,
     )
 
     return alpha_eff
