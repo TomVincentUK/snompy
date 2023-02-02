@@ -18,17 +18,15 @@ WRITE A DESCRIPTION HERE.
 """
 import numpy as np
 
+from ._defaults import defaults
 from .demodulate import demod
 from .reflection import beta_and_t_stack_from_inputs, refl_coeff_ML
 
-# Default values
-N_LAG = 64
 
-
-def phi_E_0(z_q, beta_stack, t_stack, N_Lag=N_LAG):
+def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]):
     """Calculate phi and E using Gauss-Laguerre quadrature"""
     # Evaluate integral in terms of x = k * 2 * z_q
-    x_Lag, w_Lag = np.polynomial.laguerre.laggauss(N_Lag)
+    x_Lag, w_Lag = np.polynomial.laguerre.laggauss(Laguerre_order)
     k = x_Lag / np.asarray(2 * z_q)[..., np.newaxis]
 
     beta_k = refl_coeff_ML(k, beta_stack[..., np.newaxis], t_stack[..., np.newaxis])
@@ -39,14 +37,22 @@ def phi_E_0(z_q, beta_stack, t_stack, N_Lag=N_LAG):
     return phi, E
 
 
-def eff_pos_and_charge(z_q, beta_stack, t_stack, N_Lag=N_LAG):
-    phi, E = phi_E_0(z_q, beta_stack, t_stack, N_Lag)
+def eff_pos_and_charge(
+    z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]
+):
+    phi, E = phi_E_0(z_q, beta_stack, t_stack, Laguerre_order)
     z_image = np.abs(phi / E) - z_q
     beta_image = phi**2 / E
     return z_image, beta_image
 
 
-def geom_func_ML(z, z_image, radius, semi_maj_axis, g_factor):
+def geom_func_ML(
+    z,
+    z_image,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+):
     """Function that encapsulates the geometric properties of the tip-
     sample system. Defined as `f_0` or `f_1` in equation (11) of reference
     [1], for multilayer samples.
@@ -88,19 +94,19 @@ def eff_pol_0_ML(
     z,
     beta_stack=None,
     t_stack=None,
-    x_0=1.31 * 15 / 16,
-    x_1=0.5,
-    radius=20e-9,
-    semi_maj_axis=300e-9,
-    g_factor=0.7 * np.exp(0.06j),
-    N_Lag=N_LAG,
+    x_0=defaults["x_0"],
+    x_1=defaults["x_1"],
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    Laguerre_order=defaults["Laguerre_order"],
 ):
     z_q_0 = z + radius * x_0
-    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, N_Lag)
+    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, Laguerre_order)
     f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
 
     z_q_1 = z + radius * x_1
-    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, N_Lag)
+    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, Laguerre_order)
     f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
@@ -114,11 +120,11 @@ def eff_pol_ML(
     beta_stack=None,
     t_stack=None,
     x_0=None,
-    x_1=0.5,
-    radius=20e-9,
-    semi_maj_axis=300e-9,
-    g_factor=0.7 * np.exp(0.06j),
-    N_Lag=N_LAG,
+    x_1=defaults["x_1"],
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    Laguerre_order=defaults["Laguerre_order"],
 ):
     if x_0 is None:
         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
@@ -140,7 +146,7 @@ def eff_pol_ML(
             radius,
             semi_maj_axis,
             g_factor,
-            N_Lag,
+            Laguerre_order,
         ),
     )
 

@@ -16,16 +16,7 @@ of arbitrary functions.
 
 import numpy as np
 
-
-def _sampled_integrand(f_x, x_0, x_amplitude, harmonic, f_args, n_samples):
-    max_dim = np.max([np.ndim(arg) for arg in (x_0, x_amplitude, harmonic, *f_args)])
-    theta = np.linspace(-np.pi, np.pi, n_samples).reshape(
-        -1, *np.ones(max_dim, dtype=int)
-    )
-    x = x_0 + np.cos(theta) * x_amplitude
-    f = f_x(x, *f_args)
-    envelope = np.exp(-1j * harmonic * theta)
-    return f * envelope
+from ._defaults import defaults
 
 
 def demod(
@@ -34,7 +25,7 @@ def demod(
     x_amplitude,
     harmonic,
     f_args=(),
-    n_samples=65,
+    demod_trapz=defaults["demod_trapz"],
 ):
     """Simulate a lock-in amplifier measurement by modulating the input of
     an arbitrary function and demodulating the output.
@@ -76,12 +67,12 @@ def demod(
     WRITE ME.
     """
     output_ndim = (f_x(x_0 + 0 * x_amplitude, *f_args) * harmonic).ndim
-    theta = np.linspace(-np.pi, np.pi, n_samples).reshape(-1, *(1,) * output_ndim)
+    theta = np.linspace(-np.pi, np.pi, demod_trapz + 1).reshape(-1, *(1,) * output_ndim)
     x = x_0 + np.cos(theta) * x_amplitude
     f = f_x(x, *f_args)
     envelope = np.exp(-1j * harmonic * theta)
     integrand = f * envelope
 
-    result = np.trapz(integrand, axis=0) / (n_samples - 1)
+    result = np.trapz(integrand, axis=0) / (demod_trapz)
 
     return result

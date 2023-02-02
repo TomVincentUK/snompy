@@ -19,11 +19,18 @@ import warnings
 
 import numpy as np
 
+from ._defaults import defaults
 from .demodulate import demod
 from .reflection import refl_coeff
 
 
-def geom_func(z, x, radius, semi_maj_axis, g_factor):
+def geom_func(
+    z,
+    x,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+):
     """
     Function that encapsulates the geometric properties of the tip-sample
     system. Defined as `f_0` or `f_1` in equation (2) of
@@ -64,7 +71,15 @@ def geom_func(z, x, radius, semi_maj_axis, g_factor):
     )
 
 
-def eff_pol_0(z, beta, x_0, x_1, radius, semi_maj_axis, g_factor):
+def eff_pol_0(
+    z,
+    beta,
+    x_0=defaults["x_0"],
+    x_1=defaults["x_1"],
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+):
     """
     Effective probe-sample polarizability.
     Defined as `\alpha_{eff}`` in equation (3) of reference [1].
@@ -113,13 +128,13 @@ def eff_pol(
     tapping_amplitude,
     harmonic,
     eps_sample=None,
-    eps_environment=1 + 0j,
+    eps_environment=defaults["eps_environment"],
     beta=None,
     x_0=None,
-    x_1=0.5,
-    radius=20e-9,
-    semi_maj_axis=300e-9,
-    g_factor=0.7 * np.exp(0.06j),
+    x_1=defaults["x_1"],
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
 ):
     r"""
     Effective probe-sample polarizability.
