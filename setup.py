@@ -19,7 +19,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-    ],  # TO ADD: LICENSE, OS
+        "Operating System :: OS Independent",
+    ],  # TO ADD: LICENSE
     python_requires=">=3.9",
     install_requires=requirements,
 )
