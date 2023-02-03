@@ -4,7 +4,9 @@ Multilayer finite dipole model (:mod:`finite_dipole.multilayer`)
 
 .. currentmodule:: finite_dipole.multilayer
 
-WRITE A DESCRIPTION HERE.
+This module provides functions for simulating the results of scanning
+near-field optical microscopy experiments (SNOM) using the multilayer
+finite dipole model (FDM), which works for arbitrary stacks of materials.
 
 .. autosummary::
     :nosignatures:
@@ -52,7 +54,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     phi : complex
         The electric potential induced at the sample surface by a the
         charge.
-    phi : complex
+    E : complex
         The component of the surface electric field perpendicular to the
         surface.
 
@@ -65,7 +67,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
 
         \begin{align*}
             \phi \rvert_{z=0} &= \int_0^\infty \beta(k) e^{-2 z_q k} dk,
-            \quad \text{and}\\
+            \ \text{and}\\
             E_z \rvert_{z=0} &= \int_0^\infty \beta(k) k e^{-2 z_q k} dk,
         \end{align*}
 
@@ -84,11 +86,51 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
         \begin{align*}
             \phi \rvert_{z=0}
             & = \frac{1}{2 z_q} \int_0^\infty
-            \beta\left(\frac{x}{2 z_q}\right) e^{-x} dx, \quad \text{and}\\
+            \beta\left(\frac{x}{2 z_q}\right) e^{-x} dx, \ \text{and}\\
             E_z \rvert_{z=0}
             & = \frac{1}{4 z_q^2} \int_0^\infty
             \beta\left(\frac{x}{2 z_q}\right) x e^{-x} dx.
         \end{align*}
+
+    It then uses the Gauss-Laguerre approximation_[2]
+
+    .. math::
+
+        \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{n=1}^N w_n f(x_n),
+
+    where :math:`x_n` is the :math:`n^{th}` root of the Laguerre polynomial
+
+    .. math::
+        L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
+
+    and :math:`w_n` is a weight given by
+
+    .. math::
+
+        w_n = \frac{x_n}{\left((N + 1) L_{N+1}(x_n) \right)^2}.
+
+    The integrals can therefore be approximated by the sums
+
+    .. math::
+
+        \begin{align*}
+            \phi \rvert_{z=0}
+            & \approx \frac{1}{2 z_q}
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right),
+            \ \text{and}\\
+            E_z \rvert_{z=0}
+            & \approx \frac{1}{4 z_q^2}
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right) x_n.
+        \end{align*}
+
+    The choice of :math:`N`, defined in this function as `Laguerre_order`,
+    will affect the accuracy of the approximation, with higher :math:`N`
+    values leading to more accurate evaluation of the integrals.
+
+    In this function the Laguerre weights and roots are found using
+    `numpy.polynomial.laguerre.laggauss` and the momentum-dependent
+    reflection coefficient is found using
+    `finite_dipole.reflection.refl_coeff_ML`.
 
     References
     ----------
@@ -96,6 +138,10 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
        R. Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR
        spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020,
        doi: 10.1038/s41467-020-17034-6.
+    .. [2] S. Ehrich, “On stratified extensions of Gauss-Laguerre and
+       Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
+       140, no. 1-2, pp. 291-299, Mar. 2002,
+       doi: 10.1016/S0377-0427(01)00407-1.
     """
     # Evaluate integral in terms of x = k * 2 * z_q
     x_Lag, w_Lag = np.polynomial.laguerre.laggauss(Laguerre_order)
@@ -112,7 +158,75 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
 def eff_pos_and_charge(
     z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]
 ):
-    """Write me."""
+    r"""Calculate the depth and relative charge of an image charge induced
+    Below the top surface of a stack of interfaces.
+
+    This function works by evaluating the electric potential and field
+    induced at the sample surface using `phi_E_0`.
+
+    Parameters
+    ----------
+    z_q : float
+        Height of the charge above the sample.
+    beta_stack : array_like
+        Electrostatic reflection coefficients of each interface in the
+        stack (with the first element corresponding to the top interface).
+        Used instead of `eps_stack`, if both are specified.
+    t_stack : array_like
+        Thicknesses of each sandwiched layer between the semi-inifinite
+        superstrate and substrate. Must have length one fewer than
+        `beta_stack` or two fewer than `eps_stack`. An empty list can be
+        used for the case of a single interface.
+    Laguerre_order : int
+        The order of the Laguerre polynomial used by phi_E_0.
+
+    Returns
+    -------
+    phi : complex
+        The electric potential induced at the sample surface by a the
+        charge.
+    E : complex
+        The component of the surface electric field perpendicular to the
+        surface.
+
+    Notes
+    -----
+
+    This function calculates the depth of an image charge induced by a
+    charge :math:`q` at height :math:`z_q` above a sample surface using the
+    equation
+
+    .. math::
+
+        z_{image} = \left|
+            \frac{\phi \rvert_{z=0}}{E_z \rvert_{z=0}}
+        \right| - z_q,
+
+    and the effective charge of the image, relative to :math:`q`, using the
+    equation
+
+    .. math::
+
+        \beta_{image} =
+        \frac{ \left( \phi \rvert_{z=0} \right)^2 }
+        {E_z \rvert_{z=0}},
+
+    where :math:`\phi` is the electric potential, and :math:`E_z` is the
+    vertical component of the electric field. These are based on equations
+    (9) and (10) from reference_[1]. The depth :math:`z_q`  is converted
+    to a real number by taking the absolute value of the
+    :math:`\phi`-:math:`E_z` ratio, as described in reference_[2].
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+       model for scattering infrared near-field microscopy on layered
+       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+       doi: 10.1364/OE.20.013173.
+    .. [2] C. Lupo et al., “Quantitative infrared near-field imaging of
+       suspended topological insulator nanostructures,” pp. 1–23, Dec.
+       2021, [Online]. Available: http://arxiv.org/abs/2112.10104
+    """
     phi, E = phi_E_0(z_q, beta_stack, t_stack, Laguerre_order)
     z_image = np.abs(phi / E) - z_q
     beta_image = phi**2 / E
@@ -127,7 +241,8 @@ def geom_func_ML(
     g_factor=defaults["g_factor"],
 ):
     r"""Return a complex number that encapsulates various geometric
-    properties of the tip-sample system for the multilayer FDM.
+    properties of the tip-sample system for the multilayer finite dipole
+    model.
 
     Parameters
     ----------
@@ -139,7 +254,8 @@ def geom_func_ML(
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis length of the effective spheroid from the FDM.
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
@@ -212,15 +328,16 @@ def eff_pol_0_ML(
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
     x_0 : float
-        Position of an induced charge 0 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
     x_1 : float
-        Position of an induced charge 1 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis length of the effective spheroid from the FDM.
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
@@ -228,8 +345,7 @@ def eff_pol_0_ML(
         phase shifts caused by the capacitive interaction of the tip and
         sample.
     Laguerre_order : int
-        The order of the Laguerre polynomial used to evaluate the integrals
-        over all 'k'.
+        The order of the Laguerre polynomial used by `phi_E_0`.
 
     Returns
     -------
@@ -317,15 +433,16 @@ def eff_pol_ML(
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
     x_0 : float
-        Position of an induced charge 0 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
     x_1 : float
-        Position of an induced charge 1 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis length of the effective spheroid from the FDM.
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
@@ -333,8 +450,7 @@ def eff_pol_ML(
         phase shifts caused by the capacitive interaction of the tip and
         sample.
     Laguerre_order : complex
-        The order of the Laguerre polynomial used to evaluate the integrals
-        over all 'k'.
+        The order of the Laguerre polynomial used by `phi_E_0`.
 
     Returns
     -------

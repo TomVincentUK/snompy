@@ -4,7 +4,9 @@ Bulk finite dipole model (:mod:`finite_dipole.bulk`)
 
 .. currentmodule:: finite_dipole.bulk
 
-WRITE A DESCRIPTION HERE.
+This module provides functions for simulating the results of scanning
+near-field optical microscopy experiments (SNOM) using the bulk finite
+dipole model (FDM) for semi-infinite substrate and superstrates.
 
 
 .. autosummary::
@@ -32,19 +34,20 @@ def geom_func(
     g_factor=defaults["g_factor"],
 ):
     r"""Return a complex number that encapsulates various geometric
-    properties of the tip-sample system for bulk FDM.
+    properties of the tip-sample system for bulk finite dipole model.
 
     Parameters
     ----------
     z : float
         Height of the tip above the sample.
     x : float
-        Position of an induced charge within the tip. Specified relative to
+        Position of an induced charge within the tip. Specified in units of
         the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis length of the effective spheroid from the FDM.
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
@@ -108,15 +111,16 @@ def eff_pol_0(
     beta : complex
         Electrostatic reflection coefficient of the interface.
     x_0 : float
-        Position of an induced charge 0 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
     x_1 : float
-        Position of an induced charge 1 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis length of the effective spheroid from the FDM.
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which
@@ -193,15 +197,16 @@ def eff_pol(
     beta : complex
         Electrostatic reflection coefficient of the interface.
     x_0 : float
-        Position of an induced charge 0 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
     x_1 : float
-        Position of an induced charge 1 within the tip. Specified relative
-        to the tip radius.
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
-        Semi-major axis length of the effective spheroid from the FDM.
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
     g_factor : complex
         A dimensionless approximation relating the magnitude of charge
         induced in the AFM tip to the magnitude of the nearby charge which

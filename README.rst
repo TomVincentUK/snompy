@@ -5,6 +5,6 @@ Finite dipole model for scanning near-field optical microscopy contrast
 
 Tasks / issues
 --------------
--  Complete all docstrings
 -  Write narrative documentation
+-  Add examples to `bulk` and `multilayer` docstrings
 -  Fix issue with references not linking
