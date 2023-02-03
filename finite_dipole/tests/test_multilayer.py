@@ -13,7 +13,7 @@ from finite_dipole.reflection import interface_stack, refl_coeff_ML
 # Measurement parameters
 Z = 40e-9
 Z_Q = 60e-9
-Z_APPROACH = np.linspace(0, 100, 8) * 1e-9
+Z_APPROACH = np.linspace(0, 100, 101) * 1e-9
 
 # Beta and t for single calculation
 BETA_STACK_SINGLE, T_STACK_SINGLE = interface_stack(
@@ -28,11 +28,11 @@ eps_inf = 2
 osc_freq = 1740e2
 osc_width = 20e2
 osc_strength = 15e-3
-wavenumber = np.linspace(1680, 1780, 8) * 1e2
+wavenumber = np.linspace(1680, 1780, 256) * 1e2
 eps_middle = eps_inf + (osc_strength * osc_freq**2) / (
     osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
 )
-thickness = np.arange(1, 100, 8)[:, np.newaxis] * 1e-9
+thickness = np.linspace(2, 100, 50)[:, np.newaxis] * 1e-9
 BETA_STACK_VECTOR, T_STACK_VECTOR = interface_stack(
     eps_stack=(eps_super, eps_middle, eps_sub), t_stack=(thickness,)
 )
@@ -92,7 +92,7 @@ def test_eff_pol_ML_broadcasting():
 
 
 def test_eff_pol_0_ML_approach_curve_decays():
-    alpha_eff = eff_pol_0_ML(Z_APPROACH, BETA_STACK_VECTOR, T_STACK_SINGLE)
+    alpha_eff = eff_pol_0_ML(Z_APPROACH, BETA_STACK_SINGLE, T_STACK_SINGLE)
     assert (np.diff(np.abs(alpha_eff)) < 0).all()
 
 
