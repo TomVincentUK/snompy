@@ -1,0 +1,5 @@
+[run]
+omit =
+    setup.py
+    versioneer.py
+    finite_dipole/_version.py
