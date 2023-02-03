@@ -207,9 +207,11 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
     if (t_stack == 0).any():
         warnings.warn(
             " ".join(
-                "`t_stack` contains zeros.",
-                "Zero-thickness dielectric layers are unphysical.",
-                "Results may not be as expected.",
+                [
+                    "`t_stack` contains zeros.",
+                    "Zero-thickness dielectric layers are unphysical.",
+                    "Results may not be as expected.",
+                ]
             )
         )
 

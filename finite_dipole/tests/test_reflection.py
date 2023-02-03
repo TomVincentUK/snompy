@@ -98,3 +98,49 @@ def test_refl_coeff_ML_broadcasting():
     )
     target_shape = (k + beta_stack[0] + t_stack[0]).shape
     assert refl_coeff_ML(k, beta_stack, t_stack).shape == target_shape
+
+
+def test_interface_stack_warns_for_zero_thickness():
+    with pytest.warns(
+        UserWarning,
+        match=" ".join(
+            [
+                "`t_stack` contains zeros.",
+                "Zero-thickness dielectric layers are unphysical.",
+                "Results may not be as expected.",
+            ]
+        ),
+    ):
+        interface_stack(beta_stack=(0.5, 0.5), t_stack=(0,))
+
+
+def test_interface_stack_warning_if_eps_and_beta():
+    with pytest.warns(
+        UserWarning, match="`beta_stack` overrides `eps_stack` when both are specified."
+    ):
+        interface_stack(eps_stack=(1, 2, 3), beta_stack=(0.5, 0.5), t_stack=(1,))
+
+
+def test_interface_stack_error_if_no_material():
+    with pytest.raises(Exception) as e:
+        interface_stack()
+    assert e.type == ValueError
+    assert "Either `eps_stack` or `beta_stack` must be specified." in str(e.value)
+
+
+def test_interface_stack_error_if_mismatched_eps_t():
+    with pytest.raises(Exception) as e:
+        interface_stack(eps_stack=(1, 2, 3, 4), t_stack=(1,))
+    assert e.type == ValueError
+    assert "`eps_stack` must be 2 longer than `t_stack` along the first axis." in str(
+        e.value
+    )
+
+
+def test_interface_stack_error_if_mismatched_beta_t():
+    with pytest.raises(Exception) as e:
+        interface_stack(beta_stack=(0.5, 0.5, 0.5), t_stack=(1,))
+    assert e.type == ValueError
+    assert "`beta_stack` must be 1 longer than `t_stack` along the first axis." in str(
+        e.value
+    )
