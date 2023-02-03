@@ -13,9 +13,9 @@ dipole model (FDM) for semi-infinite substrate and superstrates.
     :nosignatures:
     :toctree: generated/
 
-    geom_func
-    eff_pol_0
     eff_pol
+    eff_pol_0
+    geom_func
 """
 import warnings
 

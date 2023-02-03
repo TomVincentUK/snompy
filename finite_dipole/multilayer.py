@@ -12,11 +12,11 @@ finite dipole model (FDM), which works for arbitrary stacks of materials.
     :nosignatures:
     :toctree: generated/
 
-    phi_E_0
-    eff_pos_and_charge
-    geom_func_ML
-    eff_pol_0_ML
     eff_pol_ML
+    eff_pol_0_ML
+    geom_func_ML
+    eff_pos_and_charge
+    phi_E_0
 """
 import numpy as np
 

@@ -6,5 +6,5 @@ Finite dipole model for scanning near-field optical microscopy contrast.
 .. toctree::
    :maxdepth: 2
 
-   The finite dipole model <FDM/FDM_index>
+   User guide <guide/guide_intro>
    API reference <API/API_index>

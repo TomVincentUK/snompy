@@ -1,4 +1,5 @@
-sphinx
-sphinx-autobuild
+matplotlib
 numpydoc
 pydata-sphinx-theme==0.12.0
+sphinx
+sphinx-autobuild
