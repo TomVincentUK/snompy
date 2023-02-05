@@ -1,16 +1,33 @@
-User guide
-==========
+Introduction
+============
 
-WRITE ME.
+The main function of this package is to provide functions to calculate the
+effective polarisability, :math:`\alpha_{eff}`, of an AFM tip and a sample,
+which can be used to predict contrast in SNOM measurements.
+It also provides a function to simulate lock-in amplifier measurements of
+signals at multiple harmonics, which is an important part of modelling a
+SNOM signal.
 
-The structure of this guide might look something like this:
+Below on this page are some example scripts, showing idiomatic usage of
+``finite-dipole``.
+If you already know how the FDM works, these might be enough to get started
+with this package.
+You can also refer to the detailed explanations of the functions used in
+the API.
+The rest of this guide will take you through the workings of FDM, and also
+give tips on how the model can be used to help analyse SNOM data.
 
-.. toctree::
-   :maxdepth: 3
+.. LINKS TO SECTIONS
 
-   Bulk finite dipole model <bulk>
-   Multilayer finite dipole model <multilayer>
 
+The examples in this guide rely heavily on ``numpy``, a Python package for
+eficient numerical computation, which should be installed automatically
+when you install finite-dipole.
+To follow along, it might also be helpful to install ``matplotlib``, a
+Python package for data visualisation, and ``scipy``, a Python package for
+scientific computation.
+
+.. LINKS TO PACKAGES
 
 Installation
 ------------
@@ -43,8 +60,15 @@ installed like:
 Usage examples
 --------------
 
-This package can be used for simple simulations such as in the following
-example, which calculates the decay of the SNOM amplitude,
+These examples are intended to give a taste of what ``finite-dipole`` can
+do, as well as to model idiomatic use of the package.
+We've deliberately left out detailed descriptions from this section, as
+these will be given in the following pages of this guide.
+
+Approach curve on silicon
+*************************
+
+The example below calculates the decay of the SNOM amplitude,
 :math:`s_n \propto \alpha_{eff, n}`, for different demodulation harmonics,
 :math:`n` as the sample is moved in the :math:`z` direction, away from a
 sample of bulk silicon.
@@ -55,10 +79,12 @@ sample of bulk silicon.
 This shows the expected result: that higher order demodulation leads to a
 faster decay of the SNOM signal (*i.e.* stronger surface confinement).
 
-The package can also be used for more involved simulations, such as the
-script below, which simulates a SNOM spectrum from a multilayer structure
-of poly(methyl methacrylate) (PMMA) on silicon, for different thicknesses
-of PMMA, and normalises the signal to a reference spectrum taken from gold.
+Thickness-dependent PMMA spectra
+********************************
+
+This example simulates a SNOM spectrum from a multilayer structure of
+poly(methyl methacrylate) (PMMA) on silicon, for different thicknesses of
+PMMA, and normalises the signal to a reference spectrum taken from gold.
 
 .. plot:: guide/plots/intro_spectra.py
    :align: center
