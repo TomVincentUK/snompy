@@ -11,6 +11,35 @@ The structure of this guide might look something like this:
    Bulk finite dipole model <bulk>
    Multilayer finite dipole model <multilayer>
 
+
+Installation
+------------
+
+Currently, this project is still in development, and not yet public. So to
+install ``finite-dipole`` you'll need to clone the git repository to your
+local environment then install in development mode like:
+
+.. code-block:: bash
+
+   git clone https://github.com/TomVincentUK/finite-dipole.git
+   cd finite-dipole
+   pip install -e .
+
+When the project goes public, I'll upload it to PyPI. When I do, the
+installation should look like:
+
+.. code-block:: bash
+
+   pip install finite-dipole
+
+Eventually, I'll also look into adding it to ``conda-forge``, so it can be
+installed like:
+
+.. code-block:: bash
+
+   conda install -c conda-forge finite-dipole
+
+
 Usage examples
 --------------
 
@@ -38,22 +67,6 @@ of PMMA, and normalises the signal to a reference spectrum taken from gold.
 reference [1]_, and the dielectric function of gold was taken from
 reference [2]_).
 
-Installation
-------------
-
-I've not yet uploaded to PyPi. But when I do, the installation should look
-like:
-
-.. code-block:: bash
-
-   pip install finite-dipole
-
-Eventually, I'll also look into adding it to ``conda-forge``, so it can be
-installed like:
-
-.. code-block:: bash
-
-   conda install -c conda-forge finite-dipole
 
 References
 ----------
