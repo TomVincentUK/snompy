@@ -7,7 +7,6 @@ Tasks / issues
 --------------
 -  Write narrative documentation
 -  Add examples to `bulk` and `multilayer` docstrings
--  Fix issue with references not linking
 
 
 Developing

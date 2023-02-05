@@ -76,7 +76,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     electromagnetic wave momentum, :math:`\beta(k)` is the
     momentum-dependent effective reflection coefficient for the surface,
     and :math:`z_q` is the height of the inducing charge above the
-    surface_[1].
+    surface [1]_.
 
     To do this, it first makes the substitution :math:`x = 2 z_q k`, such
     that the integrals become
@@ -92,7 +92,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
             \beta\left(\frac{x}{2 z_q}\right) x e^{-x} dx.
         \end{align*}
 
-    It then uses the Gauss-Laguerre approximation_[2]
+    It then uses the Gauss-Laguerre approximation [2]_
 
     .. math::
 
@@ -213,9 +213,9 @@ def eff_pos_and_charge(
 
     where :math:`\phi` is the electric potential, and :math:`E_z` is the
     vertical component of the electric field. These are based on equations
-    (9) and (10) from reference_[1]. The depth :math:`z_q`  is converted
+    (9) and (10) from reference [1]_. The depth :math:`z_q`  is converted
     to a real number by taking the absolute value of the
-    :math:`\phi`-:math:`E_z` ratio, as described in reference_[2].
+    :math:`\phi`-:math:`E_z` ratio, as described in reference [2]_.
 
     References
     ----------
@@ -284,7 +284,7 @@ def geom_func_ML(
 
     where :math:`z` is `z`, :math:`z_{image}` is `z_image`, :math:`r` is
     `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
-    This is given as equation (11) in reference_[1].
+    This is given as equation (11) in reference [1]_.
 
     References
     ----------
@@ -370,7 +370,7 @@ def eff_pol_0_ML(
     `semi_maj_axis`, :math:`g` is `g_factor`, and :math:`f_{geom, ML}` is a
     function encapsulating the geometric properties of the tip-sample
     system for the multilayer finite dipole model. This is a modified
-    version of equation (3) from reference_[1]. The function
+    version of equation (3) from reference [1]_. The function
     :math:`f_{geom, ML}` is implemented here as
     `finite_dipole.bulk.geom_func_ML`.
 
@@ -464,7 +464,7 @@ def eff_pol_ML(
     :math:`\alpha_{eff, n} = \hat{F_n}(\alpha_{eff})`, where
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
-    :math:`\alpha_{eff}`, as described in reference_[1]. The function
+    :math:`\alpha_{eff}`, as described in reference [1]_. The function
     :math:`\alpha_{eff}` is implemented here as
     `finite_dipole.bulk.eff_pol_0_ML`.
 

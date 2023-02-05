@@ -34,6 +34,10 @@ of PMMA, and normalises the signal to a reference spectrum taken from gold.
 .. plot:: guide/plots/intro_spectra.py
    :align: center
 
+(The dielectric function of PMMA in the above example was based on
+reference [1]_, and the dielectric function of gold was taken from
+reference [2]_).
+
 Installation
 ------------
 

@@ -103,7 +103,7 @@ def refl_coeff_ML(k, beta_stack, t_stack):
     as an expression for :math:`\beta_{12}`, where :math:`\beta_{ij}` is
     the electrostatic reflection coefficient between layers :math:`i` and
     :math:`j`, :math:`t_{i}` is the thickness of the :math:`i^{th}`
-    layer, and :math:`k` is the in-plane momentum_[1].
+    layer, and :math:`k` is the in-plane momentum [1]_.
 
     References
     ----------

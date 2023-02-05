@@ -86,5 +86,6 @@ axes[1].set(
     ylabel=r"$\phi_{" f"{harmonic}" r"}$ / radians",
     xlim=(k_per_cm.max(), k_per_cm.min()),
 )
+fig.tight_layout()
 cbar = fig.colorbar(SM, ax=axes, label="PMMA thickness / nm")
 plt.show()

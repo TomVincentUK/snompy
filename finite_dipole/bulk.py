@@ -76,7 +76,7 @@ def geom_func(
 
     where :math:`z` is `z`, :math:`W` is `x * radius`, :math:`r` is
     `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
-    This is given as equation (2) in reference_[1].
+    This is given as equation (2) in reference [1]_.
 
     References
     ----------
@@ -148,7 +148,7 @@ def eff_pol_0(
     :math:`r` is `radius`, :math:`L` is `semi_maj_axis`, :math:`g` is
     `g_factor`, and :math:`f_{geom}` is a function encapsulating the
     geometric properties of the tip-sample system. This is given as
-    equation (3) in reference_[1]. The function :math:`f_{geom}` is
+    equation (3) in reference [1]_. The function :math:`f_{geom}` is
     implemented here as `finite_dipole.bulk.geom_func`.
 
     References
@@ -226,7 +226,7 @@ def eff_pol(
     :math:`\alpha_{eff, n} = \hat{F_n}(\alpha_{eff})`, where
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
-    :math:`\alpha_{eff}`, as described in reference_[1]. The function
+    :math:`\alpha_{eff}`, as described in reference [1]_. The function
     :math:`\alpha_{eff}` is implemented here as
     `finite_dipole.bulk.eff_pol_0`.
 
