@@ -12,9 +12,8 @@ You won't need a detailed understanding of the FDM to understand this
 guide, but it'll be helpfull to know the basics of SNOM and atomic force
 microscopy (AFM).
 For more detailed documentation of the functions provided by this package,
-see `API`.
+see :doc:`../API/API_index`.
 
-.. Add crosslinks between sections later.
 
 Table of contents
 -----------------
@@ -26,3 +25,4 @@ Table of contents
    Bulk finite dipole model <bulk>
    Multilayer finite dipole model <multilayer>
    Demodulation <demodulation>
+   Advanced topics <advanced/advanced_index>

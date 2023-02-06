@@ -17,7 +17,7 @@ author = "Tom Vincent"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    'sphinx.ext.intersphinx',
+    "sphinx.ext.intersphinx",
     "numpydoc",
     "matplotlib.sphinxext.plot_directive",
 ]
@@ -74,10 +74,10 @@ plot_rcparams = {
 }
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
-    'numpy': ('https://numpy.org/devdocs', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy', None),
-    'matplotlib': ('https://matplotlib.org/stable', None),
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/devdocs", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
 }
 
 plot_html_show_formats = False

@@ -47,7 +47,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
         used for the case of a single interface.
     Laguerre_order : int
         The order of the Laguerre polynomial used to evaluate the integrals
-        over all 'k'.
+        over all `k`.
 
     Returns
     -------
@@ -58,9 +58,13 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
         The component of the surface electric field perpendicular to the
         surface.
 
+    See also
+    --------
+    numpy.polynomial.laguerre.laggauss :
+        Laguerre polynomial weights and roots for integration.
+
     Notes
     -----
-
     This function evaluates the integrals
 
     .. math::
@@ -128,9 +132,9 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     values leading to more accurate evaluation of the integrals.
 
     In this function the Laguerre weights and roots are found using
-    `numpy.polynomial.laguerre.laggauss` and the momentum-dependent
+    :func:`numpy.polynomial.laguerre.laggauss` and the momentum-dependent
     reflection coefficient is found using
-    `finite_dipole.reflection.refl_coeff_ML`.
+    :func:`finite_dipole.reflection.refl_coeff_ML`.
 
     References
     ----------
@@ -162,7 +166,7 @@ def eff_pos_and_charge(
     Below the top surface of a stack of interfaces.
 
     This function works by evaluating the electric potential and field
-    induced at the sample surface using `phi_E_0`.
+    induced at the sample surface using :func:`phi_E_0`.
 
     Parameters
     ----------
@@ -178,7 +182,7 @@ def eff_pos_and_charge(
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
     Laguerre_order : int
-        The order of the Laguerre polynomial used by phi_E_0.
+        The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
     -------
@@ -188,6 +192,10 @@ def eff_pos_and_charge(
     E : complex
         The component of the surface electric field perpendicular to the
         surface.
+
+    See also
+    --------
+    phi_E_0 : Surface electric potential and field.
 
     Notes
     -----
@@ -269,6 +277,10 @@ def geom_func_ML(
         A complex number encapsulating geometric properties of the tip-
         sample system.
 
+    See also
+    --------
+    finite_dipole.bulk.geom_func : The bulk equivalent of this function.
+
     Notes
     -----
     This function implements the equation
@@ -345,12 +357,19 @@ def eff_pol_0_ML(
         phase shifts caused by the capacitive interaction of the tip and
         sample.
     Laguerre_order : int
-        The order of the Laguerre polynomial used by `phi_E_0`.
+        The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
     -------
     alpha_eff : complex
         Effective polarizability of the tip and sample.
+
+    See also
+    --------
+    finite_dipole.bulk.eff_pol_0 : The bulk equivalent of this function.
+    eff_pol_ML : The modulated/demodulated version of this function.
+    geom_func_ML : Multilayer geometry function.
+    phi_E_0 : Surface electric potential and field.
 
     Notes
     -----
@@ -364,15 +383,15 @@ def eff_pol_0_ML(
         {2 (1 - \beta_{image, 1} f_{geom, ML}(z, z_{image, 1}, r, L, g))}
 
     where :math:`\alpha_{eff}` is `\alpha_eff`; :math:`\beta_{image, i}`
-    and z_{image, i} are the depth and relative charge of an image charge
-    induced by a charge in the tip at :math:`x_{i}` (:math:`i=0, 1`), given
-    by `x_0` and `x_1`; :math:`r` is `radius`, :math:`L` is
-    `semi_maj_axis`, :math:`g` is `g_factor`, and :math:`f_{geom, ML}` is a
-    function encapsulating the geometric properties of the tip-sample
-    system for the multilayer finite dipole model. This is a modified
-    version of equation (3) from reference [1]_. The function
-    :math:`f_{geom, ML}` is implemented here as
-    `finite_dipole.bulk.geom_func_ML`.
+    and :math:`z_{image, i}` are the depth and relative charge of an image
+    charge induced by a charge in the tip at :math:`x_{i}`
+    (:math:`i=0, 1`), given by `x_0` and `x_1`; :math:`r` is `radius`,
+    :math:`L` is `semi_maj_axis`, :math:`g` is `g_factor`, and
+    :math:`f_{geom, ML}` is a function encapsulating the geometric
+    properties of the tip-sample system for the multilayer finite dipole
+    model. This is a modified version of equation (3) from reference [1]_.
+    The function :math:`f_{geom, ML}` is implemented here as
+    :func:`geom_func_ML`.
 
     References
     ----------
@@ -450,7 +469,7 @@ def eff_pol_ML(
         phase shifts caused by the capacitive interaction of the tip and
         sample.
     Laguerre_order : complex
-        The order of the Laguerre polynomial used by `phi_E_0`.
+        The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
     -------
@@ -462,6 +481,8 @@ def eff_pol_ML(
     --------
     finite_dipole.bulk.eff_pol : The bulk equivalent of this function.
     eff_pol_0_ML : The unmodulated/demodulated version of this function.
+    finite_dipole.demodulate.demod :
+        The function used here for demodulation.
 
     Notes
     -----
@@ -470,8 +491,7 @@ def eff_pol_ML(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as
-    `finite_dipole.bulk.eff_pol_0_ML`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_ML`.
 
     References
     ----------

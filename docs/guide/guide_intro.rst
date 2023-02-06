@@ -63,7 +63,7 @@ We've deliberately left out detailed descriptions from this section, as
 these will be given in the following pages of this guide.
 
 Approach curve on silicon
-*************************
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The example below calculates the decay of the SNOM amplitude,
 :math:`s_n \propto \alpha_{eff, n}`, for different demodulation harmonics,
@@ -77,7 +77,7 @@ This shows the expected result: that higher order demodulation leads to a
 faster decay of the SNOM signal (*i.e.* stronger surface confinement).
 
 Thickness-dependent PMMA spectra
-********************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This example simulates a SNOM spectrum from a multilayer structure of
 poly(methyl methacrylate) (PMMA) on silicon, for different thicknesses of

@@ -61,6 +61,11 @@ def geom_func(
         A complex number encapsulating geometric properties of the tip-
         sample system.
 
+    See also
+    --------
+    finite_dipole.multilayer.geom_func_ML :
+        The multilayer equivalent of this function.
+
     Notes
     -----
     This function implements the equation
@@ -133,6 +138,13 @@ def eff_pol_0(
     alpha_eff_0 : complex
         Effective polarizability of the tip and sample.
 
+    See also
+    --------
+    finite_dipole.multilayer.eff_pol_0_ML :
+        The multilayer equivalent of this function.
+    eff_pol : The modulated/demodulated version of this function.
+    geom_func : Geometry function.
+
     Notes
     -----
     This function implements the equation
@@ -149,7 +161,7 @@ def eff_pol_0(
     `g_factor`, and :math:`f_{geom}` is a function encapsulating the
     geometric properties of the tip-sample system. This is given as
     equation (3) in reference [1]_. The function :math:`f_{geom}` is
-    implemented here as `finite_dipole.bulk.geom_func`.
+    implemented here as :func:`geom_func`.
 
     References
     ----------
@@ -220,6 +232,14 @@ def eff_pol(
         Effective polarizability of the tip and sample, demodulated at
         `harmonic`.
 
+    See also
+    --------
+    finite_dipole.multilayer.eff_pol_ML :
+        The multilayer equivalent of this function.
+    eff_pol_0 : The unmodulated/demodulated version of this function.
+    finite_dipole.demodulate.demod :
+        The function used here for demodulation.
+
     Notes
     -----
     This function implements
@@ -227,8 +247,7 @@ def eff_pol(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as
-    `finite_dipole.bulk.eff_pol_0`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0`.
 
     References
     ----------
