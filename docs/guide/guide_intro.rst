@@ -17,9 +17,6 @@ the API.
 The rest of this guide will take you through the workings of FDM, and also
 give tips on how the model can be used to help analyse SNOM data.
 
-.. LINKS TO SECTIONS
-
-
 The examples in this guide rely heavily on ``numpy``, a Python package for
 eficient numerical computation, which should be installed automatically
 when you install finite-dipole.
@@ -27,7 +24,7 @@ To follow along, it might also be helpful to install ``matplotlib``, a
 Python package for data visualisation, and ``scipy``, a Python package for
 scientific computation.
 
-.. LINKS TO PACKAGES
+.. LINKS TO PACKAGES ?
 
 Installation
 ------------

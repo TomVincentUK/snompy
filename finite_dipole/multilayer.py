@@ -458,6 +458,11 @@ def eff_pol_ML(
         Effective polarizability of the tip and sample, demodulated at
         `harmonic`.
 
+    See also
+    --------
+    finite_dipole.bulk.eff_pol : The bulk equivalent of this function.
+    eff_pol_0_ML : The unmodulated/demodulated version of this function.
+
     Notes
     -----
     This function implements
