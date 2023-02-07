@@ -3,8 +3,26 @@ finite-dipole
 Finite dipole model for scanning near-field optical microscopy contrast.
 
 
+This documentation is split into the following sections:
+
+Table of contents
+-----------------
+
 .. toctree::
    :maxdepth: 2
 
    User guide <guide/guide_frontpage>
    API reference <API/API_index>
+   Development <development>
+   FAQ <FAQ>
+
+Cite us
+-------
+When we release this package, we'll accompany it with a paper showcasing
+its use.
+I'll add a reference to that paper here and ask people to cite it if they
+use the code.
+
+Acknowledgements
+----------------
+``finite-dipole`` was supported by...
