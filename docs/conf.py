@@ -45,7 +45,7 @@ html_css_files = ["finite-dipole.css"]
 html_context = {"default_mode": "light"}
 
 autosummary_generate = True
-add_function_parentheses = False
+add_function_parentheses = True
 
 plot_pre_code = """
 import numpy as np

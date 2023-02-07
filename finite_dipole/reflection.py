@@ -40,6 +40,11 @@ def refl_coeff(eps_i, eps_j):
     beta_ij : complex
         Electrostatic reflection coefficient of the sample.
 
+    See also
+    --------
+    refl_coeff_ML :
+        Momentum-dependent reflection coefficient for multilayer samples.
+
     Examples
     --------
     Works with real inputs:
@@ -89,6 +94,12 @@ def refl_coeff_ML(k, beta_stack, t_stack):
     -------
     beta_k : complex
         The momentum-dependent effective reflection coefficient.
+
+    See also
+    --------
+    refl_coeff : Reflection coefficient for a single interface.
+    interface_stack :
+        A helper function to prepare inputs that work with this function.
 
     Notes
     -----
@@ -141,7 +152,7 @@ def refl_coeff_ML(k, beta_stack, t_stack):
 
 def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
     r"""Return a stack of reflection coefficients and layer thicknesses in
-    the form required by `refl_coeff_ML`.
+    the form required by :func:`refl_coeff_ML`.
 
     Parameters
     ----------
@@ -170,9 +181,14 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
         `beta_stack`. A zero-size array is returned for the case of a
         single interface.
 
+    See also
+    --------
+    refl_coeff_ML :
+        Momentum-dependent reflection coefficient for multilayer samples.
+
     Examples
     --------
-    Ensures outputs are in form of `numpy` arrays:
+    Ensures outputs are in form of ``numpy`` arrays:
 
     >>> interface_stack(beta_stack=(0.75, 0.5, 0.25), t_stack=(100e-9, 50e-9))
     (array([0.75, 0.5 , 0.25]), array([1.e-07, 5.e-08]))
@@ -185,10 +201,15 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
     Ensures output arrays are non-ragged:
 
     >>> ragged_beta = (0.75, (0.5, 0.25), 0.25)
-    >>> interface_stack(beta_stack=ragged_beta, t_stack=(100e-9, 50e-9))[0]
+    >>> beta_stack, t_stack = interface_stack(
+    ...     beta_stack=ragged_beta, t_stack=(100e-9, 50e-9)
+    ... )
+    >>> beta_stack
     array([[0.75, 0.75],
            [0.5 , 0.25],
            [0.25, 0.25]])
+    >>> t_stack
+    array([1.e-07, 5.e-08])
 
     Works for single interfaces:
 
