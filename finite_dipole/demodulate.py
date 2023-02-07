@@ -27,14 +27,12 @@ def demod(
     f_args=(),
     N_demod_trapz=defaults["N_demod_trapz"],
 ):
-    """Simulate a lock-in amplifier measurement by modulating the input of
+    r"""Simulate a lock-in amplifier measurement by modulating the input of
     an arbitrary function then demodulating the output.
 
-    For a function `f_x` in the form ``f(x, *args)``, `demod` calculates
-    the integral of
-    ``f_x(x_0 + x_amplitude * cos(theta)) * exp(-1j * harmonic * theta)``
-    for `theta` between -pi and pi, using the trapezium method.
-
+    This function multiplies the modulated output of `f_x` by a complex
+    envelope, which has a period of `harmonic` times pi, then integrates
+    between -pi and pi, using the trapezium method.
 
     Parameters
     ----------
@@ -57,6 +55,20 @@ def demod(
     -------
     result : complex
         The modulated and demodulated output.
+
+    Notes
+    -----
+    For a function in the form `f_x(x, *args)`, :func:`demod` calculates
+
+    .. math::
+
+        \int_{-\pi}^{\pi}
+        \mathtt{f\_x(x\_0} + \mathtt{x\_amplitude} \cdot \cos(\theta)
+        \mathtt{, *args)}
+        e^{-i \theta \cdot \mathtt{harmonic}}
+        d{\theta}
+
+    using the trapezium method.
 
     Examples
     --------

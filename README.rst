@@ -7,7 +7,6 @@ Tasks / issues
 --------------
 -  Write narrative documentation
 -  Add examples to `bulk` and `multilayer` docstrings
--  Add Notes section to `demod` to replace horrid pseudocode explanation
 
 
 Developing
