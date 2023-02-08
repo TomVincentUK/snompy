@@ -39,7 +39,7 @@ PMMA_thickness = np.geomspace(10, 100, 32) * 1e-9
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)
 
 # Measurement
-alpha_eff_PMMA = pysnom.multilayer.eff_pol_ML(
+alpha_eff_PMMA = pysnom.fdm.eff_pol_ML(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonic,
