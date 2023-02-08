@@ -21,7 +21,7 @@ References
 import matplotlib.pyplot as plt
 import numpy as np
 
-import finite_dipole as fdm
+import pysnom as fdm
 
 
 def eps_Drude(omega, eps_inf, omega_plasma, gamma):

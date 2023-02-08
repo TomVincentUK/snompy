@@ -1,5 +1,5 @@
-finite-dipole
-=============
+pysnom
+======
 Finite dipole model for scanning near-field optical microscopy contrast.
 
 
@@ -25,4 +25,4 @@ use the code.
 
 Acknowledgements
 ----------------
-``finite-dipole`` was supported by...
+``pysnom`` was supported by...

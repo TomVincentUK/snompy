@@ -1,1 +1,1 @@
-.. automodule:: finite_dipole.multilayer
+.. automodule:: pysnom.multilayer

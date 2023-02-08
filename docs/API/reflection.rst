@@ -1,1 +1,1 @@
-.. automodule:: finite_dipole.reflection
+.. automodule:: pysnom.reflection

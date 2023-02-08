@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from finite_dipole.reflection import interface_stack, refl_coeff_ML
+from pysnom.reflection import interface_stack, refl_coeff_ML
 
 VALID_EPS_AND_T_STACK_PAIRS = [
     ([1, 2], []),

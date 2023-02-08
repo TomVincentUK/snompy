@@ -1,8 +1,8 @@
 """
-Demodulation (:mod:`finite_dipole.demodulate`)
+Demodulation (:mod:`pysnom.demodulate`)
 ==============================================
 
-.. currentmodule:: finite_dipole.demodulate
+.. currentmodule:: pysnom.demodulate
 
 This module provides a function to simulate lock-in amplifier measurements
 of arbitrary functions.

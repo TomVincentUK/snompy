@@ -1,8 +1,8 @@
 """
-Multilayer finite dipole model (:mod:`finite_dipole.multilayer`)
+Multilayer finite dipole model (:mod:`pysnom.multilayer`)
 ================================================================
 
-.. currentmodule:: finite_dipole.multilayer
+.. currentmodule:: pysnom.multilayer
 
 This module provides functions for simulating the results of scanning
 near-field optical microscopy experiments (SNOM) using the multilayer
@@ -134,7 +134,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     In this function the Laguerre weights and roots are found using
     :func:`numpy.polynomial.laguerre.laggauss` and the momentum-dependent
     reflection coefficient is found using
-    :func:`finite_dipole.reflection.refl_coeff_ML`.
+    :func:`pysnom.reflection.refl_coeff_ML`.
 
     References
     ----------
@@ -279,7 +279,7 @@ def geom_func_ML(
 
     See also
     --------
-    finite_dipole.bulk.geom_func : The bulk equivalent of this function.
+    pysnom.bulk.geom_func : The bulk equivalent of this function.
 
     Notes
     -----
@@ -366,7 +366,7 @@ def eff_pol_0_ML(
 
     See also
     --------
-    finite_dipole.bulk.eff_pol_0 : The bulk equivalent of this function.
+    pysnom.bulk.eff_pol_0 : The bulk equivalent of this function.
     eff_pol_ML : The modulated/demodulated version of this function.
     geom_func_ML : Multilayer geometry function.
     phi_E_0 : Surface electric potential and field.
@@ -479,9 +479,9 @@ def eff_pol_ML(
 
     See also
     --------
-    finite_dipole.bulk.eff_pol : The bulk equivalent of this function.
+    pysnom.bulk.eff_pol : The bulk equivalent of this function.
     eff_pol_0_ML : The unmodulated/demodulated version of this function.
-    finite_dipole.demodulate.demod :
+    pysnom.demodulate.demod :
         The function used here for demodulation.
 
     Notes

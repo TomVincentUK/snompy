@@ -1,8 +1,8 @@
 """
-Bulk finite dipole model (:mod:`finite_dipole.bulk`)
+Bulk finite dipole model (:mod:`pysnom.bulk`)
 ================================================================
 
-.. currentmodule:: finite_dipole.bulk
+.. currentmodule:: pysnom.bulk
 
 This module provides functions for simulating the results of scanning
 near-field optical microscopy experiments (SNOM) using the bulk finite
@@ -63,7 +63,7 @@ def geom_func(
 
     See also
     --------
-    finite_dipole.multilayer.geom_func_ML :
+    pysnom.multilayer.geom_func_ML :
         The multilayer equivalent of this function.
 
     Notes
@@ -140,7 +140,7 @@ def eff_pol_0(
 
     See also
     --------
-    finite_dipole.multilayer.eff_pol_0_ML :
+    pysnom.multilayer.eff_pol_0_ML :
         The multilayer equivalent of this function.
     eff_pol : The modulated/demodulated version of this function.
     geom_func : Geometry function.
@@ -234,10 +234,10 @@ def eff_pol(
 
     See also
     --------
-    finite_dipole.multilayer.eff_pol_ML :
+    pysnom.multilayer.eff_pol_ML :
         The multilayer equivalent of this function.
     eff_pol_0 : The unmodulated/demodulated version of this function.
-    finite_dipole.demodulate.demod :
+    pysnom.demodulate.demod :
         The function used here for demodulation.
 
     Notes

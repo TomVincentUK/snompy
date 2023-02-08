@@ -2,8 +2,8 @@ Bulk finite dipole model
 ========================
 
 * SNOM tip and sample in laser -> sigma = (1 + c*r)^2 eff_pol
-* We want to find eff_pol, here: `finite-dipole.bulk.eff_pol_0`
-* To remove the far-field, we need to tap and demodulate so we want to find eff_pol_n, here: `finite-dipole.bulk.eff_pol`
+* We want to find eff_pol, here: `pysnom.bulk.eff_pol_0`
+* To remove the far-field, we need to tap and demodulate so we want to find eff_pol_n, here: `pysnom.bulk.eff_pol`
 
 Principles of the finite dipole model
 -------------------------------------

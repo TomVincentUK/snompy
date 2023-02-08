@@ -20,7 +20,7 @@ import numpy as np
 from scipy.optimize import minimize
 from tqdm import tqdm
 
-import finite_dipole as fdm
+import pysnom as fdm
 
 
 def eps_Lorentz(omega, eps_inf, omega_0, strength, gamma):

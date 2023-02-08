@@ -1,8 +1,8 @@
 """
-Reflection coefficients (:mod:`finite_dipole.reflection`)
+Reflection coefficients (:mod:`pysnom.reflection`)
 =========================================================
 
-.. currentmodule:: finite_dipole.reflection
+.. currentmodule:: pysnom.reflection
 
 This module provides functions for calculating reflection coefficients of
 interfaces between two materials, or the momentum-dependent effective

@@ -1,1 +1,1 @@
-.. automodule:: finite_dipole.bulk
+.. automodule:: pysnom.bulk

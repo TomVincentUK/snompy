@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import finite_dipole as fdm
+import pysnom as fdm
 
 # Values from Lars Mester Nat. Comms. (2020)
 eps_air = 1

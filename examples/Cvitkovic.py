@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import Normalize
 
-import finite_dipole as fdm
+import pysnom as fdm
 
 
 def eps_SHO(omega, eps_inf, omega_TO, omega_LO, gamma):
