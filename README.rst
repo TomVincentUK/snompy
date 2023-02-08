@@ -7,4 +7,3 @@ Tasks / issues
 --------------
 -  Write narrative documentation
 -  Add examples to `bulk` and `multilayer` docstrings
--  Rename the package to something less restrictive (pysnom?)

@@ -28,7 +28,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
-    "github_url": "https://github.com/TomVincentUK/finite-dipole",  # FIX ME
+    "github_url": "https://github.com/TomVincentUK/pysnom",
     "secondary_sidebar_items": ["page-toc"],
     "navbar_end": ["navbar-icon-links"],
     "footer_items": ["copyright"],
