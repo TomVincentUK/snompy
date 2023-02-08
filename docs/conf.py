@@ -40,7 +40,7 @@ html_theme_options = {
 
 html_static_path = ["_static"]
 html_logo = "_static/pysnom_logo.svg"
-html_favicon = "_static/pysnom_logo.svg"
+html_favicon = "_static/pysnom_favicon.svg"
 html_css_files = ["pysnom.css"]
 html_context = {"default_mode": "light"}
 
