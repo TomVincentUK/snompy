@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import finite_dipole as fdm
+import pysnom as fdm
 
 # Set some experimental parameters for an AFM approach curve
 z = np.linspace(0, 100e-9, 512)  # Define an approach curve

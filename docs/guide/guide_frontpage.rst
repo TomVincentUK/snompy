@@ -1,7 +1,7 @@
 User guide
 ==========
 
-This is the user guide for the Python package ``finite-dipole``, which is
+This is the user guide for the Python package ``pysnom``, which is
 an implementation of the finite dipole model (FDM) for predicting contrasts
 in scattering-type scanning near-field optical microscopy (SNOM)
 measurements.

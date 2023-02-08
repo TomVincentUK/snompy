@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from finite_dipole.bulk import eff_pol
+from pysnom.bulk import eff_pol
 
 
 def test_eff_pol_broadcasting():

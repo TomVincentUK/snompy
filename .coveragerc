@@ -2,4 +2,4 @@
 omit =
     setup.py
     versioneer.py
-    finite_dipole/_version.py
+    pysnom/_version.py

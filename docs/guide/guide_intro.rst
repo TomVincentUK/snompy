@@ -9,7 +9,7 @@ signals at multiple harmonics, which is an important part of modelling a
 SNOM signal.
 
 Below on this page are some example scripts, showing idiomatic usage of
-``finite-dipole``.
+``pysnom``.
 If you already know how the FDM works, these might be enough to get started
 with this package.
 You can also refer to the detailed explanations of the functions used in
@@ -19,7 +19,7 @@ give tips on how the model can be used to help analyse SNOM data.
 
 The examples in this guide rely heavily on ``numpy``, a Python package for
 eficient numerical computation, which should be installed automatically
-when you install finite-dipole.
+when you install ``pysnom``.
 To follow along, it might also be helpful to install ``matplotlib``, a
 Python package for data visualisation, and ``scipy``, a Python package for
 scientific computation.
@@ -30,13 +30,13 @@ Installation
 ------------
 
 Currently, this project is still in development, and not yet public. So to
-install ``finite-dipole`` you'll need to clone the git repository to your
+install ``pysnom`` you'll need to clone the git repository to your
 local environment then install in development mode like:
 
 .. code-block:: bash
 
-   git clone https://github.com/TomVincentUK/finite-dipole.git
-   cd finite-dipole
+   git clone https://github.com/TomVincentUK/pysnom.git
+   cd pysnom
    pip install -e .
 
 When the project goes public, I'll upload it to PyPI. When I do, the
@@ -44,20 +44,20 @@ installation should look like:
 
 .. code-block:: bash
 
-   pip install finite-dipole
+   pip install pysnom
 
 Eventually, I'll also look into adding it to ``conda-forge``, so it can be
 installed like:
 
 .. code-block:: bash
 
-   conda install -c conda-forge finite-dipole
+   conda install -c conda-forge pysnom
 
 
 Usage examples
 --------------
 
-These examples are intended to give a taste of what ``finite-dipole`` can
+These examples are intended to give a taste of what ``pysnom`` can
 do, as well as to model idiomatic use of the package.
 We've deliberately left out detailed descriptions from this section, as
 these will be given in the following pages of this guide.

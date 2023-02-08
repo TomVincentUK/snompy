@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import math
 
-project = "finite-dipole"
+project = "pysnom"
 copyright = "2023, Tom Vincent"
 author = "Tom Vincent"
 
@@ -28,20 +28,20 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
-    "github_url": "https://github.com/TomVincentUK/finite-dipole",
+    "github_url": "https://github.com/TomVincentUK/finite-dipole",  # FIX ME
     "secondary_sidebar_items": ["page-toc"],
     "navbar_end": ["navbar-icon-links"],
     "footer_items": ["copyright"],
     "logo": {
-        "image_light": "placeholderlogo.svg",
-        "image_dark": "placeholderlogo.svg",
+        "image_light": "pysnom_logo.svg",
+        "image_dark": "pysnom_logo.svg",
     },  # Not sure why this is needed, but it errors without
 }
 
 html_static_path = ["_static"]
-html_logo = "_static/placeholderlogo.svg"
-html_favicon = "_static/placeholderlogo.svg"
-html_css_files = ["finite-dipole.css"]
+html_logo = "_static/pysnom_logo.svg"
+html_favicon = "_static/pysnom_logo.svg"
+html_css_files = ["pysnom.css"]
 html_context = {"default_mode": "light"}
 
 autosummary_generate = True

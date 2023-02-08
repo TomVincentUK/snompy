@@ -1,1 +1,1 @@
-.. automodule:: finite_dipole.demodulate
+.. automodule:: pysnom.demodulate

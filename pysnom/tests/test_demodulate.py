@@ -1,6 +1,6 @@
 import numpy as np
 
-from finite_dipole.demodulate import demod
+from pysnom.demodulate import demod
 
 
 def test_only_zeroth_harmonic_with_constant_function():

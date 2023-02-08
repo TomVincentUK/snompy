@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import Normalize
 
-import finite_dipole as fdm
+import pysnom as fdm
 
 
 def eps_Lorentz(omega, eps_inf, omega_0, strength, gamma):
