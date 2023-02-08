@@ -2,12 +2,7 @@ import numpy as np
 from scipy.integrate import quad_vec
 
 from pysnom.bulk import eff_pol
-from pysnom.multilayer import (
-    eff_pol_0_ML,
-    eff_pol_ML,
-    eff_pos_and_charge,
-    phi_E_0,
-)
+from pysnom.multilayer import eff_pol_0_ML, eff_pol_ML, eff_pos_and_charge, phi_E_0
 from pysnom.reflection import interface_stack, refl_coeff_ML
 
 # Measurement parameters
