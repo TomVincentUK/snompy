@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import pysnom as fdm
+import pysnom
 
 # Set some experimental parameters for an AFM approach curve
 z = np.linspace(0, 100e-9, 512)  # Define an approach curve
@@ -10,7 +10,7 @@ harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
 
 # Calculate the effective polarisability
-alpha_eff = fdm.bulk.eff_pol(
+alpha_eff = pysnom.bulk.eff_pol(
     z=z[:, np.newaxis],  # newaxis added for array broadcasting
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonics,

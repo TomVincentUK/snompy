@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import Normalize
 
-import pysnom as fdm
+import pysnom
 
 
 def eps_Lorentz(wavenumber, eps_inf, centre_wavenumber, strength, width):
@@ -39,7 +39,7 @@ PMMA_thickness = np.geomspace(10, 100, 32) * 1e-9
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)
 
 # Measurement
-alpha_eff_PMMA = fdm.multilayer.eff_pol_ML(
+alpha_eff_PMMA = pysnom.multilayer.eff_pol_ML(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonic,
@@ -50,7 +50,7 @@ alpha_eff_PMMA = fdm.multilayer.eff_pol_ML(
 )
 
 # Gold reference
-alpha_eff_Au = fdm.bulk.eff_pol(
+alpha_eff_Au = pysnom.bulk.eff_pol(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonic,
