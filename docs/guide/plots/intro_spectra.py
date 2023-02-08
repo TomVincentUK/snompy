@@ -50,7 +50,7 @@ alpha_eff_PMMA = pysnom.multilayer.eff_pol_ML(
 )
 
 # Gold reference
-alpha_eff_Au = pysnom.bulk.eff_pol(
+alpha_eff_Au = pysnom.fdm.eff_pol(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonic,

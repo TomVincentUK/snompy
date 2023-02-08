@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from pysnom.bulk import eff_pol
+from pysnom.fdm import eff_pol
 
 
 def test_eff_pol_broadcasting():
