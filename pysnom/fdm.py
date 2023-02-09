@@ -326,8 +326,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     Returns
     -------
     phi : complex
-        The electric potential induced at the sample surface by a the
-        charge.
+        The electric potential induced at the sample surface by the charge.
     E : complex
         The component of the surface electric field perpendicular to the
         surface.
