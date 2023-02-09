@@ -1,6 +1,6 @@
 """
 Demodulation (:mod:`pysnom.demodulate`)
-==============================================
+=======================================
 
 .. currentmodule:: pysnom.demodulate
 

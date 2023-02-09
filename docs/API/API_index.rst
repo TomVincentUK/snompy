@@ -4,7 +4,6 @@ API reference
 .. toctree::
    :maxdepth: 2
 
-   bulk <bulk>
-   multilayer <multilayer>
+   fdm <fdm>
    demodulate <demodulate>
    reflection <reflection>

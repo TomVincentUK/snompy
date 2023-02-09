@@ -1,6 +1,6 @@
 """
 Reflection coefficients (:mod:`pysnom.reflection`)
-=========================================================
+==================================================
 
 .. currentmodule:: pysnom.reflection
 
