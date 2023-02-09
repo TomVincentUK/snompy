@@ -1,6 +1,6 @@
 """
-Bulk finite dipole model (:mod:`pysnom.fdm`)
-============================================
+Finite dipole model (:mod:`pysnom.fdm`)
+=======================================
 
 .. currentmodule:: pysnom.fdm
 
