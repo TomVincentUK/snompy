@@ -7,6 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import math
 
+from cycler import cycler
+
 project = "pysnom"
 copyright = "2023, COPYRIGHT HOLDERS"
 author = "Tom Vincent"
@@ -58,6 +60,17 @@ phi = (math.sqrt(5) + 1) / 2
 
 plot_rcparams = {
     "font.size": 12,
+    "axes.prop_cycle": cycler(
+        color=[
+            "#3288bd",
+            "#f46d43",
+            "#66c285",
+            "#d53ef4",
+            "#5e4fa2",
+            "#fdae61",
+            "#9e0142",
+        ]
+    ),
     "axes.titlesize": 12,
     "axes.labelsize": 12,
     "xtick.labelsize": 12,
