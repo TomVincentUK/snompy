@@ -8,7 +8,7 @@
 import math
 
 project = "pysnom"
-copyright = "2023, Tom Vincent"
+copyright = "2023, COPYRIGHT HOLDERS"
 author = "Tom Vincent"
 
 # -- General configuration ---------------------------------------------------
