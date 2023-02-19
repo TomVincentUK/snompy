@@ -116,11 +116,11 @@ def geom_func(
 def eff_pol_0(
     z,
     beta,
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
+    x_0=defaults["x_0"],
+    x_1=defaults["x_1"],
 ):
     r"""Return the effective probe-sample polarizability using the bulk
     finite dipole model.
@@ -131,12 +131,6 @@ def eff_pol_0(
         Height of the tip above the sample.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
@@ -148,6 +142,12 @@ def eff_pol_0(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
 
     Returns
     -------
@@ -198,11 +198,11 @@ def eff_pol(
     eps_sample=None,
     eps_environment=defaults["eps_environment"],
     beta=None,
-    x_0=None,
-    x_1=defaults["x_1"],
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
+    x_0=None,
+    x_1=defaults["x_1"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk finite dipole model.
@@ -224,12 +224,6 @@ def eff_pol(
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
@@ -241,6 +235,12 @@ def eff_pol(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
 
     Returns
     -------
@@ -293,7 +293,7 @@ def eff_pol(
         z_0,
         tapping_amplitude,
         harmonic,
-        f_args=(beta, x_0, x_1, radius, semi_maj_axis, g_factor),
+        f_args=(beta, radius, semi_maj_axis, g_factor, x_0, x_1),
     )
 
     return alpha_eff
@@ -589,11 +589,11 @@ def eff_pol_0_ML(
     z,
     beta_stack=None,
     t_stack=None,
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
+    x_0=defaults["x_0"],
+    x_1=defaults["x_1"],
     Laguerre_order=defaults["Laguerre_order"],
 ):
     r"""Return the effective probe-sample polarizability using the
@@ -691,11 +691,11 @@ def eff_pol_ML(
     eps_stack=None,
     beta_stack=None,
     t_stack=None,
-    x_0=None,
-    x_1=defaults["x_1"],
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
+    x_0=None,
+    x_1=defaults["x_1"],
     Laguerre_order=defaults["Laguerre_order"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
@@ -724,12 +724,6 @@ def eff_pol_ML(
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
@@ -741,6 +735,12 @@ def eff_pol_ML(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
     Laguerre_order : complex
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
@@ -789,11 +789,11 @@ def eff_pol_ML(
         f_args=(
             beta_stack,
             t_stack,
-            x_0,
-            x_1,
             radius,
             semi_maj_axis,
             g_factor,
+            x_0,
+            x_1,
             Laguerre_order,
         ),
     )
