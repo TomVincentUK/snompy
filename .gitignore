@@ -1,3 +1,6 @@
+# My additions
+docs/API/generated/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
