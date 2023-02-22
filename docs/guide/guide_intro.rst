@@ -75,6 +75,8 @@ sample of bulk silicon.
 
 This shows the expected result: that higher order demodulation leads to a
 faster decay of the SNOM signal (*i.e.* stronger surface confinement).
+It also shows the quantitative difference between approach curves
+calculated with the point dipole model (PDM) and finite dipole model (FDM).
 
 Thickness-dependent PMMA spectra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -17,10 +17,12 @@ bulk_kwargs = dict(beta=beta)
 ML_kwargs = dict(beta_stack=beta_stack, t_stack=t_stack)
 demod_kwargs = dict(tapping_amplitude=50e-9, harmonic=np.arange(2, 10))
 funcs_0_kwargs = [
+    (pysnom.pdm.eff_pol_0, bulk_kwargs),
     (pysnom.fdm.eff_pol_0, bulk_kwargs),
     (pysnom.fdm.eff_pol_0_ML, ML_kwargs),
 ]
 funcs_demod_kwargs = [
+    (pysnom.pdm.eff_pol, bulk_kwargs | demod_kwargs),
     (pysnom.fdm.eff_pol, bulk_kwargs | demod_kwargs),
     (pysnom.fdm.eff_pol_ML, ML_kwargs | demod_kwargs),
 ]

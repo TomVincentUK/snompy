@@ -172,7 +172,7 @@ def eff_pol_0(
         + \frac{\beta f_{geom}(z, x_0, r, L, g)}
         {2 (1 - \beta f_{geom}(z, x_1, r, L, g))}
 
-    where :math:`\alpha_{eff}` is `\alpha_eff`, :math:`\beta` is `beta`,
+    where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\beta` is `beta`,
     :math:`r` is `radius`, :math:`L` is `semi_maj_axis`, :math:`g` is
     `g_factor`, and :math:`f_{geom}` is a function encapsulating the
     geometric properties of the tip-sample system. This is given as
