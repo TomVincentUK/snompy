@@ -1,6 +1,7 @@
 pysnom
 ======
-Finite dipole model for scanning near-field optical microscopy contrast.
+A Python package for modelling contrast in scanning near-field optical
+microscopy measurements.
 
 
 This documentation is split into the following sections:
