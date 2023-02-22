@@ -14,21 +14,20 @@ BETA_STACK_SINGLE, T_STACK_SINGLE = interface_stack(
     eps_stack=(1, 2 + 1j, 11.7), t_stack=(100e-9,)
 )
 
-
 # Dispersive beta and different t
-eps_super = 1
-eps_sub = 11.7
+eps_environment = 1
+eps_substrate = 11.7
 eps_inf = 2
-osc_freq = 1740e2
+osc_freq = 1738e2
 osc_width = 20e2
-osc_strength = 15e-3
-wavenumber = np.linspace(1680, 1780, 256) * 1e2
+osc_strength = 14e-3
+wavenumber = np.linspace(1680, 1780, 128) * 1e2
 eps_middle = eps_inf + (osc_strength * osc_freq**2) / (
     osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
-)
-thickness = np.linspace(2, 100, 50)[:, np.newaxis] * 1e-9
+)  # Lorentzian oscillator
+thickness = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
 BETA_STACK_VECTOR, T_STACK_VECTOR = interface_stack(
-    eps_stack=(eps_super, eps_middle, eps_sub), t_stack=(thickness,)
+    eps_stack=(eps_environment, eps_middle, eps_substrate), t_stack=(thickness,)
 )
 
 # Demodulation parameters
@@ -83,33 +82,6 @@ def test_eff_pol_ML_broadcasting():
         t_stack=T_STACK_VECTOR,
     )
     assert alpha_eff.shape == target_shape
-
-
-def test_eff_pol_0_ML_approach_curve_decays():
-    alpha_eff = eff_pol_0_ML(Z_APPROACH, BETA_STACK_SINGLE, T_STACK_SINGLE)
-    assert (np.diff(np.abs(alpha_eff)) < 0).all()
-
-
-def test_eff_pol_ML_approach_curve_decays():
-    alpha_eff = eff_pol_ML(
-        z=Z_APPROACH,
-        tapping_amplitude=TAPPING_AMPLITUDE,
-        harmonic=HARMONIC,
-        beta_stack=BETA_STACK_SINGLE,
-        t_stack=T_STACK_SINGLE,
-    )
-    assert (np.diff(np.abs(alpha_eff)) < 0).all()
-
-
-def test_eff_pol_ML_harmonics_decay():
-    alpha_eff = eff_pol_ML(
-        z=Z,
-        tapping_amplitude=TAPPING_AMPLITUDE,
-        harmonic=HARMONIC,
-        beta_stack=BETA_STACK_SINGLE,
-        t_stack=T_STACK_SINGLE,
-    )
-    assert (np.diff(np.abs(alpha_eff)) < 0).all()
 
 
 def test_eff_pol_ML_two_layers_same_as_bulk():

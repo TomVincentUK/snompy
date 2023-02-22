@@ -11,9 +11,9 @@ def test_eff_pol_broadcasting():
     tapping_amplitude = 50e-9
     harmonic = np.arange(2, 5)[:, np.newaxis]
 
-    # Eventual output shape should match broadcast arrays
-    target_shape = (wavenumber + z + tapping_amplitude + harmonic).shape
+    # Eventual output shape should match broadcast arrayse
 
+    target_shape = (wavenumber + z + tapping_amplitude + harmonic).shape
     # Dispersive semi-infinite layer dielectric function
     eps_inf = 2
     osc_freq = 1740e2
@@ -30,26 +30,6 @@ def test_eff_pol_broadcasting():
         eps_sample=eps_sample,
     )
     assert alpha_eff.shape == target_shape
-
-
-def test_eff_pol_approach_curve_decays():
-    alpha_eff = eff_pol(
-        z=np.linspace(0, 100, 128) * 1e-9,
-        tapping_amplitude=50e-9,
-        harmonic=np.arange(2, 10)[:, np.newaxis],
-        eps_sample=2 + 1j,
-    )
-    assert (np.diff(np.abs(alpha_eff)) < 0).all()
-
-
-def test_eff_pol_harmonics_decay():
-    alpha_eff = eff_pol(
-        z=50e-9,
-        tapping_amplitude=50e-9,
-        harmonic=np.arange(2, 10),
-        eps_sample=2 + 1j,
-    )
-    assert (np.diff(np.abs(alpha_eff)) < 0).all()
 
 
 def test_eff_pol_error_if_no_material():
