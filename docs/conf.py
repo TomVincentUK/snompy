@@ -1,10 +1,3 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import math
 
 from cycler import cycler
@@ -12,9 +5,6 @@ from cycler import cycler
 project = "pysnom"
 copyright = "2023, COPYRIGHT HOLDERS"
 author = "Tom Vincent"
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -28,6 +18,8 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
+html_logo = "_static/pysnom_logo.svg"
+html_favicon = "_static/pysnom_favicon.svg"
 
 html_theme_options = {
     "github_url": "https://github.com/TomVincentUK/pysnom",
@@ -41,8 +33,6 @@ html_theme_options = {
 }
 
 html_static_path = ["_static"]
-html_logo = "_static/pysnom_logo.svg"
-html_favicon = "_static/pysnom_favicon.svg"
 html_css_files = ["css/custom.css"]
 html_context = {"default_mode": "light"}
 
@@ -62,20 +52,20 @@ plot_rcparams = {
     "font.size": 12,
     "axes.prop_cycle": cycler(
         color=[
+            "#9e0142",
             "#3288bd",
             "#f46d43",
             "#66c285",
             "#d53ef4",
-            "#5e4fa2",
             "#fdae61",
-            "#9e0142",
+            "#5e4fa2",
         ]
     ),
-    "axes.titlesize": 12,
-    "axes.labelsize": 12,
-    "xtick.labelsize": 12,
-    "ytick.labelsize": 12,
-    "legend.fontsize": 12,
+    "axes.titlesize": 11,
+    "axes.labelsize": 11,
+    "xtick.labelsize": 11,
+    "ytick.labelsize": 11,
+    "legend.fontsize": 11,
     "figure.dpi": 144,
     "figure.figsize": (3.5 * phi, 3.5),
     "figure.subplot.bottom": 0.2,
@@ -83,6 +73,11 @@ plot_rcparams = {
     "figure.subplot.right": 0.9,
     "figure.subplot.top": 0.85,
     "figure.subplot.wspace": 0.4,
+    "figure.facecolor": (0, 0, 0, 0),
+    "axes.spines.left": True,
+    "axes.spines.bottom": True,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
     "text.usetex": False,
 }
 

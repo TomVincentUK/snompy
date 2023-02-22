@@ -1,26 +1,15 @@
-.navbar-brand img {
-   height: 75px;
-}
-.navbar-brand {
-   height: 75px;
-}
-
-pre, code {
-  font-size: 100%;
-  line-height: 155%;
-}
-
-h1 {
-  font-family: "Lato", sans-serif;
-  color: #262339; /* black from logo */
-}
-
-h2 {
-  color: #3288bd; /* blue from logo*/
-  letter-spacing: -.03em;
-}
-
-h3 {
-  color: #262339; /* black from logo */
-  letter-spacing: -.03em;
+html[data-theme="light"] {
+  --pst-color-primary: #9e0142;
+  --pst-color-secondary: #3288bd;
+  --pst-color-success: #66c2a5;
+  --pst-color-info: #5e4fa2;
+  --pst-color-warning: #3288bd;
+  --pst-color-danger: #d53e4f;
+  --pst-color-target: #fee08b;
+  --pst-color-background: #f5f5f5;
+  --pst-color-on-background: #f5f5f5;
+  --pst-color-surface: #ffffff;
+  --pst-color-inline-code: var(--pst-color-primary);
+  --pst-color-text-base: #262339;
+  --pst-color-text-muted: #3d4853;
 }
