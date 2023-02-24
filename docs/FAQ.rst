@@ -33,3 +33,8 @@ Perhaps.
 We're always happy to discuss ways to improve this code.
 The section :doc:`development` gives details of how to raise feature
 requests.
+
+Should I use the FDM or the PDM?
+---------------------------------------------------------------
+[Something along the lines of: use FDM if you're unsure, but both models
+have advantages and disadvantages].

@@ -1,21 +1,19 @@
 Introduction
 ============
 
-The main function of this package is to provide functions to calculate the
-effective polarisability, :math:`\alpha_{eff}`, of an AFM tip and a sample,
+The main purpose of ``pysnom`` is to provide functions to calculate the
+effective polarisability, :math:`\alpha_{eff}`, of a SNOM tip and a sample,
 which can be used to predict contrast in SNOM measurements.
-It also provides a function to simulate lock-in amplifier measurements of
-signals at multiple harmonics, which is an important part of modelling a
-SNOM signal.
 
 Below on this page are some example scripts, showing idiomatic usage of
 ``pysnom``.
-If you already know how the FDM works, these might be enough to get started
-with this package.
+If you already know how the finite dipole model (FDM) or point dipole model
+(PDM) works, these might be enough to get started with this package.
 You can also refer to the detailed explanations of the functions used in
-the API.
-The rest of this guide will take you through the workings of FDM, and also
-give tips on how the model can be used to help analyse SNOM data.
+the :doc:`../API/API_index`.
+The rest of this guide will take you through the workings of the two
+models, and also give tips on how the model can be used to help analyse
+SNOM data.
 
 The examples in this guide rely heavily on ``numpy``, a Python package for
 eficient numerical computation, which should be installed automatically
@@ -57,18 +55,20 @@ installed like:
 Usage examples
 --------------
 
-These examples are intended to give a taste of what ``pysnom`` can
-do, as well as to model idiomatic use of the package.
-We've deliberately left out detailed descriptions from this section, as
-these will be given in the following pages of this guide.
+The examples on this page are intended to give a taste of what ``pysnom``
+can do, as well as to model idiomatic use of the package.
+We've deliberately left out detailed explanations from this section, so
+don't worry if you don't understand what's going on here yet!
+The following pages of this guide should take you through the concepts
+needed to understand these scripts.
 
 Approach curve on silicon
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The example below calculates the decay of the SNOM amplitude,
-:math:`s_n \propto \alpha_{eff, n}`, for different demodulation harmonics,
-:math:`n` as the sample is moved in the :math:`z` direction, away from a
-sample of bulk silicon.
+This example uses both the FDM and PDM  to calculate the decay of the SNOM
+amplitude, :math:`s_n \propto \alpha_{eff, n}`, for different demodulation
+harmonics, :math:`n` as the SNOM tip is moved in the :math:`z` direction,
+away from a sample of bulk silicon.
 
 .. plot:: guide/plots/intro_approach.py
    :align: center
@@ -81,9 +81,10 @@ calculated with the point dipole model (PDM) and finite dipole model (FDM).
 Thickness-dependent PMMA spectra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example simulates a SNOM spectrum from a multilayer structure of
-poly(methyl methacrylate) (PMMA) on silicon, for different thicknesses of
-PMMA, and normalises the signal to a reference spectrum taken from gold.
+This example uses the multilayer FDM to simulate a SNOM spectrum from a
+thin layer of poly(methyl methacrylate) (PMMA) on silicon, for different
+thicknesses of PMMA, and normalises the signal to a reference spectrum
+taken from bulk gold.
 
 .. plot:: guide/plots/intro_spectra.py
    :align: center
