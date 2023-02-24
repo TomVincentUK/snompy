@@ -10,13 +10,13 @@ harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
 
 # Calculate the effective polarisability using FDM and PDM
-alpha_eff_fdm = pysnom.fdm.eff_pol(
+alpha_eff_fdm = pysnom.fdm.eff_pol_bulk(
     z=z[:, np.newaxis],  # newaxis added for array broadcasting
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonics,
     eps_sample=eps_Si,
 )
-alpha_eff_pdm = pysnom.pdm.eff_pol(
+alpha_eff_pdm = pysnom.pdm.eff_pol_bulk(
     z=z[:, np.newaxis],  # newaxis added for array broadcasting
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonics,

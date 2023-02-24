@@ -9,7 +9,7 @@ def test_eff_pol_warning_if_eps_and_alpha_sphere():
         UserWarning,
         match="`alpha_sphere` overrides `eps_sphere` when both are specified.",
     ):
-        pysnom.pdm.eff_pol(
+        pysnom.pdm.eff_pol_bulk(
             z=50e-9,
             tapping_amplitude=50e-9,
             harmonic=np.arange(2, 10),
@@ -21,14 +21,14 @@ def test_eff_pol_warning_if_eps_and_alpha_sphere():
 
 def test_eff_pol_uses_perfect_conducting_sphere_if_no_material_specified():
     radius = 20e-9
-    alpha_eff_unspecified = pysnom.pdm.eff_pol(
+    alpha_eff_unspecified = pysnom.pdm.eff_pol_bulk(
         z=50e-9,
         tapping_amplitude=50e-9,
         harmonic=np.arange(2, 10),
         beta=0.75,
         radius=radius,
     )
-    alpha_eff_perfect = pysnom.pdm.eff_pol(
+    alpha_eff_perfect = pysnom.pdm.eff_pol_bulk(
         z=50e-9,
         tapping_amplitude=50e-9,
         harmonic=np.arange(2, 10),
@@ -40,14 +40,14 @@ def test_eff_pol_uses_perfect_conducting_sphere_if_no_material_specified():
 
 
 def test_eff_pol_eps_tip_has_effect():
-    alpha_eff_dielectric = pysnom.pdm.eff_pol(
+    alpha_eff_dielectric = pysnom.pdm.eff_pol_bulk(
         z=50e-9,
         tapping_amplitude=50e-9,
         harmonic=np.arange(2, 10),
         beta=0.75,
         eps_sphere=11.7,
     )
-    alpha_eff_perfect = pysnom.pdm.eff_pol(
+    alpha_eff_perfect = pysnom.pdm.eff_pol_bulk(
         z=50e-9,
         tapping_amplitude=50e-9,
         harmonic=np.arange(2, 10),

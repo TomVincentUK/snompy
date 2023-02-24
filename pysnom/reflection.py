@@ -13,7 +13,7 @@ reflection coefficient for a stack of three or more materials.
     :toctree: generated/
 
     refl_coeff
-    refl_coeff_ML
+    refl_coeff_multi_qs
     interface_stack
 """
 import warnings
@@ -42,7 +42,7 @@ def refl_coeff(eps_i, eps_j):
 
     See also
     --------
-    refl_coeff_ML :
+    refl_coeff_multi_qs :
         Momentum-dependent reflection coefficient for multilayer samples.
 
     Examples
@@ -70,9 +70,9 @@ def refl_coeff(eps_i, eps_j):
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-def refl_coeff_ML(k, beta_stack, t_stack):
-    r"""Return the momentum-dependent effective reflection coefficient for
-    the first interface in a stack of interfaces.
+def refl_coeff_multi_qs(k, beta_stack, t_stack):
+    r"""Return the quasistatic momentum-dependent effective reflection
+    coefficient for the first interface in a stack of interfaces.
 
     Parameters
     ----------
@@ -132,13 +132,13 @@ def refl_coeff_ML(k, beta_stack, t_stack):
     >>> k = np.arange(5)
     >>> beta_stack = np.array([1 / 3, 1 / 5])
     >>> t_stack = np.array([1])
-    >>> refl_coeff_ML(k, beta_stack, t_stack)
+    >>> refl_coeff_multi_qs(k, beta_stack, t_stack)
     array([0.5  , 0.357, 0.337, 0.333, 0.333])
 
     Constant value for single interface:
 
     >>> k = np.arange(5)
-    >>> refl_coeff_ML(k, beta_stack=np.array([0.5]), t_stack=np.array([]))
+    >>> refl_coeff_multi_qs(k, beta_stack=np.array([0.5]), t_stack=np.array([]))
     array([0.5, 0.5, 0.5, 0.5, 0.5])
     """
     beta_effective = beta_stack[0] * np.ones_like(k)
@@ -152,7 +152,7 @@ def refl_coeff_ML(k, beta_stack, t_stack):
 
 def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
     r"""Return a stack of reflection coefficients and layer thicknesses in
-    the form required by :func:`refl_coeff_ML`.
+    the form required by :func:`refl_coeff_multi_qs`.
 
     Parameters
     ----------
@@ -183,7 +183,7 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
 
     See also
     --------
-    refl_coeff_ML :
+    refl_coeff_multi_qs :
         Momentum-dependent reflection coefficient for multilayer samples.
 
     Examples

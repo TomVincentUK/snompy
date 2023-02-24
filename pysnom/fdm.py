@@ -15,9 +15,9 @@ Bulk finite dipole model
     :nosignatures:
     :toctree: generated/
 
-    eff_pol
-    eff_pol_0
-    geom_func
+    eff_pol_bulk
+    eff_pol_0_bulk
+    geom_func_bulk
 
 Multilayer finite dipole model
 ------------------------------
@@ -26,9 +26,9 @@ Multilayer finite dipole model
     :nosignatures:
     :toctree: generated/
 
-    eff_pol_ML
-    eff_pol_0_ML
-    geom_func_ML
+    eff_pol_multi
+    eff_pol_0_multi
+    geom_func_multi
     eff_pos_and_charge
     phi_E_0
 
@@ -39,10 +39,10 @@ import numpy as np
 
 from ._defaults import defaults
 from .demodulate import demod
-from .reflection import interface_stack, refl_coeff, refl_coeff_ML
+from .reflection import interface_stack, refl_coeff, refl_coeff_multi_qs
 
 
-def geom_func(
+def geom_func_bulk(
     z,
     x,
     radius=defaults["radius"],
@@ -79,7 +79,7 @@ def geom_func(
 
     See also
     --------
-    geom_func_ML :
+    geom_func_multi :
         The multilayer equivalent of this function.
 
     Notes
@@ -113,7 +113,7 @@ def geom_func(
     )
 
 
-def eff_pol_0(
+def eff_pol_0_bulk(
     z,
     beta,
     radius=defaults["radius"],
@@ -156,10 +156,10 @@ def eff_pol_0(
 
     See also
     --------
-    eff_pol_0_ML :
+    eff_pol_0_multi :
         The multilayer equivalent of this function.
-    eff_pol : The modulated/demodulated version of this function.
-    geom_func : Geometry function.
+    eff_pol_bulk : The modulated/demodulated version of this function.
+    geom_func_bulk : Geometry function.
 
     Notes
     -----
@@ -177,7 +177,7 @@ def eff_pol_0(
     `g_factor`, and :math:`f_{geom}` is a function encapsulating the
     geometric properties of the tip-sample system. This is given as
     equation (3) in reference [1]_. The function :math:`f_{geom}` is
-    implemented here as :func:`geom_func`.
+    implemented here as :func:`geom_func_bulk`.
 
     References
     ----------
@@ -186,12 +186,12 @@ def eff_pol_0(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    f_0 = geom_func(z, x_0, radius, semi_maj_axis, g_factor)
-    f_1 = geom_func(z, x_1, radius, semi_maj_axis, g_factor)
+    f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
     return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
 
 
-def eff_pol(
+def eff_pol_bulk(
     z,
     tapping_amplitude,
     harmonic,
@@ -250,9 +250,9 @@ def eff_pol(
 
     See also
     --------
-    eff_pol_ML :
+    eff_pol_multi :
         The multilayer equivalent of this function.
-    eff_pol_0 : The unmodulated/demodulated version of this function.
+    eff_pol_0_bulk : The unmodulated/demodulated version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -263,7 +263,7 @@ def eff_pol(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_bulk`.
 
     References
     ----------
@@ -289,7 +289,7 @@ def eff_pol(
     z_0 = z + tapping_amplitude + radius
 
     alpha_eff = demod(
-        eff_pol_0,
+        eff_pol_0_bulk,
         z_0,
         tapping_amplitude,
         harmonic,
@@ -407,7 +407,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     In this function the Laguerre weights and roots are found using
     :func:`numpy.polynomial.laguerre.laggauss` and the momentum-dependent
     reflection coefficient is found using
-    :func:`pysnom.reflection.refl_coeff_ML`.
+    :func:`pysnom.reflection.refl_coeff_multi_qs`.
 
     References
     ----------
@@ -424,7 +424,9 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
     x_Lag, w_Lag = np.polynomial.laguerre.laggauss(Laguerre_order)
     k = x_Lag / np.asarray(2 * z_q)[..., np.newaxis]
 
-    beta_k = refl_coeff_ML(k, beta_stack[..., np.newaxis], t_stack[..., np.newaxis])
+    beta_k = refl_coeff_multi_qs(
+        k, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
+    )
 
     phi = np.sum(w_Lag * beta_k, axis=-1) / (2 * z_q)
     E = np.sum(w_Lag * x_Lag * beta_k, axis=-1) / (4 * z_q**2)
@@ -514,7 +516,7 @@ def eff_pos_and_charge(
     return z_image, beta_image
 
 
-def geom_func_ML(
+def geom_func_multi(
     z,
     z_image,
     radius=defaults["radius"],
@@ -552,7 +554,7 @@ def geom_func_ML(
 
     See also
     --------
-    geom_func : The bulk equivalent of this function.
+    geom_func_bulk : The bulk equivalent of this function.
 
     Notes
     -----
@@ -585,7 +587,7 @@ def geom_func_ML(
     )
 
 
-def eff_pol_0_ML(
+def eff_pol_0_multi(
     z,
     beta_stack=None,
     t_stack=None,
@@ -639,9 +641,9 @@ def eff_pol_0_ML(
 
     See also
     --------
-    eff_pol_0 : The bulk equivalent of this function.
-    eff_pol_ML : The modulated/demodulated version of this function.
-    geom_func_ML : Multilayer geometry function.
+    eff_pol_0_bulk : The bulk equivalent of this function.
+    eff_pol_multi : The modulated/demodulated version of this function.
+    geom_func_multi : Multilayer geometry function.
     phi_E_0 : Surface electric potential and field.
 
     Notes
@@ -664,7 +666,7 @@ def eff_pol_0_ML(
     properties of the tip-sample system for the multilayer finite dipole
     model. This is a modified version of equation (3) from reference [1]_.
     The function :math:`f_{geom, ML}` is implemented here as
-    :func:`geom_func_ML`.
+    :func:`geom_func_multi`.
 
     References
     ----------
@@ -675,16 +677,16 @@ def eff_pol_0_ML(
     """
     z_q_0 = z + radius * x_0
     z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, Laguerre_order)
-    f_0 = geom_func_ML(z, z_im_0, radius, semi_maj_axis, g_factor)
+    f_0 = geom_func_multi(z, z_im_0, radius, semi_maj_axis, g_factor)
 
     z_q_1 = z + radius * x_1
     z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, Laguerre_order)
-    f_1 = geom_func_ML(z, z_im_1, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func_multi(z, z_im_1, radius, semi_maj_axis, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
 
-def eff_pol_ML(
+def eff_pol_multi(
     z,
     tapping_amplitude,
     harmonic,
@@ -752,8 +754,8 @@ def eff_pol_ML(
 
     See also
     --------
-    eff_pol : The bulk equivalent of this function.
-    eff_pol_0_ML : The unmodulated/demodulated version of this function.
+    eff_pol_bulk : The bulk equivalent of this function.
+    eff_pol_0_multi : The unmodulated/demodulated version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -764,7 +766,7 @@ def eff_pol_ML(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_ML`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_multi`.
 
     References
     ----------
@@ -782,7 +784,7 @@ def eff_pol_ML(
     z_0 = z + tapping_amplitude + radius
 
     alpha_eff = demod(
-        eff_pol_0_ML,
+        eff_pol_0_multi,
         z_0,
         tapping_amplitude,
         harmonic,

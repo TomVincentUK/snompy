@@ -4,7 +4,7 @@ import pytest
 import pysnom
 
 
-@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol, pysnom.pdm.eff_pol))
+@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol_bulk, pysnom.pdm.eff_pol_bulk))
 def test_eff_pol_broadcasting(eff_pol):
     # Measurement parameters
     wavenumber = np.linspace(1680, 1780, 32) * 1e2
@@ -33,7 +33,7 @@ def test_eff_pol_broadcasting(eff_pol):
     assert alpha_eff.shape == target_shape
 
 
-@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol, pysnom.pdm.eff_pol))
+@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol_bulk, pysnom.pdm.eff_pol_bulk))
 def test_eff_pol_error_if_no_material(eff_pol):
     with pytest.raises(Exception) as e:
         eff_pol(
@@ -45,7 +45,7 @@ def test_eff_pol_error_if_no_material(eff_pol):
     assert "Either `eps_sample` or `beta` must be specified." in str(e.value)
 
 
-@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol, pysnom.pdm.eff_pol))
+@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol_bulk, pysnom.pdm.eff_pol_bulk))
 def test_eff_pol_warning_if_eps_and_beta(eff_pol):
     with pytest.warns(
         UserWarning, match="`beta` overrides `eps_sample` when both are specified."
