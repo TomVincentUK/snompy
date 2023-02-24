@@ -438,7 +438,7 @@ def eff_pos_and_charge(
     z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]
 ):
     r"""Calculate the depth and relative charge of an image charge induced
-    Below the top surface of a stack of interfaces.
+    below the top surface of a stack of interfaces.
 
     This function works by evaluating the electric potential and field
     induced at the sample surface using :func:`phi_E_0`.
