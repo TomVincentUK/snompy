@@ -22,6 +22,7 @@ Table of contents
    :maxdepth: 3
 
    Introduction <guide_intro>
+   Modelling scattering in SNOM <basics>
    Bulk finite dipole model <bulk>
    Multilayer finite dipole model <multilayer>
    Demodulation <demodulation>
