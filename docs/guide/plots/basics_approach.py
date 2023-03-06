@@ -39,9 +39,16 @@ alpha_eff_direct /= alpha_eff_direct[0]
 # Plot output
 fig, ax = plt.subplots()
 z_nm = z * 1e9  # For neater plotting
-ax.plot(z_nm, np.real(alpha_eff_demod), label=[f"demod(eff_pol_0): $n = ${n}" for n in harmonics])
 ax.plot(
-    z_nm, np.real(alpha_eff_direct), ls="--", label=[f"eff_pol: $n = ${n}" for n in harmonics]
+    z_nm,
+    np.real(alpha_eff_demod),
+    label=[f"demod(eff_pol_0): $n = ${n}" for n in harmonics],
+)
+ax.plot(
+    z_nm,
+    np.real(alpha_eff_direct),
+    ls="--",
+    label=[f"eff_pol: $n = ${n}" for n in harmonics],
 )
 ax.set(
     xlabel=r"$z$ / nm",

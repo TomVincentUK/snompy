@@ -2,8 +2,8 @@ import numpy as np
 from scipy.integrate import quad_vec
 
 from pysnom.fdm import (
-    eff_pol_bulk,
     eff_pol_0_multi,
+    eff_pol_bulk,
     eff_pol_multi,
     eff_pos_and_charge,
     phi_E_0,
