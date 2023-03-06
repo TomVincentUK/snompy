@@ -1,12 +1,12 @@
-Modelling scattering in SNOM
-============================
+Basics of SNOM modelling
+========================
 
 To model contrast in scanning near-field optical microscopy (SNOM)
 experiments, ``pysnom`` provides two models called the finite dipole model
 (FDM) and the point dipole model (PDM).
 We'll explain how each model works on the following pages, but first we'll
-cover some basics of SNOM modelling: effective polarisability and
-demodulation.
+cover some basics of SNOM modelling: `Effective polarisability`_ and
+`Demodulation`_.
 These will be useful to understand both models.
 
 
@@ -14,8 +14,8 @@ Effective polarisability
 ------------------------
 
 In both the FDM and the PDM, the SNOM contrast is modelled by calculating
-the effective polarisability of an atomic force microscope (AFM) tip and
-sample.
+the effective polarisability, :math:`\alpha_{eff}`, of an atomic force
+microscope (AFM) tip and sample.
 In this section we'll explain why that works.
 
 The image below shows a typical scattering SNOM experiment, in which we
@@ -43,7 +43,7 @@ The electric fields induced in the tip and sample interact, so the tip and
 sample couple together to produce a combined response to the external
 field.
 The strength of their dipole moment, relative to the incident field, is
-given by the effective polarisability of the tip and sample
+given by the effective polarisability of the tip and sample,
 :math:`\alpha_{eff}`.
 
 It's this dipole which radiates near-field light back into the far field,
@@ -84,9 +84,16 @@ amplitude, :math:`s`, and phase, :math:`\phi`, given by
             \phi &= \arg(\sigma_{scat}).
         \end{align*}
 
+In ``pysnom``, the effective polarisability is provided by the functions
+:func:`pysnom.fdm.eff_pol_0_bulk`, :func:`pysnom.fdm.eff_pol_0_multi`, and
+:func:`pysnom.pdm.eff_pol_0_bulk`.
+However it's common to use high-harmonic-demodulated versions of these
+functions, :math:`\alpha_{eff, n}`,  instead of the raw
+:math:`\alpha_{eff}`.
+The following section will explain why.
 
-Isolating the near field from the far field
--------------------------------------------
+Demodulation
+------------
 
 Typically in a SNOM experiment, we can't measure :math:`\sigma_{scat}`
 directly, because the total scattered electric field from the far-field
@@ -112,16 +119,36 @@ account for it in our modelling if we want accurate results.
 The rest of this section will take you through how demodulation is
 implemented in ``pysnom``.
 
+The undemodulated effective polarisability
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 As an example, lets take a look at the :math:`z`-dependence of
 :math:`\alpha_{eff}` for a sample of bulk silicon (Si), calculated using
 the FDM.
+
 The following script plots the amplitude of :math:`\alpha_{eff}` for a
 range of :math:`z` values from 0 to 200 nm.
 
 .. plot:: guide/plots/basics_eff_pol_0.py
    :align: center
 
-This shows the expected non-linear decay of the effective polarisability.
+This is the parameter we want to model, but we can't measure this directly
+using SNOM.
+We'll need to simulate a lock-in measurement if we want to compare our
+models to experimental results.
+Note that the decay of the effective polarisability is non-linear, which
+will become important later.
+
+.. note::
+
+   In this section we show only the real part of effective polarisability,
+   :math:`\Re(\alpha_{eff})`, which makes it easier to visualise complex
+   demodulation.
+   However, in practice it's more common to show the amplitude
+   (:math:`|\alpha_{eff}|`) or phase (:math:`\arg(\alpha_{eff})`).
+
+Modulating the height of the AFM tip
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step in simulating the modulation and demodulation of a SNOM
 signal will be to modulate the height of the AFM probe according to
@@ -132,8 +159,32 @@ signal will be to modulate the height of the AFM probe according to
 
 where :math:`z_0` is the bottom of the height oscillation :math:`A_{tap}`
 is the oscillation amplitude, and :math:`t` is time.
-In practice, the demodulation simulation is frequency-independent, so we
-can make the simplification that :math:`\omega_{tip} = 1`.
+
+The following script shows how the effective polarisability responds to a
+sinusoidal modulation of the tip height as described above:
+
+.. plot:: guide/plots/basics_modulated.py
+   :align: center
+
+This shows a very important result: thanks to the non-linear :math:`z`
+decay, a sinusoidal modulation of :math:`z` leads to a periodic but
+non-sinusoidal modulation of :math:`\alpha_{eff}`.
+Fourier analysis tells us that this sort of signal can be described by a
+`Fourier series <https://en.wikipedia.org/wiki/Fourier_series>`_,
+
+.. math::
+
+        \alpha_{eff}(t) =
+        \sum_{n=-\infty}^{\infty} c_n e^{i n \omega_{tip} t}.
+
+This is a series of complex sinusoids with frequencies at multiples,
+:math:`n`, of :math:`\omega_{tip}`.
+The values of :math:`c_n` are the complex valued coefficients that multiply
+each sinusoid.
+
+.. plot:: guide/plots/basics_Fourier.py
+   :align: center
+   :include-source: False
 
 References
 ----------

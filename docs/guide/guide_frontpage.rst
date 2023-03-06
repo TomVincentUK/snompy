@@ -14,15 +14,11 @@ force microscopy (AFM).
 For more detailed documentation of the functions provided by this package,
 see :doc:`../API/API_index`.
 
-
-Table of contents
------------------
-
 .. toctree::
    :maxdepth: 3
 
    Introduction <guide_intro>
-   Modelling scattering in SNOM <basics>
+   Basics of SNOM modelling <basics>
    Bulk finite dipole model <bulk>
    Multilayer finite dipole model <multilayer>
    Demodulation <demodulation>

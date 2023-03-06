@@ -194,7 +194,7 @@ def eff_pol_bulk(
             )
 
     # Set oscillation centre  so AFM tip touches sample at z = 0
-    z_0 = z + tapping_amplitude + radius
+    z_0 = z + tapping_amplitude
 
     alpha_eff = demod(
         eff_pol_0_bulk,
