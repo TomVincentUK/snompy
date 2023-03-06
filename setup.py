@@ -13,7 +13,10 @@ setuptools.setup(
     cmdclass=versioneer.get_cmdclass(),
     author="Tom Vincent",
     author_email="tom.vincent@manchester.ac.uk",
-    description="A Python implementation of the finite dipole model for scanning near-field optical microscopy contrast.",
+    description=(
+        "A Python package for modelling contrast in scanning near-field "
+        "optical microscopy measurements."
+    ),
     long_description=long_description,
     long_description_content_type="text/x-rst",
     packages=setuptools.find_packages(),
