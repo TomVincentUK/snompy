@@ -36,7 +36,7 @@ ax.plot(
 )
 ax.set(
     xlabel=r"$z$ / nm",
-    ylabel=r"$\alpha_{eff, n} / \alpha_{eff, n, z=0}$",
+    ylabel=r"$\left|\alpha_{eff, n} / \alpha_{eff, n, z=0}\right|$",
     xlim=(z_nm.min(), z_nm.max()),
 )
 ax.legend(ncol=2)

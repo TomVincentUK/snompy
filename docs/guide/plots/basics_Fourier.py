@@ -43,7 +43,7 @@ axes = [fig.add_subplot(gs[i, 0]) for i in range(2)]
 t_us = t * 1e6  # For neater plotting
 
 # Plot total
-axes[0].plot(t_us, alpha_eff.real, c="k", label="total")
+axes[0].plot(t_us, alpha_eff.real, c="k", label="total signal")
 
 # Plot waves
 cmap = plt.cm.Spectral
