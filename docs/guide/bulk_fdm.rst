@@ -1,10 +1,6 @@
 Bulk finite dipole model
 ========================
 
-* SNOM tip and sample in laser -> sigma = (1 + c*r)^2 eff_pol
-* We want to find eff_pol, here: `pysnom.bulk.eff_pol_0`
-* To remove the far-field, we need to tap and demodulate so we want to find eff_pol_n, here: `pysnom.bulk.eff_pol`
-
 Principles of the finite dipole model
 -------------------------------------
 
@@ -21,15 +17,8 @@ Principles of the finite dipole model
   * Decays non-linearly from sample surface
   * Depends on dielectric functions of sample and environment
 
-
-Removing far-field signals by demodulation
-------------------------------------------
-
-* Why we need to demodulate (ref Keilmann)
-* Higher harmonics lead to greater near-field confinement (ref Keilmann)
-* This can be exploited for depth-sensitive probing of materials (ref Lars)
-* Warn that there's still a far-field contribution (ref other Lars)
-* For more details on how to demodulate see specific section on guide.
+.. image:: diagrams/fdm.svg
+   :align: center
 
 References
 ----------

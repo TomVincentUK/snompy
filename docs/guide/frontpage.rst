@@ -12,14 +12,14 @@ You won't need a detailed understanding of the FDM or PDM to understand
 this guide, but it'll be helpfull to know the basics of SNOM and atomic
 force microscopy (AFM).
 For more detailed documentation of the functions provided by this package,
-see :doc:`../API/API_index`.
+see :doc:`../API/index`.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
-   Introduction <guide_intro>
+   Introduction <intro>
    Basics of SNOM modelling <basics>
-   Bulk finite dipole model <bulk>
-   Multilayer finite dipole model <multilayer>
-   Demodulation <demodulation>
-   Advanced topics <advanced/advanced_index>
+   Bulk finite dipole model <bulk_fdm>
+   Multilayer finite dipole model <multi_fdm>
+   Point dipole model <bulk_pdm>
+   Advanced topics <advanced>

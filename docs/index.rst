@@ -12,8 +12,8 @@ Table of contents
 .. toctree::
    :maxdepth: 2
 
-   User guide <guide/guide_frontpage>
-   API reference <API/API_index>
+   User guide <guide/frontpage>
+   API reference <API/index>
    Development <development>
    FAQ <FAQ>
 

@@ -10,7 +10,7 @@ Below on this page are some example scripts, showing idiomatic usage of
 If you already know how the finite dipole model (FDM) or point dipole model
 (PDM) works, these might be enough to get started with this package.
 You can also refer to the detailed explanations of the functions used in
-the :doc:`../API/API_index`.
+the :doc:`../API/index`.
 The rest of this guide will take you through the workings of the two
 models, and also give tips on how the model can be used to help analyse
 SNOM data.
