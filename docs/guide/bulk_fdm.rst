@@ -5,8 +5,11 @@ Principles of the finite dipole model
 -------------------------------------
 
 * AFM tip in laser -> ellipsoid in E-field
-* Quasi-static approximation (E-fields change slow enough that the system is always in equilibrium)
 * E-field around ellipsoid looks like finite dipole (to contrast with point dipole)
+
+.. image:: diagrams/dipole_field.svg
+   :align: center
+
 * Only charge at end is close to sample, so can be treated as a point charge
 * Charge in end of tip induces an image charge, which induces another charge in the tip
 * That charge also has it's own image charge and counter-charge (ref Cvitkovic, all above)
