@@ -159,14 +159,22 @@ The undemodulated effective polarisability
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As an example, lets take a look at the :math:`z`-dependence of
-:math:`\alpha_{eff}` for a sample of bulk silicon (Si), calculated using
-the FDM.
+:math:`\alpha_{eff}` for a sample of bulk silicon (Si).
 
 The following script plots the amplitude of :math:`\alpha_{eff}` for a
 range of :math:`z` values from 0 to 200 nm.
 
-.. plot:: guide/plots/basics_eff_pol_0.py
-   :align: center
+.. tab-set::
+
+   .. tab-item:: FDM
+
+      .. plot:: guide/plots/basics_eff_pol_0_fdm.py
+         :align: center
+
+   .. tab-item:: PDM
+
+      .. plot:: guide/plots/basics_eff_pol_0_pdm.py
+         :align: center
 
 This is the parameter we want to model, but we can't measure this directly
 using SNOM.
@@ -200,8 +208,17 @@ is the oscillation amplitude, and :math:`t` is time.
 The following script shows how the effective polarisability responds to a
 sinusoidal modulation of the tip height as described above:
 
-.. plot:: guide/plots/basics_modulated.py
-   :align: center
+.. tab-set::
+
+   .. tab-item:: FDM
+
+      .. plot:: guide/plots/basics_modulated_fdm.py
+         :align: center
+
+   .. tab-item:: PDM
+
+      .. plot:: guide/plots/basics_modulated_pdm.py
+         :align: center
 
 This shows a very important result: thanks to the non-linear :math:`z`
 decay, a sinusoidal modulation of :math:`z` leads to a periodic *but
@@ -237,9 +254,19 @@ The following figure shows the modulated :math:`\alpha_{eff}(t)` signal
 that we calculated above, along with the first few terms of equation
 :eq:`Fourier_series`.
 
-.. plot:: guide/plots/basics_Fourier.py
-   :align: center
-   :include-source: False
+.. tab-set::
+
+   .. tab-item:: FDM
+
+      .. plot:: guide/plots/basics_Fourier_fdm.py
+         :align: center
+         :include-source: False
+
+   .. tab-item:: PDM
+
+      .. plot:: guide/plots/basics_Fourier_pdm.py
+         :align: center
+         :include-source: False
 
 We can see that the :math:`n=0` term accounts for the DC offset, and that
 the amplitudes of the following terms drop off quickly with increasing
@@ -310,8 +337,17 @@ which can then be evaluated numerically using a method such as the
 `trapezium rule <https://en.wikipedia.org/wiki/Trapezoidal_rule>`_, as
 shown in the example script below.
 
-.. plot:: guide/plots/basics_integral.py
-   :align: center
+.. tab-set::
+
+   .. tab-item:: FDM
+
+      .. plot:: guide/plots/basics_integral_fdm.py
+         :align: center
+
+   .. tab-item:: PDM
+
+      .. plot:: guide/plots/basics_integral_pdm.py
+         :align: center
 
 Putting it all together
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -335,8 +371,17 @@ These should be even simpler to use.
 The script below shows the use of both to calculate approach curves for
 several harmonics at once.
 
-.. plot:: guide/plots/basics_approach.py
-   :align: center
+.. tab-set::
+
+   .. tab-item:: FDM
+
+      .. plot:: guide/plots/basics_approach_fdm.py
+         :align: center
+
+   .. tab-item:: PDM
+
+      .. plot:: guide/plots/basics_approach_pdm.py
+         :align: center
 
 This shows that both methods produce exactly the same results, and also
 that higher order demodulation leads to a faster decay of the SNOM signal
@@ -354,7 +399,8 @@ that higher order demodulation leads to a faster decay of the SNOM signal
 
    This conversion is taken care of automatically by ``pysnom``'s functions
    with built-in demodulation, which is why the `z` value isn't offset for
-   the approach curve calculated using :func:`pysnom.fdm.eff_pol_bulk`.
+   the approach curve calculated using :func:`pysnom.fdm.eff_pol_bulk` or
+   :func:`pysnom.pdm.eff_pol_bulk`.
 
 References
 ----------
