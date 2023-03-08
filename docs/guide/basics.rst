@@ -292,6 +292,7 @@ We can simulate this with the integral
 
 (which takes advantage of the fact that :math:`\alpha_{eff}(t)` is periodic
 in :math:`\omega_{tip}`).
+
 This can be simplified further by noting that the result is independent of
 frequency, so we can set :math:`\omega_{tip}=1`.
 The resulting integral then becomes
@@ -303,9 +304,9 @@ The resulting integral then becomes
    \int_{-\pi}^{\pi}
    \alpha_{eff}(\theta)
    e^{i n \theta}
-   d\theta.
+   d\theta,
 
-This can then be evaluated numerically using a method such as the
+which can then be evaluated numerically using a method such as the
 `trapezium rule <https://en.wikipedia.org/wiki/Trapezoidal_rule>`_, as
 shown in the example script below.
 
@@ -321,8 +322,7 @@ Fourier coefficient.
 If you're worried that it seems like a lot of work, that's because it is!
 
 Thankfully ``pysnom`` has a built-in function
-:func:`pysnom.demodulate.demod`, which takes care of all the tricky parts,
-so you don't have to.
+:func:`pysnom.demodulate.demod`, which takes care of all the tricky parts.
 It's also vectorised, which means it can simulate demodulation on whole
 arrays of data at once, with no need for looping.
 

@@ -12,7 +12,7 @@ If you already know how the finite dipole model (FDM) or point dipole model
 You can also refer to the detailed explanations of the functions used in
 the :doc:`../API/index`.
 The rest of this guide will take you through the workings of the two
-models, and also give tips on how the model can be used to help analyse
+models, and also give tips on how the models can be used to help analyse
 SNOM data.
 
 The examples in this guide rely heavily on ``numpy``, a Python package for

@@ -23,19 +23,20 @@ microscopy measurements.
       User guide
       ^^^^^^^^^^
 
-      Start here for an introduction to ``pysnom``, with examples of how to
-      use it.
+      Start here for a friendly introduction to ``pysnom``, including
+      explanations of how the models work, and examples showing how to
+      use them.
 
     .. grid-item-card::
       :img-top: _static/api_image.svg
       :link: api
       :link-type: ref
 
-      API
-      ^^^
+      API reference
+      ^^^^^^^^^^^^^
 
-      Here you can find a detailed reference guide to the functions in this
-      package.
+      Here you can find a detailed  guide to the functions in ``pysnom``.
+      You might want to check the user guide first if you're a new user.
 
     .. grid-item-card::
       :img-top: _static/dev_image.svg
@@ -45,7 +46,11 @@ microscopy measurements.
       Development
       ^^^^^^^^^^^
 
-      Text
+      Is something missing?
+      Have you spotted a bug?
+      Click here for details on how to raise feature requests, or
+      contribute to ``pysnom``.
+
 
     .. grid-item-card::
       :img-top: _static/faq_image.svg
