@@ -13,3 +13,45 @@ html[data-theme="light"] {
   --pst-color-text-base: #262339;
   --pst-color-text-muted: #3d4853;
 }
+
+.sd-card {
+  background: #f5f5f5;
+  border-radius: 0;
+  padding: 30px 10px 20px 10px;
+  margin: 10px 0px;
+}
+
+.sd-card .sd-card-header {
+  text-align: center;
+}
+
+.sd-card .sd-card-header .sd-card-text {
+  margin: 0px;
+}
+
+.sd-card .sd-card-img-top {
+  height: 52px;
+  width: 52px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sd-card .sd-card-header {
+  border: none;
+  background-color: white;
+  color: #150458 !important;
+  font-size: var(--pst-font-size-h5);
+  font-weight: bold;
+  padding: 2.5rem 0rem 0.5rem 0rem;
+}
+
+.sd-card .sd-card-footer {
+  border: none;
+  background-color: white;
+}
+
+.sd-card .sd-card-footer .sd-card-text {
+  max-width: 220px;
+  margin-left: auto;
+  margin-right: auto;
+}

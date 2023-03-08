@@ -1,3 +1,5 @@
+.. _user_guide:
+
 User guide
 ==========
 
@@ -9,13 +11,14 @@ optical microscopy (SNOM) measurements.
 Here we provide examples of how to use this package, along with an
 explanation of how the models are implemented.
 You won't need a detailed understanding of the FDM or PDM to understand
-this guide, but it'll be helpfull to know the basics of SNOM and atomic
+this guide, but it'll be helpful to know the basics of SNOM and atomic
 force microscopy (AFM).
 For more detailed documentation of the functions provided by this package,
-see :doc:`../API/index`.
+see :ref:`API`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :hidden:
 
    Introduction <intro>
    Basics of SNOM modelling <basics>

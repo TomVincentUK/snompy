@@ -10,6 +10,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "sphinx_design",
     "numpydoc",
     "matplotlib.sphinxext.plot_directive",
 ]

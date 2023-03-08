@@ -1,10 +1,12 @@
+.. _api:
+
 API reference
 =============
 
 .. toctree::
    :maxdepth: 2
 
-   fdm <fdm>
-   pdm <pdm>
-   demodulate <demodulate>
-   reflection <reflection>
+   fdm
+   pdm
+   demodulate
+   reflection

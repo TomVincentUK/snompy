@@ -3,19 +3,59 @@ pysnom
 A Python package for modelling contrast in scanning near-field optical
 microscopy measurements.
 
-
-This documentation is split into the following sections:
-
-Table of contents
------------------
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :hidden:
 
    User guide <guide/frontpage>
    API reference <API/index>
    Development <development>
    FAQ <FAQ>
+
+
+.. grid:: 2
+
+    .. grid-item-card::
+      :img-top: _static/guide_image.svg
+      :link: user_guide
+      :link-type: ref
+
+      User guide
+      ^^^^^^^^^^
+
+      Start here for an introduction to ``pysnom``, with examples of how to
+      use it.
+
+    .. grid-item-card::
+      :img-top: _static/api_image.svg
+      :link: api
+      :link-type: ref
+
+      API
+      ^^^
+
+      Here you can find a detailed reference guide to the functions in this
+      package.
+
+    .. grid-item-card::
+      :img-top: _static/dev_image.svg
+      :link: development
+      :link-type: ref
+
+      Development
+      ^^^^^^^^^^^
+
+      Text
+
+    .. grid-item-card::
+      :img-top: _static/faq_image.svg
+      :link: faq
+      :link-type: ref
+
+      FAQ
+      ^^^
+
+      Text
 
 Cite us
 -------
@@ -26,4 +66,4 @@ use the code.
 
 Acknowledgements
 ----------------
-``pysnom`` was supported by...
+``pysnom`` was supported by ...
