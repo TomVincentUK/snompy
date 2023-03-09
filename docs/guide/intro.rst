@@ -1,3 +1,5 @@
+.. _intro:
+
 Introduction
 ============
 
@@ -70,7 +72,7 @@ amplitude, :math:`s_n \propto \alpha_{eff, n}`, for different demodulation
 harmonics, :math:`n` as the SNOM tip is moved in the :math:`z` direction,
 away from a sample of bulk silicon.
 
-.. plot:: guide/plots/intro_approach.py
+.. plot:: guide/plots/intro/approach.py
    :align: center
 
 This shows the expected result: that higher order demodulation leads to a
@@ -86,7 +88,7 @@ thin layer of poly(methyl methacrylate) (PMMA) on silicon, for different
 thicknesses of PMMA, and normalises the signal to a reference spectrum
 taken from bulk gold.
 
-.. plot:: guide/plots/intro_spectra.py
+.. plot:: guide/plots/intro/spectra.py
    :align: center
 
 (The dielectric function of PMMA in the above example was based on

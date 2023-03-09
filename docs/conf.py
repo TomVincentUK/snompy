@@ -11,6 +11,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx_design",
+    "sphinx_togglebutton",
     "numpydoc",
     "matplotlib.sphinxext.plot_directive",
 ]
@@ -36,6 +37,9 @@ html_theme_options = {
 html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 html_context = {"default_mode": "light"}
+
+# Remove contents from user guide index
+html_sidebars = {"guide/index": []}
 
 autosummary_generate = True
 add_function_parentheses = True

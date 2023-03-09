@@ -1,107 +1,13 @@
-Basics of SNOM modelling
-========================
-
-To model contrast in scanning near-field optical microscopy (SNOM)
-experiments, ``pysnom`` provides two models called the finite dipole model
-(FDM) and the point dipole model (PDM).
-We'll explain how each model works on the following pages, but first we'll
-cover some basics of SNOM modelling: `Effective polarisability`_ and
-`Demodulation`_.
-These will be useful to understand both models.
-
-
-Effective polarisability
-------------------------
-
-In both the FDM and the PDM, the SNOM contrast is modelled by calculating
-the effective polarisability, :math:`\alpha_{eff}`, of an atomic force
-microscope (AFM) tip and sample.
-In this section we'll explain why that works.
-
-The image below shows a typical scattering SNOM experiment, in which we
-illuminate an AFM tip and sample with far-field light whose electric field
-we can call :math:`E_{in}`.
-This excites a near field at the apex of the AFM tip, which interacts with
-the sample and scatters light with electric field :math:`E_{scat}` back
-into the far-field.
-
-.. image:: diagrams/tip_sample.svg
-   :align: center
-
-The near-field information in the sample is contained in the scattering
-coefficient :math:`\sigma_{scat}`, which relates the near-field scattered
-light to the incident light as
-
-.. math::
-   :label: scatter_def
-
-   \sigma_{scat} = \frac{E_{scat}}{E_{in}}.
-
-When the incident light falls on the tip and sample, the electric field
-induces a polarisation of the charges inside them, and a consequent dipole
-moment.
-The electric fields induced in the tip and sample interact, so the tip and
-sample couple together to produce a combined response to the external
-field.
-The strength of their dipole moment, relative to the incident field, is
-given by the effective polarisability of the tip and sample,
-:math:`\alpha_{eff}`.
-
-It's this dipole which radiates near-field light back into the far field,
-so the scattering coefficient can therefore be found from
-
-.. math::
-   :label: scatter_from_eff_pol
-
-   \sigma_{scat} = (1 + c r)^2 \alpha_{eff},
-
-where :math:`r` is the far-field reflection coefficient, and :math:`c` is
-an empirical constant which can be used to compensate for differences
-between particular experimental setups.
-The :math:`(1 + c r)^2` term is included because the AFM tip is illuminated
-both directly, and also by reflections from the sample surface, as shown in
-the diagram above.
-
-.. hint::
-
-   It's common to assume that the :math:`(1 + c r)^2` term will be constant
-   throughout a SNOM experiment, because the area of the far-field laser
-   spot is so much bigger than the near-field-confined area probed by SNOM,
-   so it's often neglected in analysis.
-   However, there are many occasions where the far-field reflection
-   coefficient *does* have a significant affect on results, particularly
-   near large features or on cluttered substrates [1]_.
-   *Don't neglect it without thinking!*
-
-
-SNOM experiments are typically sensitive to not just the amplitude but also
-the phase of the scattered light, relative to the incident light.
-Because of this, :math:`\sigma_{scat}` takes the form of a complex number with
-amplitude, :math:`s`, and phase, :math:`\phi`, given by
-
-.. math::
-   :label: amp_and_phase
-
-   \begin{align*}
-      s &= |\sigma_{scat}|, \ \text{and}\\
-      \phi &= \arg(\sigma_{scat}).
-   \end{align*}
-
-In ``pysnom``, the effective polarisability is provided by the functions
-:func:`pysnom.fdm.eff_pol_0_bulk`, :func:`pysnom.fdm.eff_pol_0_multi`, and
-:func:`pysnom.pdm.eff_pol_0_bulk`.
-However it's common to use high-harmonic-demodulated versions of these
-functions, :math:`\alpha_{eff, n}`,  instead of the raw
-:math:`\alpha_{eff}`.
-The following section will explain why.
+.. _demodulation:
 
 Demodulation
-------------
+============
 
 Typically in a SNOM experiment, we can't measure :math:`\sigma_{scat}`
 directly, because the total scattered electric field from the far-field
 laser spot is much, much bigger than the electric field from the near
-field.
+field (see the page :ref:`scattering` for the definition of
+:math:`\sigma_{scat}`).
 
 Instead, we oscillate the AFM tip height, :math:`z`,  at a frequency
 :math:`\omega_{tip}`, then use a
@@ -114,7 +20,7 @@ the signal by looking for only parts of the signal that change with the
 right frequency.
 
 The lock-in-demodulated signals that we actually detect are therefore
-given, not by equation :eq:`scatter_from_eff_pol`, but by
+given, not by :math:`\sigma_{scat}`, but by
 
 .. math::
    :label: scatter_from_eff_pol_n
@@ -140,10 +46,14 @@ confinement by choosing a higher value of :math:`n`.
 
 Demodulation is an integral part of a SNOM experiment, so we need to
 account for it in our modelling if we want accurate results.
-The rest of this section will take you through how demodulation is
+The rest of this page will take you through how demodulation is
 implemented in ``pysnom``.
+The process for demodulation is exactly the same for both the finite dipole
+model (FDM) and point dipole model (PDM), so the examples here can be
+switched between the two models using the tabs on this page.
 
 .. hint::
+   :class: dropdown
 
    It might seem like there are lots of steps, but don't worry!
    The final section of this page, `Putting it all together`_, will
@@ -156,7 +66,7 @@ implemented in ``pysnom``.
    :func:`pysnom.fdm.eff_pol_multi`, and :func:`pysnom.pdm.eff_pol_bulk`.
 
 The undemodulated effective polarisability
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------
 
 As an example, lets take a look at the :math:`z`-dependence of
 :math:`\alpha_{eff}` for a sample of bulk silicon (Si).
@@ -168,12 +78,12 @@ range of :math:`z` values from 0 to 200 nm.
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/basics_eff_pol_0_fdm.py
+      .. plot:: guide/plots/demodulation/eff_pol_0_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/basics_eff_pol_0_pdm.py
+      .. plot:: guide/plots/demodulation/eff_pol_0_pdm.py
          :align: center
 
 This is the parameter we want to model, but we can't measure this directly
@@ -184,15 +94,16 @@ Note that the decay of the effective polarisability is non-linear, which
 will become important later.
 
 .. hint::
+   :class: dropdown
 
-   In this section we show only the real part of effective polarisability,
-   :math:`\Re(\alpha_{eff})`, which makes it easier to visualise complex
-   demodulation.
-   However, in practice it's more common to study the amplitude
-   (:math:`|\alpha_{eff}|`) or phase (:math:`\arg(\alpha_{eff})`).
+   In this section we show the real and imaginary parts of the effective
+   polarisability, :math:`\Re(\alpha_{eff})` and :math:`\Im(\alpha_{eff})`,
+   which makes it easier to visualise complex demodulation.
+   However, in practice it's more common to study the amplitude and phase,
+   (:math:`|\alpha_{eff}|`) and (:math:`\arg(\alpha_{eff})`).
 
 Modulating the height of the AFM tip
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------
 
 The first step in simulating the modulation and demodulation of a SNOM
 signal will be to modulate the height of the AFM probe according to
@@ -212,12 +123,12 @@ sinusoidal modulation of the tip height as described above:
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/basics_modulated_fdm.py
+      .. plot:: guide/plots/demodulation/modulated_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/basics_modulated_pdm.py
+      .. plot:: guide/plots/demodulation/modulated_pdm.py
          :align: center
 
 This shows a very important result: thanks to the non-linear :math:`z`
@@ -225,7 +136,7 @@ decay, a sinusoidal modulation of :math:`z` leads to a periodic *but
 non-sinusoidal* modulation of :math:`\alpha_{eff}`.
 
 Fourier analysis
-^^^^^^^^^^^^^^^^
+----------------
 
 To understand demodulation, and how :math:`\alpha_{eff}` relates to
 :math:`\alpha_{eff, n}`, it's helpful to analyse this signal in the
@@ -244,6 +155,21 @@ described by a
 This is a series of complex sinusoids with frequencies at multiples,
 :math:`n`, of :math:`\omega_{tip}`.
 
+.. hint::
+   :class: dropdown
+
+   Equation :eq:`Fourier_series` includes negative values of :math:`n`,
+   which means it accounts for
+   `negative frequencies <https://en.wikipedia.org/wiki/Fourier_transform#Negative_frequency>`_.
+   Don't worry if this is confusing!
+   For SNOM demodulation, we usually only need to worry about positive
+   :math:`n` values.
+
+   The negative frequency terms are needed to fully reconstruct complex
+   signals (like :math:`\alpha_{eff}`).
+   But, as we're only interested in extracting particular
+   :math:`\alpha_{eff, n}` values, we can essentially ignore them here.
+
 The values of :math:`\alpha_{eff, n}` are what we probe with SNOM, and they
 take the form of complex-valued coefficients that multiply each sinusoid.
 They modify the oscillations such that the :math:`n^{th}` sinusoid has
@@ -258,13 +184,13 @@ that we calculated above, along with the first few terms of equation
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/basics_Fourier_fdm.py
+      .. plot:: guide/plots/demodulation/Fourier_fdm.py
          :align: center
          :include-source: False
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/basics_Fourier_pdm.py
+      .. plot:: guide/plots/demodulation/Fourier_pdm.py
          :align: center
          :include-source: False
 
@@ -277,31 +203,18 @@ sinusoidal :math:`z` modulation would create a purely sinusoidal
 :math:`\alpha_{eff}` modulation, which would mean only the :math:`n=0` and
 :math:`n=1` terms would remain in the signal.
 
-.. hint::
-
-   Equation :eq:`Fourier_series` includes negative values of :math:`n`,
-   which means it accounts for
-   `negative frequencies <https://en.wikipedia.org/wiki/Fourier_transform#Negative_frequency>`_.
-   Don't worry if this is confusing!
-   For SNOM demodulation, we usually only need to worry about positive
-   :math:`n` values.
-
-   The negative frequency terms are needed to fully reconstruct complex
-   signals (like :math:`\alpha_{eff}`).
-   But, as we're only interested in extracting particular
-   :math:`\alpha_{eff, n}` values, we can essentially ignore them here.
-
 Extracting Fourier coefficients
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 Once we've modulated the effective polarisability by changing the
 tip height, the next step is to demodulate the resulting signal to extract
 the desired Fourier coeficients, :math:`\alpha_{eff, n}`.
 
 In a lock-in amplifier, this is done by multiplying the input signal by a
-complex oscillator (:math:`e^{i n \omega t}`), synced to the desired
-harmonic of the tapping frequency, then low-pass filtering the product to
-remove all but the DC offset.
+complex oscillator
+:math:`\left(e^{i n \omega t} = \cos(n \omega t) + i \sin(n \omega t)\right)`
+synced to the desired harmonic of the tapping frequency, then low-pass
+filtering the product to remove all but the DC offset.
 We can simulate this with the integral
 
 .. math::
@@ -341,16 +254,16 @@ shown in the example script below.
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/basics_integral_fdm.py
+      .. plot:: guide/plots/demodulation/integral_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/basics_integral_pdm.py
+      .. plot:: guide/plots/demodulation/integral_pdm.py
          :align: center
 
 Putting it all together
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 In the sections above, we showed how to simulate a lock-in measurement, by
 modulating a signal, then demodulating it to find the :math:`n^{th}`
@@ -375,12 +288,12 @@ several harmonics at once.
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/basics_approach_fdm.py
+      .. plot:: guide/plots/demodulation/approach_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/basics_approach_pdm.py
+      .. plot:: guide/plots/demodulation/approach_pdm.py
          :align: center
 
 This shows that both methods produce exactly the same results, and also
@@ -388,6 +301,7 @@ that higher order demodulation leads to a faster decay of the SNOM signal
 (*i.e.* stronger surface confinement).
 
 .. hint::
+   :class: dropdown
 
    In the script above, the `z` value is offset by `tapping amplitude` for
    the approach curve calculated using :func:`pysnom.demodulate.demod`.
@@ -401,10 +315,3 @@ that higher order demodulation leads to a faster decay of the SNOM signal
    with built-in demodulation, which is why the `z` value isn't offset for
    the approach curve calculated using :func:`pysnom.fdm.eff_pol_bulk` or
    :func:`pysnom.pdm.eff_pol_bulk`.
-
-References
-----------
-.. [1] L. Mester, A. A. Govyadinov, and R. Hillenbrand, “High-fidelity
-   nano-FTIR spectroscopy by on-pixel normalization of signal harmonics,”
-   Nanophotonics, vol. 11, no. 2, p. 377, 2022, doi:
-   10.1515/nanoph-2021-0565.

@@ -7,7 +7,7 @@ microscopy measurements.
    :maxdepth: 1
    :hidden:
 
-   User guide <guide/frontpage>
+   User guide <guide/index>
    API reference <API/index>
    Development <development>
    FAQ <FAQ>
@@ -60,7 +60,9 @@ microscopy measurements.
       FAQ
       ^^^
 
-      Text
+      Look here for some answers to common questions about ``pysnom``.
+
+.. _cite:
 
 Cite us
 -------

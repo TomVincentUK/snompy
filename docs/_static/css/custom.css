@@ -55,3 +55,17 @@ html[data-theme="light"] {
   margin-left: auto;
   margin-right: auto;
 }
+
+
+/* FAQ */
+
+div.admonition.admonition-faq {
+  border-color: #9e0142;
+}
+div.admonition.admonition-faq > .admonition-title:before {
+  background-color: #9e0142;
+}
+div.admonition.admonition-faq > .admonition-title:after {
+  color: #9e0142;
+  content: "\f059";
+}

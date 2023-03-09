@@ -1,3 +1,5 @@
+.. _bulk_pdm:
+
 Point dipole model
 ==================
 
