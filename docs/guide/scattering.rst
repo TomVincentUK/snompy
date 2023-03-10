@@ -95,6 +95,18 @@ with amplitude, :math:`s`, and phase, :math:`\phi`, given by
       \phi &= \arg(\sigma_{scat}).
    \end{align*}
 
+Demodulation
+------------
+
+[Move the note on demodulation its own brief section here. Link to the main
+page.]
+
+Normalization
+-------------
+
+[Talk about normalising SNOM measurements to a reference (maybe on its own
+page).]
+
 References
 ----------
 .. [1] L. Mester, A. A. Govyadinov, and R. Hillenbrand, “High-fidelity

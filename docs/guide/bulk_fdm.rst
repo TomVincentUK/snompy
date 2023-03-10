@@ -52,8 +52,8 @@ The position of the two charges are found at distances
    z_{Q0} \approx \frac{1.31 L r}{L + 2 r}
 
 from the ends of the ellipsoid, where :math:`r` is the radius of curvature
-at the pointy end of the ellipsoid, and :math:`L` is the semi-major axis
-length (the distance from the ellipsoid centre to the furthest point).
+at the pointy end, and :math:`L` is the semi-major axis length (the
+distance from the ellipsoid centre to the pointy end).
 
 The strength of the electric dipole moment can be related to the charges
 and their separation as
@@ -106,6 +106,8 @@ where :math:`\varepsilon_{env}` is the dielectric function of the
 environment (:math:`\varepsilon_{env} = 1` for air or vacuum), and
 :math:`\varepsilon_{sub}` is the dielectric function of the sample (the
 subscript "sub" here is short for substrate).
+In ``pysnom``, equation :eq:`beta` is provided by the function
+:func:`pysnom.reflection.refl_coeff`.
 
 The charge :math:`Q'_0` acts back on the tip and induces a further
 polarisation, which we can model as another point charge :math:`Q_1`, at a
@@ -122,7 +124,7 @@ distance :math:`z_{Q1} \approx r / 2` away from the end of the tip.
    charge allows us to solve the electrostatic equations, and gives a model
    that matches well to experimental results.
 
-With the addition of :math:`Q_1`, we must add some more charges to our
+With the addition of :math:`Q_1`, we need to add some more charges to our
 model:
 the sample response to :math:`Q_1` can be represented by another image
 charge, :math:`Q'_1 = \beta Q_1`, at a depth of :math:`z + z_{Q1}` below
@@ -142,8 +144,9 @@ itself [2]_, as
 
 (neglecting the influence of the :math:`-Q_1` charge as it's far from the
 sample).
-Here, the parameters :math:`f_i` represent some important geometrical
-features of the tip, and the positions of the charges within them.
+
+Here, the parameters :math:`f_i` account for the geometrical features of
+the tip, and the positions of the charges within them.
 They are given by the formula
 
 .. math::
@@ -151,14 +154,77 @@ They are given by the formula
 
    f_i = \left(g - \frac{r + 2 z + z_{Qi}}{2 L} \right)
    \frac{\ln\left(\frac{4 L}{r + 4 z + 2 z_{Qi}}\right)}
-   {\ln\left(\frac{4 L}{r}\right)}.
+   {\ln\left(\frac{4 L}{r}\right)},
 
+where :math:`g \approx 0.7` is an empirical factor that describes how much
+of the induced charge is relevant for the near-field interaction (see
+`Parameters`_ for more details on how this factor affects the results).
+In ``pysnom``, equation :eq:`f_i_bulk` is provided by the function
+:func:`pysnom.fdm.geom_func_bulk`.
 
+The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 
-* Properties of eff_pol_0:
-  * Complex number -> amplitude and phase
-  * Decays non-linearly from sample surface
-  * Depends on dielectric functions of sample and environment
+.. math::
+   :label: p_1
+
+   p_1 = (L - z_{Q1}) Q_1 \quad (\approx L Q_1, \ \mathrm{for} \ r \ll L).
+
+The effective polarisability of the tip and sample can then be found from
+the total induced dipole, as
+
+.. math::
+   :label: eff_pol_bulk_fdm
+
+   \alpha_{eff}
+   = \frac{p_0 + p_1}{E_{in}}
+   \approx \frac{2 L Q_0}{E_{in}}
+   \left(1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}\right)
+   \propto 1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}.
+
+In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
+:func:`pysnom.fdm.eff_pol_0_bulk`.
+
+Demodulating the FDM
+--------------------
+
+Typically we're not interested in the raw effective polarisability, but in
+the :math:`n_{th}`-harmonic-demodulated effective polarisability
+:math:`\alpha_{eff, n}`.
+That's because the signals measured in real SNOM experiments are determined
+by the demodulated near-field scattering coefficient
+
+.. math::
+   :label: fdm_scattering
+
+   \sigma_{scat, n} \propto \alpha_{eff, n},
+
+with amplitude and phase
+
+.. math::
+   :label: fdm_amp_and_phase
+
+   \begin{align*}
+      s_n &= |\sigma_{scat, n}|, \ \text{and}\\
+      \phi_n &= \arg(\sigma_{scat, n}).
+   \end{align*}
+
+This is explained in detail on the dedicated page :ref:`demodulation`.
+
+In ``pysnom``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
+function :func:`pysnom.fdm.eff_pol_bulk`.
+
+Using pysnom for bulk FDM
+-------------------------
+
+[This section should explain :func:`pysnom.fdm.eff_pol_bulk` and relate it
+to the section above, including different ways to specify the material
+parameters.]
+
+Parameters
+----------
+
+[A section talking about how each parameter of the FDM affects the results.
+Possibly with graphs for some parameters (`z`, `radius`, `semi_maj_ax`)]
 
 References
 ----------
