@@ -220,11 +220,38 @@ Using pysnom for bulk FDM
 to the section above, including different ways to specify the material
 parameters.]
 
+.. plot::
+   :context:
+
+   import matplotlib.pyplot as plt
+   import numpy as np
+
+   import pysnom
+
+   z = np.linspace(0, 100, 512) * 1e-9
+   tapping_amplitude = 25e-9
+   eps_sample = 11.7
+   harmonic = 3
+
+   alpha_eff = pysnom.fdm.eff_pol_bulk(z, tapping_amplitude, harmonic, eps_sample)
+   plt.plot(z, np.abs(alpha_eff))
+
+[Just testing contexts carry between plots here]
+
+.. plot::
+   :context:
+
+   beta = pysnom.reflection.refl_coeff(1, eps_sample)
+
+   alpha_eff = pysnom.fdm.eff_pol_bulk(z, tapping_amplitude, harmonic, beta=beta)
+   plt.plot(z, np.abs(alpha_eff), ls="--")
+
 Parameters
 ----------
 
 [A section talking about how each parameter of the FDM affects the results.
 Possibly with graphs for some parameters (`z`, `radius`, `semi_maj_ax`)]
+
 
 References
 ----------

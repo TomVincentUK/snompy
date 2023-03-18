@@ -85,6 +85,7 @@ plot_rcparams = {
     "axes.spines.right": False,
     "text.usetex": False,
 }
+plot_apply_rcparams = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
