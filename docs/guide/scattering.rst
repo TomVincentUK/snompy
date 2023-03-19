@@ -26,7 +26,7 @@ This excites a near field at the apex of the AFM tip, which interacts with
 the sample and scatters light with electric field :math:`E_{scat}` back
 into the far-field.
 
-.. image:: diagrams/tip_sample.svg
+.. image:: scattering/tip_sample.svg
    :align: center
 
 The near-field information in the sample is contained in the scattering

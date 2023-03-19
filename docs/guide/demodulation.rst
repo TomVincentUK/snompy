@@ -78,12 +78,12 @@ range of :math:`z` values from 0 to 200 nm.
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/demodulation/eff_pol_0_fdm.py
+      .. plot:: guide/demodulation/eff_pol_0_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/demodulation/eff_pol_0_pdm.py
+      .. plot:: guide/demodulation/eff_pol_0_pdm.py
          :align: center
 
 This is the parameter we want to model, but we can't measure this directly
@@ -123,12 +123,12 @@ sinusoidal modulation of the tip height as described above:
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/demodulation/modulated_fdm.py
+      .. plot:: guide/demodulation/modulated_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/demodulation/modulated_pdm.py
+      .. plot:: guide/demodulation/modulated_pdm.py
          :align: center
 
 This shows a very important result: thanks to the non-linear :math:`z`
@@ -184,13 +184,13 @@ that we calculated above, along with the first few terms of equation
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/demodulation/Fourier_fdm.py
+      .. plot:: guide/demodulation/Fourier_fdm.py
          :align: center
          :include-source: False
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/demodulation/Fourier_pdm.py
+      .. plot:: guide/demodulation/Fourier_pdm.py
          :align: center
          :include-source: False
 
@@ -254,12 +254,12 @@ shown in the example script below.
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/demodulation/integral_fdm.py
+      .. plot:: guide/demodulation/integral_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/demodulation/integral_pdm.py
+      .. plot:: guide/demodulation/integral_pdm.py
          :align: center
 
 Putting it all together
@@ -288,12 +288,12 @@ several harmonics at once.
 
    .. tab-item:: FDM
 
-      .. plot:: guide/plots/demodulation/approach_fdm.py
+      .. plot:: guide/demodulation/approach_fdm.py
          :align: center
 
    .. tab-item:: PDM
 
-      .. plot:: guide/plots/demodulation/approach_pdm.py
+      .. plot:: guide/demodulation/approach_pdm.py
          :align: center
 
 This shows that both methods produce exactly the same results, and also

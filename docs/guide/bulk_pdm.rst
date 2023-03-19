@@ -8,5 +8,5 @@ Principles of the point dipole model
 
 Write me
 
-.. image:: diagrams/pdm.svg
+.. image:: bulk_pdm/pdm.svg
    :align: center

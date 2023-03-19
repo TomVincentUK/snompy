@@ -32,7 +32,7 @@ surface nearby) to a vertical electric field.
 The image below shows the vertical component of the electric field response
 of an ellipsoid to a vertical :math:`E_{in}`.
 
-.. image:: diagrams/dipole_field.svg
+.. image:: bulk_fdm/dipole_field.svg
    :align: center
 
 We can see that the resulting field looks like that of a dipole formed by
@@ -82,7 +82,7 @@ The image below shows the various induced charges, counter charges, and
 image charges which are used in the FDM to model the tip-sample
 interaction.
 
-.. image:: diagrams/fdm.svg
+.. image:: bulk_fdm/fdm.svg
    :align: center
 
 We can model the electric field response of the sample to the charge
@@ -216,12 +216,15 @@ function :func:`pysnom.fdm.eff_pol_bulk`.
 Using pysnom for bulk FDM
 -------------------------
 
-[This section should explain :func:`pysnom.fdm.eff_pol_bulk` and relate it
-to the section above, including different ways to specify the material
-parameters.]
+In this section:
+
+* Show an approach curve using default arguments
+* Show the same approach curve using specific tip arguments
+* Show the same approach curve using multiple harmonics
 
 .. plot::
    :context:
+   :caption: Just a test
 
    import matplotlib.pyplot as plt
    import numpy as np
@@ -233,8 +236,15 @@ parameters.]
    eps_sample = 11.7
    harmonic = 3
 
+   fig, ax = plt.subplots()
+   ax.set(
+       xlabel=r"$z$",
+       xlim=(z.min(), z.max())
+   )
+   ax.legend()
+
    alpha_eff = pysnom.fdm.eff_pol_bulk(z, tapping_amplitude, harmonic, eps_sample)
-   plt.plot(z, np.abs(alpha_eff))
+   ax.plot(z, np.abs(alpha_eff))
 
 [Just testing contexts carry between plots here]
 
