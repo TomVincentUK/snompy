@@ -4,16 +4,19 @@ import numpy as np
 import pysnom
 
 # Define an approach curve on Si
-z_nm = np.linspace(0, 100, 512)
+z_nm = np.linspace(0, 100, 512)  # Useful for plotting
 z = z_nm * 1e-9  # Convert to nm to m (we'll work in SI units)
 tapping_amplitude = 25e-9
-eps_sample = 11.7
+eps_sample = 11.7  # The mid-IR dielectric function of Si
 
 # Set up an axis for plotting
 fig, ax = plt.subplots()
 ax.set(
-    xlabel=r"$z$", xlim=(z_nm.min(), z_nm.max()), ylabel=r"$\alpha_{eff, \ n}$ / a.u."
+    xlabel=r"$z$",
+    xlim=(z_nm.min(), z_nm.max()),
+    ylabel=r"$\frac{\alpha_{eff, \ n}}{(\alpha_{eff, \ n})|_{z = 0}}$",
 )
+fig.tight_layout()
 
 # Calculate an approach curve using default parameters
 single_harmonic = 2
@@ -43,7 +46,7 @@ alpha_eff /= alpha_eff[0]  # Normalise to z=0
 ax.plot(
     z_nm,
     np.abs(alpha_eff),
-    label=r"Default parameters($\beta$), $n = " f"{single_harmonic}" r"$",
+    label=r"Default parameters ($\beta$), $n = " f"{single_harmonic}" r"$",
     ls="--",
 )
 ax.legend()  # Update the legend

@@ -222,39 +222,151 @@ In this section:
 * Show the same approach curve using specific tip arguments
 * Show the same approach curve using multiple harmonics
 
+In this section we'll show how the bulk FDM can be used in ``pysnom`` by
+simulating an approach curve from bulk silicon (Si).
+
+.. hint::
+   :class: toggle
+
+   An approach curve is a type of AFM measurement where values are recorded
+   while the tip is moved towards the sample surface, typically until the
+   two make contact.
+
+   The same data can be acquired by a retraction curve, which moves the tip
+   *away* from the sample, though the term approach curve is often used to
+   refer to either type of measurement.
+
+To begin, lets import the libraries that we'll need, define some
+experimental parameters for our simulation, and set up some axes that we
+can plot our results in.
+
+For the approach curve parameters we use:
+
+* :math:`z`, called `z` here, is a range of points from 0 to 100 nm;
+* :math:`A_{tip}`, called `tapping_amplitude` here, is set to 25 nm (see :ref:`demodulation` for details on this parameter); and
+* :math:`\varepsilon_{sub}`, called `eps_sample` here, is set to 11.7, The mid-IR dielectric function of Si.
+
+All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_base_unit>`_.
+
 .. plot::
    :context:
-   :caption: Just a test
+   :caption: An empty set of axes.
+   :alt: An empty set of axes.
 
    import matplotlib.pyplot as plt
    import numpy as np
 
    import pysnom
 
-   z = np.linspace(0, 100, 512) * 1e-9
+   # Define an approach curve on Si
+   z_nm = np.linspace(0, 100, 512)  # Useful for plotting
+   z = z_nm * 1e-9  # Convert to nm to m (we'll work in SI units)
    tapping_amplitude = 25e-9
-   eps_sample = 11.7
-   harmonic = 3
+   eps_sample = 11.7  # The mid-IR dielectric function of Si
 
+   # Set up an axis for plotting
    fig, ax = plt.subplots()
    ax.set(
-       xlabel=r"$z$",
-       xlim=(z.min(), z.max())
+      xlabel=r"$z$",
+      xlim=(z_nm.min(), z_nm.max()),
+      ylabel=r"$\frac{\alpha_{eff, \ n}}{(\alpha_{eff, \ n})|_{z = 0}}$",
+   )
+   fig.tight_layout()
+
+[Now, we can fill these ...]
+
+.. plot::
+   :context:
+
+   # Calculate an approach curve using default parameters
+   single_harmonic = 2
+   alpha_eff = pysnom.fdm.eff_pol_bulk(
+      z=z,
+      tapping_amplitude=tapping_amplitude,
+      harmonic=single_harmonic,
+      eps_sample=eps_sample,
+   )
+   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   ax.plot(
+      z_nm,
+      np.abs(alpha_eff),
+      label=r"Default parameters ($\varepsilon$), $n = " f"{single_harmonic}" r"$",
    )
    ax.legend()
-
-   alpha_eff = pysnom.fdm.eff_pol_bulk(z, tapping_amplitude, harmonic, eps_sample)
-   ax.plot(z, np.abs(alpha_eff))
 
 [Just testing contexts carry between plots here]
 
 .. plot::
    :context:
 
+   # Use beta instead of eps_sample
    beta = pysnom.reflection.refl_coeff(1, eps_sample)
+   alpha_eff = pysnom.fdm.eff_pol_bulk(
+      z=z,
+      tapping_amplitude=tapping_amplitude,
+      harmonic=single_harmonic,
+      beta=beta,
+   )
+   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   ax.plot(
+      z_nm,
+      np.abs(alpha_eff),
+      label=r"Default parameters ($\beta$), $n = " f"{single_harmonic}" r"$",
+      ls="--",
+   )
+   ax.legend()  # Update the legend
 
-   alpha_eff = pysnom.fdm.eff_pol_bulk(z, tapping_amplitude, harmonic, beta=beta)
-   plt.plot(z, np.abs(alpha_eff), ls="--")
+[Test]
+
+.. plot::
+   :context:
+
+   # Change the default parameters
+   radius = 100e-9
+   semi_maj_axis = 400e-9
+   g_factor = 0.7
+   alpha_eff = pysnom.fdm.eff_pol_bulk(
+      z=z,
+      tapping_amplitude=tapping_amplitude,
+      harmonic=single_harmonic,
+      eps_sample=eps_sample,
+      radius=radius,
+      semi_maj_axis=semi_maj_axis,
+      g_factor=g_factor,
+   )
+   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   ax.plot(
+      z_nm,
+      np.abs(alpha_eff),
+      label=r"Custom parameters, $n = " f"{single_harmonic}" r"$",
+      ls=":",
+   )
+   ax.legend()  # Update the legend
+
+[Test]
+
+.. plot::
+   :context:
+
+   # Vector broadcasting
+   multiple_harmonics = np.arange(3, 6)
+   alpha_eff = pysnom.fdm.eff_pol_bulk(
+      z=z[:, np.newaxis],  # newaxis added for array broadcasting
+      tapping_amplitude=tapping_amplitude,
+      harmonic=multiple_harmonics,
+      eps_sample=eps_sample,
+      radius=radius,
+      semi_maj_axis=semi_maj_axis,
+      g_factor=g_factor,
+   )
+   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   ax.plot(
+      z_nm,
+      np.abs(alpha_eff),
+      label=[r"Custom parameters, $n = " f"{n}" r"$" for n in multiple_harmonics],
+      ls=":",
+   )
+   ax.legend()  # Update the legend
 
 Parameters
 ----------
