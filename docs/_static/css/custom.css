@@ -6,16 +6,16 @@ html[data-theme="light"] {
   --pst-color-warning: #3288bd;
   --pst-color-danger: #d53e4f;
   --pst-color-target: #fee08b;
-  --pst-color-background: #f5f5f5;
-  --pst-color-on-background: #f5f5f5;
-  --pst-color-surface: #ffffff;
+  --pst-color-background: #ffffff;
+  --pst-color-on-background: #ffffff;
+  --pst-color-surface: #f5f5f5;
   --pst-color-inline-code: var(--pst-color-primary);
   --pst-color-text-base: #262339;
   --pst-color-text-muted: #3d4853;
 }
 
 .sd-card {
-  background: #f5f5f5;
+  background: #ffffff;
   border-radius: 0;
   padding: 30px 10px 20px 10px;
   margin: 10px 0px;
