@@ -93,6 +93,7 @@ def eff_pol_n_bulk(
     radius=defaults["radius"],
     eps_sphere=None,
     alpha_sphere=None,
+    N_demod_trapz=defaults["N_demod_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk point dipole model.
@@ -124,6 +125,9 @@ def eff_pol_n_bulk(
     alpha_sphere : complex
         Polarisability of the conducting sphere used as a model for the AFM
         tip.
+    N_demod_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
 
     Returns
     -------
@@ -202,6 +206,7 @@ def eff_pol_n_bulk(
         tapping_amplitude,
         harmonic,
         f_args=(beta, radius, alpha_sphere),
+        N_demod_trapz=N_demod_trapz,
     )
 
     return alpha_eff

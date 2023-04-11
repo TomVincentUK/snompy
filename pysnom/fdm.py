@@ -203,6 +203,7 @@ def eff_pol_n_bulk(
     g_factor=defaults["g_factor"],
     x_0=None,
     x_1=defaults["x_1"],
+    N_demod_trapz=defaults["N_demod_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk finite dipole model.
@@ -241,6 +242,9 @@ def eff_pol_n_bulk(
     x_1 : float
         Position of an induced charge 1 within the tip. Specified in units
         of the tip radius.
+    N_demod_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
 
     Returns
     -------
@@ -294,6 +298,7 @@ def eff_pol_n_bulk(
         tapping_amplitude,
         harmonic,
         f_args=(beta, radius, semi_maj_axis, g_factor, x_0, x_1),
+        N_demod_trapz=N_demod_trapz,
     )
 
     return alpha_eff
@@ -699,6 +704,7 @@ def eff_pol_n_multi(
     x_0=None,
     x_1=defaults["x_1"],
     Laguerre_order=defaults["Laguerre_order"],
+    N_demod_trapz=defaults["N_demod_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the multilayer finite dipole model.
@@ -745,6 +751,9 @@ def eff_pol_n_multi(
         of the tip radius.
     Laguerre_order : complex
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
+    N_demod_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
 
     Returns
     -------
@@ -798,6 +807,7 @@ def eff_pol_n_multi(
             x_1,
             Laguerre_order,
         ),
+        N_demod_trapz=N_demod_trapz,
     )
 
     return alpha_eff
