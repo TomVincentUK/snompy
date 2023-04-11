@@ -64,8 +64,8 @@ both directly, and also by reflections from the sample surface, as shown in
 the diagram above.
 
 In ``pysnom``, the undemodulated effective polarisability is provided by
-the functions :func:`pysnom.fdm.eff_pol_0_bulk`,
-:func:`pysnom.fdm.eff_pol_0_multi`, and :func:`pysnom.pdm.eff_pol_0_bulk`.
+the functions :func:`pysnom.fdm.eff_pol_bulk`,
+:func:`pysnom.fdm.eff_pol_multi`, and :func:`pysnom.pdm.eff_pol_bulk`.
 
 .. hint::
    :class: dropdown
