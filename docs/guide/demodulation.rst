@@ -304,7 +304,7 @@ that higher order demodulation leads to a faster decay of the SNOM signal
 .. hint::
    :class: dropdown
 
-   In the script above, the `z` value is offset by `tapping amplitude` for
+   In the script above, the `z` value is offset by `tapping_amplitude` for
    the approach curve calculated using :func:`pysnom.demodulate.demod`.
    That's because the definition for the AFM oscillation, as given in
    equation :eq:`z_mod`, is set so that the tip just barely contacts the
