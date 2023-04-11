@@ -182,7 +182,7 @@ the total induced dipole, as
    \propto 1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}.
 
 In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
-:func:`pysnom.fdm.eff_pol_0_bulk`.
+:func:`pysnom.fdm.eff_pol_bulk`.
 
 Demodulating the FDM
 --------------------
@@ -211,7 +211,7 @@ with amplitude and phase
 This is explained in detail on the dedicated page :ref:`demodulation`.
 
 In ``pysnom``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
-function :func:`pysnom.fdm.eff_pol_bulk`.
+function :func:`pysnom.fdm.eff_pol_n_bulk`.
 
 Using pysnom for bulk FDM
 -------------------------
@@ -280,7 +280,7 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
 
    # Calculate an approach curve using default parameters
    single_harmonic = 2
-   alpha_eff = pysnom.fdm.eff_pol_bulk(
+   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
       z=z,
       tapping_amplitude=tapping_amplitude,
       harmonic=single_harmonic,
@@ -301,7 +301,7 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
 
    # Use beta instead of eps_sample
    beta = pysnom.reflection.refl_coeff(1, eps_sample)
-   alpha_eff = pysnom.fdm.eff_pol_bulk(
+   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
       z=z,
       tapping_amplitude=tapping_amplitude,
       harmonic=single_harmonic,
@@ -325,7 +325,7 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
    radius = 100e-9
    semi_maj_axis = 400e-9
    g_factor = 0.7
-   alpha_eff = pysnom.fdm.eff_pol_bulk(
+   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
       z=z,
       tapping_amplitude=tapping_amplitude,
       harmonic=single_harmonic,
@@ -350,7 +350,7 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
 
    # Vector broadcasting
    multiple_harmonics = np.arange(3, 6)
-   alpha_eff = pysnom.fdm.eff_pol_bulk(
+   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
       z=z[:, np.newaxis],  # newaxis added for array broadcasting
       tapping_amplitude=tapping_amplitude,
       harmonic=multiple_harmonics,

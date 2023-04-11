@@ -15,8 +15,8 @@ Bulk point dipole model
     :nosignatures:
     :toctree: generated/
 
+    eff_pol_n_bulk
     eff_pol_bulk
-    eff_pol_0_bulk
 
 """
 import warnings
@@ -28,7 +28,7 @@ from .demodulate import demod
 from .reflection import refl_coeff
 
 
-def eff_pol_0_bulk(
+def eff_pol_bulk(
     z,
     beta,
     radius=defaults["radius"],
@@ -56,9 +56,9 @@ def eff_pol_0_bulk(
 
     See also
     --------
-    pysnom.fdm.eff_pol_0_bulk :
+    pysnom.fdm.eff_pol_bulk :
         The finite dipole model (FDM) equivalent of this function.
-    eff_pol_bulk : The modulated/demodulated version of this function.
+    eff_pol_n_bulk : The modulated/demodulated version of this function.
 
     Notes
     -----
@@ -83,7 +83,7 @@ def eff_pol_0_bulk(
     return alpha_sphere / (1 - (alpha_sphere * beta / (16 * np.pi * (radius + z) ** 3)))
 
 
-def eff_pol_bulk(
+def eff_pol_n_bulk(
     z,
     tapping_amplitude,
     harmonic,
@@ -133,9 +133,9 @@ def eff_pol_bulk(
 
     See also
     --------
-    pysnom.fdm.eff_pol_bulk :
+    pysnom.fdm.eff_pol_n_bulk :
         The finite dipole model equivalent of this function.
-    eff_pol_0_bulk : The unmodulated/demodulated version of this function.
+    eff_pol_bulk : The unmodulated/demodulated version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -146,7 +146,7 @@ def eff_pol_bulk(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_bulk`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_bulk`.
 
     If `eps_sphere` is specified it is used to calculate `alpha_sphere`
     according to
@@ -197,7 +197,7 @@ def eff_pol_bulk(
     z_0 = z + tapping_amplitude
 
     alpha_eff = demod(
-        eff_pol_0_bulk,
+        eff_pol_bulk,
         z_0,
         tapping_amplitude,
         harmonic,

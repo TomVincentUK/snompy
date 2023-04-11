@@ -15,8 +15,8 @@ Bulk finite dipole model
     :nosignatures:
     :toctree: generated/
 
+    eff_pol_n_bulk
     eff_pol_bulk
-    eff_pol_0_bulk
     geom_func_bulk
 
 Multilayer finite dipole model
@@ -26,8 +26,8 @@ Multilayer finite dipole model
     :nosignatures:
     :toctree: generated/
 
+    eff_pol_n_multi
     eff_pol_multi
-    eff_pol_0_multi
     geom_func_multi
     eff_pos_and_charge
     phi_E_0
@@ -113,7 +113,7 @@ def geom_func_bulk(
     )
 
 
-def eff_pol_0_bulk(
+def eff_pol_bulk(
     z,
     beta,
     radius=defaults["radius"],
@@ -156,9 +156,9 @@ def eff_pol_0_bulk(
 
     See also
     --------
-    eff_pol_0_multi :
+    eff_pol_multi :
         The multilayer equivalent of this function.
-    eff_pol_bulk : The modulated/demodulated version of this function.
+    eff_pol_n_bulk : The modulated/demodulated version of this function.
     geom_func_bulk : Geometry function.
 
     Notes
@@ -191,7 +191,7 @@ def eff_pol_0_bulk(
     return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
 
 
-def eff_pol_bulk(
+def eff_pol_n_bulk(
     z,
     tapping_amplitude,
     harmonic,
@@ -250,9 +250,9 @@ def eff_pol_bulk(
 
     See also
     --------
-    eff_pol_multi :
+    eff_pol_n_multi :
         The multilayer equivalent of this function.
-    eff_pol_0_bulk : The unmodulated/demodulated version of this function.
+    eff_pol_bulk : The unmodulated/demodulated version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -263,7 +263,7 @@ def eff_pol_bulk(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_bulk`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_bulk`.
 
     References
     ----------
@@ -289,7 +289,7 @@ def eff_pol_bulk(
     z_0 = z + tapping_amplitude
 
     alpha_eff = demod(
-        eff_pol_0_bulk,
+        eff_pol_bulk,
         z_0,
         tapping_amplitude,
         harmonic,
@@ -315,7 +315,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-inifinite
+        Thicknesses of each sandwiched layer between the semi-infinite
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
@@ -452,7 +452,7 @@ def eff_pos_and_charge(
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-inifinite
+        Thicknesses of each sandwiched layer between the semi-infinite
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
@@ -587,7 +587,7 @@ def geom_func_multi(
     )
 
 
-def eff_pol_0_multi(
+def eff_pol_multi(
     z,
     beta_stack=None,
     t_stack=None,
@@ -610,7 +610,7 @@ def eff_pol_0_multi(
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-inifinite
+        Thicknesses of each sandwiched layer between the semi-infinite
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
@@ -641,8 +641,8 @@ def eff_pol_0_multi(
 
     See also
     --------
-    eff_pol_0_bulk : The bulk equivalent of this function.
-    eff_pol_multi : The modulated/demodulated version of this function.
+    eff_pol_bulk : The bulk equivalent of this function.
+    eff_pol_n_multi : The modulated/demodulated version of this function.
     geom_func_multi : Multilayer geometry function.
     phi_E_0 : Surface electric potential and field.
 
@@ -686,7 +686,7 @@ def eff_pol_0_multi(
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
 
-def eff_pol_multi(
+def eff_pol_n_multi(
     z,
     tapping_amplitude,
     harmonic,
@@ -722,7 +722,7 @@ def eff_pol_multi(
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-inifinite
+        Thicknesses of each sandwiched layer between the semi-infinite
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
@@ -754,8 +754,8 @@ def eff_pol_multi(
 
     See also
     --------
-    eff_pol_bulk : The bulk equivalent of this function.
-    eff_pol_0_multi : The unmodulated/demodulated version of this function.
+    eff_pol_n_bulk : The bulk equivalent of this function.
+    eff_pol_multi : The unmodulated/demodulated version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -766,7 +766,7 @@ def eff_pol_multi(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_0_multi`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_multi`.
 
     References
     ----------
@@ -784,7 +784,7 @@ def eff_pol_multi(
     z_0 = z + tapping_amplitude
 
     alpha_eff = demod(
-        eff_pol_0_multi,
+        eff_pol_multi,
         z_0,
         tapping_amplitude,
         harmonic,

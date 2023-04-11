@@ -18,7 +18,7 @@ theta = np.linspace(-np.pi, np.pi, 512)
 z = z_0 + tapping_amplitude * (1 + np.cos(theta))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.fdm.eff_pol_0_bulk(z=z, beta=refl_coeff)
+alpha_eff = pysnom.fdm.eff_pol_bulk(z=z, beta=refl_coeff)
 
 # Generate a complex sinusoidal envelope
 envelope = np.exp(1j * harmonic * theta)

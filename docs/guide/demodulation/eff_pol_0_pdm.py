@@ -12,7 +12,7 @@ eps_environment = 1  # Vacuum/air dielectric function
 refl_coeff = pysnom.reflection.refl_coeff(eps_environment, eps_Si)
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.pdm.eff_pol_0_bulk(z=z, beta=refl_coeff)
+alpha_eff = pysnom.pdm.eff_pol_bulk(z=z, beta=refl_coeff)
 
 # Plot output
 fig, ax = plt.subplots()

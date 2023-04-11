@@ -4,8 +4,10 @@ import pytest
 import pysnom
 
 
-@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol_bulk, pysnom.pdm.eff_pol_bulk))
-def test_eff_pol_broadcasting(eff_pol):
+@pytest.mark.parametrize(
+    "eff_pol_n", (pysnom.fdm.eff_pol_n_bulk, pysnom.pdm.eff_pol_n_bulk)
+)
+def test_eff_pol_n_broadcasting(eff_pol_n):
     # Measurement parameters
     wavenumber = np.linspace(1680, 1780, 32) * 1e2
     z = 50e-9
@@ -24,7 +26,7 @@ def test_eff_pol_broadcasting(eff_pol):
         osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
     )
 
-    alpha_eff = eff_pol(
+    alpha_eff = eff_pol_n(
         z=z,
         tapping_amplitude=tapping_amplitude,
         harmonic=harmonic,
@@ -33,10 +35,12 @@ def test_eff_pol_broadcasting(eff_pol):
     assert alpha_eff.shape == target_shape
 
 
-@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol_bulk, pysnom.pdm.eff_pol_bulk))
-def test_eff_pol_error_if_no_material(eff_pol):
+@pytest.mark.parametrize(
+    "eff_pol_n", (pysnom.fdm.eff_pol_n_bulk, pysnom.pdm.eff_pol_n_bulk)
+)
+def test_eff_pol_n_error_if_no_material(eff_pol_n):
     with pytest.raises(Exception) as e:
-        eff_pol(
+        eff_pol_n(
             z=50e-9,
             tapping_amplitude=50e-9,
             harmonic=np.arange(2, 10),
@@ -45,12 +49,14 @@ def test_eff_pol_error_if_no_material(eff_pol):
     assert "Either `eps_sample` or `beta` must be specified." in str(e.value)
 
 
-@pytest.mark.parametrize("eff_pol", (pysnom.fdm.eff_pol_bulk, pysnom.pdm.eff_pol_bulk))
-def test_eff_pol_warning_if_eps_and_beta(eff_pol):
+@pytest.mark.parametrize(
+    "eff_pol_n", (pysnom.fdm.eff_pol_n_bulk, pysnom.pdm.eff_pol_n_bulk)
+)
+def test_eff_pol_n_warning_if_eps_and_beta(eff_pol_n):
     with pytest.warns(
         UserWarning, match="`beta` overrides `eps_sample` when both are specified."
     ):
-        eff_pol(
+        eff_pol_n(
             z=50e-9,
             tapping_amplitude=50e-9,
             harmonic=np.arange(2, 10),

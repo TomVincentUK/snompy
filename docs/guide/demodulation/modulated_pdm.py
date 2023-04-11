@@ -19,7 +19,7 @@ t = np.linspace(-periods * np.pi / tapping_freq, periods * np.pi / tapping_freq,
 z = z_0 + tapping_amplitude * (1 + np.cos(tapping_freq * t))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.pdm.eff_pol_0_bulk(z=z, beta=refl_coeff)
+alpha_eff = pysnom.pdm.eff_pol_bulk(z=z, beta=refl_coeff)
 
 # Plot output
 fig, axes = plt.subplots(nrows=2, sharex=True)

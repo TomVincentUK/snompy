@@ -17,7 +17,7 @@ refl_coeff = pysnom.reflection.refl_coeff(eps_environment, eps_Si)
 # offset by tapping amplitude so oscillation doesn't intersect with sample
 z_shift = z + tapping_amplitude
 alpha_eff_demod = pysnom.demodulate.demod(
-    f_x=pysnom.fdm.eff_pol_0_bulk,
+    f_x=pysnom.fdm.eff_pol_bulk,
     x_0=z_shift[:, np.newaxis],  # newaxis added for array broadcasting
     x_amplitude=tapping_amplitude,
     harmonic=harmonics,
@@ -25,7 +25,7 @@ alpha_eff_demod = pysnom.demodulate.demod(
 )
 
 # Calculate the effective polarisability directly
-alpha_eff_direct = pysnom.fdm.eff_pol_bulk(
+alpha_eff_direct = pysnom.fdm.eff_pol_n_bulk(
     z=z[:, np.newaxis],  # newaxis added for array broadcasting
     tapping_amplitude=tapping_amplitude,
     harmonic=harmonics,

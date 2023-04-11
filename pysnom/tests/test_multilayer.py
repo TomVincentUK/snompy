@@ -2,9 +2,9 @@ import numpy as np
 from scipy.integrate import quad_vec
 
 from pysnom.fdm import (
-    eff_pol_0_multi,
-    eff_pol_bulk,
     eff_pol_multi,
+    eff_pol_n_bulk,
+    eff_pol_n_multi,
     eff_pos_and_charge,
     phi_E_0,
 )
@@ -70,17 +70,17 @@ def test_eff_pos_and_charge_broadcasting():
     assert z_image.shape == beta_image.shape == target_shape
 
 
-def test_eff_pol_0_multi_broadcasting():
+def test_eff_pol_multi_broadcasting():
     target_shape = (Z * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0]).shape
-    alpha_eff = eff_pol_0_multi(Z, BETA_STACK_VECTOR, T_STACK_VECTOR)
+    alpha_eff = eff_pol_multi(Z, BETA_STACK_VECTOR, T_STACK_VECTOR)
     assert alpha_eff.shape == target_shape
 
 
-def test_eff_pol_multi_broadcasting():
+def test_eff_pol_n_multi_broadcasting():
     target_shape = (
         Z * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0] * TAPPING_AMPLITUDE * HARMONIC
     ).shape
-    alpha_eff = eff_pol_multi(
+    alpha_eff = eff_pol_n_multi(
         z=Z,
         tapping_amplitude=TAPPING_AMPLITUDE,
         harmonic=HARMONIC,
@@ -90,16 +90,16 @@ def test_eff_pol_multi_broadcasting():
     assert alpha_eff.shape == target_shape
 
 
-def test_eff_pol_multi_two_layers_same_as_bulk():
+def test_eff_pol_n_multi_two_layers_same_as_bulk():
     eps_stack = 1, 11.7
-    alpha_eff_bulk = eff_pol_bulk(
+    alpha_eff_bulk = eff_pol_n_bulk(
         z=Z,
         tapping_amplitude=TAPPING_AMPLITUDE,
         harmonic=HARMONIC,
         eps_sample=eps_stack[-1],
         eps_environment=eps_stack[0],
     )
-    alpha_eff_multi = eff_pol_multi(
+    alpha_eff_multi = eff_pol_n_multi(
         z=Z,
         tapping_amplitude=TAPPING_AMPLITUDE,
         harmonic=HARMONIC,

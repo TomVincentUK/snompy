@@ -166,7 +166,7 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-inifinite
+        Thicknesses of each sandwiched layer between the semi-infinite
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.

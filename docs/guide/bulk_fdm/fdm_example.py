@@ -20,7 +20,7 @@ fig.tight_layout()
 
 # Calculate an approach curve using default parameters
 single_harmonic = 2
-alpha_eff = pysnom.fdm.eff_pol_bulk(
+alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=single_harmonic,
@@ -36,7 +36,7 @@ ax.legend()
 
 # Use beta instead of eps_sample
 beta = pysnom.reflection.refl_coeff(1, eps_sample)
-alpha_eff = pysnom.fdm.eff_pol_bulk(
+alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=single_harmonic,
@@ -55,7 +55,7 @@ ax.legend()  # Update the legend
 radius = 100e-9
 semi_maj_axis = 400e-9
 g_factor = 0.7
-alpha_eff = pysnom.fdm.eff_pol_bulk(
+alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z=z,
     tapping_amplitude=tapping_amplitude,
     harmonic=single_harmonic,
@@ -75,7 +75,7 @@ ax.legend()  # Update the legend
 
 # Vector broadcasting
 multiple_harmonics = np.arange(3, 6)
-alpha_eff = pysnom.fdm.eff_pol_bulk(
+alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z=z[:, np.newaxis],  # newaxis added for array broadcasting
     tapping_amplitude=tapping_amplitude,
     harmonic=multiple_harmonics,
