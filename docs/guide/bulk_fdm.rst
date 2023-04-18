@@ -216,14 +216,9 @@ function :func:`pysnom.fdm.eff_pol_n_bulk`.
 Using pysnom for bulk FDM
 -------------------------
 
-In this section:
-
-* Show an approach curve using default arguments
-* Show the same approach curve using specific tip arguments
-* Show the same approach curve using multiple harmonics
-
 In this section we'll show how the bulk FDM can be used in ``pysnom`` by
-simulating an approach curve from bulk silicon (Si).
+simulating an approach curve from bulk silicon (Si) in a few different
+ways.
 
 .. hint::
    :class: toggle
@@ -236,17 +231,16 @@ simulating an approach curve from bulk silicon (Si).
    *away* from the sample, though the term approach curve is often used to
    refer to either type of measurement.
 
-To begin, lets import the libraries that we'll need, define some
-experimental parameters for our simulation, and set up some axes that we
-can plot our results in.
+Initial setup
+^^^^^^^^^^^^^
 
-For the approach curve parameters we use:
+To begin with, let's import the libraries that we'll need, set the
+:math:`z` values for our approach curves, and set up some axes that we can
+plot our results in.
+For :math:`z`, we'll set a range of points from 0 to 100 nm.
 
-* :math:`z`, called `z` here, is a range of points from 0 to 100 nm;
-* :math:`A_{tip}`, called `tapping_amplitude` here, is set to 25 nm (see :ref:`demodulation` for details on this parameter); and
-* :math:`\varepsilon_{sub}`, called `eps_sample` here, is set to 11.7, The mid-IR dielectric function of Si.
-
-All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_base_unit>`_.
+We'll do all the calculations in `SI base units <https://en.wikipedia.org/wiki/SI_base_unit>`_,
+but we can also plot :math:`z` in nm to make our figure tidier.
 
 .. plot::
    :context:
@@ -260,72 +254,135 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
 
    # Define an approach curve on Si
    z_nm = np.linspace(0, 100, 512)  # Useful for plotting
-   z = z_nm * 1e-9  # Convert to nm to m (we'll work in SI units)
-   tapping_amplitude = 25e-9
-   eps_sample = 11.7  # The mid-IR dielectric function of Si
+   z = z_nm * 1e-9  # Convert to nm to m (we'll work in SI base units)
 
    # Set up an axis for plotting
    fig, ax = plt.subplots()
    ax.set(
-      xlabel=r"$z$",
+      xlabel=r"$z$ / nm",
       xlim=(z_nm.min(), z_nm.max()),
       ylabel=r"$\frac{\alpha_{eff, \ n}}{(\alpha_{eff, \ n})|_{z = 0}}$",
    )
    fig.tight_layout()
 
-[Now, we can fill these ...]
+Using dielectric function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now let's create an approach curve to display in these axes.
+We'll use :func:`pysnom.fdm.eff_pol_n_bulk` to calculate the effective
+polarisability.
+
+We need to tell the function our tip height :math:`z`, the tapping
+amplitude :math:`A_{tip}` (see :ref:`demodulation` for details on this
+parameter), the demodulation harmonic :math:`n`, and some way of specifying
+the sample's response to light (in this first example we'll use
+:math:`\varepsilon_{sub}`).
+These arguments are called `z`, `tapping_amplitude`, `harmonic`, and
+`eps_sample`.
+
+Let's use :math:`A_{tip} = 25` nm, :math:`n = 2`, and
+:math:`\varepsilon_{sub} = 11.7` (the mid-IR dielectric function of Si) [3]_ to
+calculate our first approach curve.
 
 .. plot::
    :context:
+   :caption: An approach curve from Si, calculated from the dielectric function.
+   :alt: An approach curve from Si, calculated from the dielectric function.
 
-   # Calculate an approach curve using default parameters
+   # Set the parameters for our first approach curve
+   tapping_amplitude = 25e-9
    single_harmonic = 2
-   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
+   eps_sample = 11.7  # The mid-IR dielectric function of Si
+
+
+   # Calculate an approach curve using the dielectric function
+   alpha_eff_0 = pysnom.fdm.eff_pol_n_bulk(
       z=z,
       tapping_amplitude=tapping_amplitude,
       harmonic=single_harmonic,
       eps_sample=eps_sample,
    )
-   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   alpha_eff_0 /= alpha_eff_0[0]  # Normalise to z = 0
+
+   # Add the approach curve to the figure
    ax.plot(
       z_nm,
-      np.abs(alpha_eff),
-      label=r"Default parameters ($\varepsilon$), $n = " f"{single_harmonic}" r"$",
+      np.abs(alpha_eff_0),
+      label=r"Default parameters (via $\varepsilon$), $n = " f"{single_harmonic}" r"$",
    )
    ax.legend()
 
-[Just testing contexts carry between plots here]
+This shows the expected response, that the effective polarisability decays
+with distance from the sample.
+
+Using reflection coefficient
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes it's easier to specify the sample's response as a reflection
+coefficient :math:`\beta`, instead of a dielectric function
+:math:`\varepsilon_{sub}`.
+In :func:`pysnom.fdm.eff_pol_n_bulk`, we can do this by using the argument
+`beta` instead of `eps_sample`.
+
+To calculate the reflection coefficient of Si, we'll use the function
+:func:`pysnom.reflection.refl_coeff`, and assume that our environment has a
+dielectric function of 1 (for air or vacuum).
+
+We should expect to see exactly the same approach curve here that we
+calculated before, so we'll draw the new curve with a dashed line so we can
+still see the original plot.
 
 .. plot::
    :context:
+   :caption: Add a second approach curve calculated from the reflection coefficient.
+   :alt: Add a second approach curve calculated from the reflection coefficient.
 
-   # Use beta instead of eps_sample
+   # Calculate reflection coefficient from the Si dielectric function
    beta = pysnom.reflection.refl_coeff(1, eps_sample)
-   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
+
+   # Calculate an approach curve using the reflection coefficient
+   alpha_eff_1 = pysnom.fdm.eff_pol_n_bulk(
       z=z,
       tapping_amplitude=tapping_amplitude,
       harmonic=single_harmonic,
       beta=beta,
    )
-   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   alpha_eff_1 /= alpha_eff_1[0]  # Normalise to z = 0
+
+   # Add the new approach curve to the figure
    ax.plot(
       z_nm,
-      np.abs(alpha_eff),
-      label=r"Default parameters ($\beta$), $n = " f"{single_harmonic}" r"$",
+      np.abs(alpha_eff_1),
+      label=r"Default parameters (via $\beta$), $n = " f"{single_harmonic}" r"$",
       ls="--",
    )
    ax.legend()  # Update the legend
 
-[Test]
+As we expected, both lines overlap nicely, which shows that specifying the
+material response via :math:`\varepsilon` and :math:`\beta` are equivalent.
+
+Changing the default parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the above examples, we didn't specify parameters like the radius
+:math:`r` or semi-major axis length :math:`L` of the ellipsoid, or the
+empirical factor :math:`g`, so the function reverted to its default values
+(see :func:`pysnom.fdm.eff_pol_n_bulk` for the values of these defaults).
+
+Lets add a new approach curve with a different set of tip parameters.
 
 .. plot::
    :context:
+   :caption: Add an approach curve with changes to the default parameters.
+   :alt: Add an approach curve with changes to the default parameters.
 
-   # Change the default parameters
+   # Updates to the default parameters
    radius = 100e-9
    semi_maj_axis = 400e-9
    g_factor = 0.7
-   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
+
+   # Calculate an approach curve with the updated parameters
+   alpha_eff_2 = pysnom.fdm.eff_pol_n_bulk(
       z=z,
       tapping_amplitude=tapping_amplitude,
       harmonic=single_harmonic,
@@ -334,23 +391,39 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
       semi_maj_axis=semi_maj_axis,
       g_factor=g_factor,
    )
-   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   alpha_eff_2 /= alpha_eff_2[0]  # Normalise to z = 0
+
+   # Add the new approach curve to the figure
    ax.plot(
       z_nm,
-      np.abs(alpha_eff),
-      label=r"Custom parameters, $n = " f"{single_harmonic}" r"$",
+      np.abs(alpha_eff_2),
+      label=r"Custom parameters (via $\varepsilon$), $n = " f"{single_harmonic}" r"$",
       ls=":",
    )
    ax.legend()  # Update the legend
 
-[Test]
+In this case, we see a new, distinct shape for the approach curve thanks to
+the different tip parameters.
+
+Taking advantage of array broadcasting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Where possible, ``pysnom`` uses ``numpy``-style
+`array broadcasting <https://numpy.org/doc/stable/user/basics.broadcasting.html>`_.
+This means multiple parameters can be varied at once, by providing arrays
+with different shapes as inputs.
+
+Lets take advantage of that to calculate several new approach curves at
+once, for some more harmonics using our custom parameters.
 
 .. plot::
    :context:
 
-   # Vector broadcasting
+   # Create a range of harmonics
    multiple_harmonics = np.arange(3, 6)
-   alpha_eff = pysnom.fdm.eff_pol_n_bulk(
+
+   # Calculate several approach curves at once using array broadcasting
+   alpha_eff_3 = pysnom.fdm.eff_pol_n_bulk(
       z=z[:, np.newaxis],  # newaxis added for array broadcasting
       tapping_amplitude=tapping_amplitude,
       harmonic=multiple_harmonics,
@@ -359,21 +432,22 @@ All values are specified using `SI base units <https://en.wikipedia.org/wiki/SI_
       semi_maj_axis=semi_maj_axis,
       g_factor=g_factor,
    )
-   alpha_eff /= alpha_eff[0]  # Normalise to z=0
+   alpha_eff_3 /= alpha_eff_3[0]  # Normalise to z = 0
+
    ax.plot(
       z_nm,
-      np.abs(alpha_eff),
-      label=[r"Custom parameters, $n = " f"{n}" r"$" for n in multiple_harmonics],
+      np.abs(alpha_eff_3),
+      label=[
+         r"Custom parameters (via $\varepsilon$), $n = " f"{n}" r"$"
+         for n in multiple_harmonics
+      ],  # list of labels (one per harmonic)
       ls=":",
    )
    ax.legend()  # Update the legend
 
-Parameters
-----------
-
-[A section talking about how each parameter of the FDM affects the results.
-Possibly with graphs for some parameters (`z`, `radius`, `semi_maj_ax`)]
-
+This shows another key result for SNOM experiments: that higher harmonics
+decay faster with distance than lower ones, which means they have a higher
+surface sensitivity.
 
 References
 ----------
@@ -385,3 +459,7 @@ References
    for scattering infrared near-field microscopy on layered systems,” Opt.
    Express, vol. 20, no. 12, p. 13173, Jun. 2012,
    doi: 10.1364/OE.20.013173.
+.. [3] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and R.
+   Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR
+   spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020, doi:
+   10.1038/s41467-020-17034-6.

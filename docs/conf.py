@@ -70,7 +70,7 @@ plot_rcparams = {
     "axes.labelsize": 11,
     "xtick.labelsize": 11,
     "ytick.labelsize": 11,
-    "legend.fontsize": 11,
+    "legend.fontsize": 9,
     "figure.dpi": 144,
     "figure.figsize": (3.5 * phi, 3.5),
     "figure.subplot.bottom": 0.2,
