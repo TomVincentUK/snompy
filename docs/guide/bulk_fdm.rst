@@ -449,6 +449,11 @@ This shows another key result for SNOM experiments: that higher harmonics
 decay faster with distance than lower ones, which means they have a higher
 surface sensitivity.
 
+Parameters
+----------
+
+[Explanations of parameters (perhaps with graphs)?]
+
 References
 ----------
 .. [1] A. Cvitkovic, N. Ocelic, and R. Hillenbrand, “Analytical model for
