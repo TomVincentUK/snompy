@@ -1,4 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+
 html[data-theme="light"] {
+  --pst-font-family-base: 'Open Sans', var(--pst-font-family-base-system);
+  --pst-font-family-heading: 'Open Sans', var(--pst-font-family-base-system);
   --pst-color-primary: #9e0142;
   --pst-color-secondary: #3288bd;
   --pst-color-success: #66c2a5;
