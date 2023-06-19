@@ -62,6 +62,7 @@ def demod(
 
     .. math::
 
+        \frac{1}{2 \pi}
         \int_{-\pi}^{\pi}
         \mathtt{f\_x(x\_0} + \mathtt{x\_amplitude} \cdot \cos(\theta)
         \mathtt{, *args)}
@@ -99,4 +100,4 @@ def demod(
     integrand = f_x(x_0 + np.cos(theta) * x_amplitude, *f_args) * np.exp(
         -1j * harmonic * theta
     )
-    return np.trapz(integrand, axis=0) / N_demod_trapz
+    return np.trapz(integrand, axis=0) / (N_demod_trapz)
