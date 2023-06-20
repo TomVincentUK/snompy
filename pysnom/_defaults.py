@@ -9,4 +9,5 @@ defaults = dict(
     g_factor=0.7 * np.exp(0.06j),
     N_demod_trapz=64,
     Laguerre_order=64,
+    Taylor_order=24,
 )

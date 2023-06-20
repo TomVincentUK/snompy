@@ -304,6 +304,50 @@ def eff_pol_n_bulk(
     return alpha_eff
 
 
+def eff_pol_n_bulk_Taylor(
+    z,
+    tapping_amplitude,
+    harmonic,
+    eps_sample=None,
+    eps_environment=defaults["eps_environment"],
+    beta=None,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    x_0=None,
+    x_1=defaults["x_1"],
+    N_demod_trapz=defaults["N_demod_trapz"],
+    Taylor_order=defaults["Taylor_order"],
+):
+    r"""Write me!"""
+    # beta calculated from eps_sample if not specified
+    if eps_sample is None:
+        if beta is None:
+            raise ValueError("Either `eps_sample` or `beta` must be specified.")
+    else:
+        if beta is None:
+            beta = refl_coeff(eps_environment, eps_sample)
+        else:
+            warnings.warn("`beta` overrides `eps_sample` when both are specified.")
+
+    if x_0 is None:
+        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+
+    # Set oscillation centre  so AFM tip touches sample at z = 0
+    z_0 = z + tapping_amplitude
+
+    _ = demod(
+        eff_pol_bulk,
+        z_0,
+        tapping_amplitude,
+        harmonic,
+        f_args=(beta, radius, semi_maj_axis, g_factor, x_0, x_1),
+        N_demod_trapz=N_demod_trapz,
+    )
+
+    return None
+
+
 def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]):
     r"""Return the electric potential and field at the sample surface,
     induced by a charge above a stack of interfaces.
