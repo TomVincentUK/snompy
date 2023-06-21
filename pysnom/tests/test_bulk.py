@@ -106,10 +106,17 @@ def test_refl_coeff_from_eff_pol_n_bulk_Taylor(model):
     )
     # Add a case with multiple solutions
     beta_in = np.hstack([beta_in, -0.5 + 0.5j])
-    params = dict(z=1e-9, tapping_amplitude=30e-9, harmonic=3)
-    alpha_eff_n = model.eff_pol_n_bulk(beta=beta_in, **params)
+    params = dict(
+        z=1e-9, tapping_amplitude=30e-9, harmonic=np.arange(2, 6)[:, np.newaxis]
+    )
+    alpha_eff_n = model.eff_pol_n_bulk_Taylor(beta=beta_in, **params)
     beta_out = model.refl_coeff_from_eff_pol_n_bulk_Taylor(
         alpha_eff_n=alpha_eff_n, **params
     )
-    # Beta out may contain multiple solutions (HOW DO I SOLVE THAT?)
-    assert beta_out == beta_in
+
+    # beta_out may contain multiple solutions
+    # need to check if any solutions correspond to the input
+    atol = 0
+    rtol = 1.0e-7
+    close_values = np.abs(beta_out - beta_in) <= (atol + rtol * np.abs(beta_in))
+    assert close_values.any(axis=0).all()
