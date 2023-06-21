@@ -19,6 +19,18 @@ Bulk finite dipole model
     eff_pol_bulk
     geom_func_bulk
 
+Taylor series representation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    refl_coeff_from_eff_pol_n_bulk_Taylor
+    eff_pol_n_bulk_Taylor
+    Taylor_coeff_bulk
+    geom_func_bulk_Taylor
+
 Multilayer finite dipole model
 ------------------------------
 
@@ -36,6 +48,7 @@ Multilayer finite dipole model
 import warnings
 
 import numpy as np
+from numpy.polynomial import Polynomial
 
 from ._defaults import defaults
 from .demodulate import demod
@@ -302,6 +315,431 @@ def eff_pol_n_bulk(
     )
 
     return alpha_eff
+
+
+def geom_func_bulk_Taylor(
+    z,
+    Taylor_index,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    x_0=defaults["x_0"],
+    x_1=defaults["x_1"],
+):
+    r"""The height-dependent part of the separable Taylor series expression
+    for the bulk FDM.
+
+    Parameters
+    ----------
+    z : float
+        Height of the tip above the sample.
+    Taylor_index : integer
+        The corresponding power of the reflection coefficient in the Taylor
+        series.
+    radius : float
+        Radius of curvature of the AFM tip.
+    semi_maj_axis : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
+
+    Returns
+    -------
+    f_t : complex
+        The height-dependent part of the separable Taylor series expression
+        for the bulk FDM.
+
+    See also
+    --------
+    geom_func_bulk
+    Taylor_coeff_bulk :
+        Function that uses this to calculate the Taylor series coefficients
+        for the bulk FDM.
+
+    Notes
+    -----
+    This function implements the equation
+
+    .. math::
+
+        f_{t} = f_{geom}(z, x_0, r, L, g) f_{geom}(z, x_1, r, L, g)^{j-1}
+
+    where :math:`f_{t}` is `f_t`, :math:`r` is `radius`, :math:`L` is
+    `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `Taylor_index,
+    and :math:`f_{geom}` is a function encapsulating the geometric
+    properties of the tip-sample system`. This is given as equation (3) in
+    reference [1]_. The function :math:`f_{geom}` is implemented here as
+    :func:`geom_func_bulk`.
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+       model for scattering infrared near-field microscopy on layered
+       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+       doi: 10.1364/OE.20.013173.
+    """
+    f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
+    return f_0 * f_1 ** (Taylor_index - 1)
+
+
+def Taylor_coeff_bulk(
+    z,
+    Taylor_index,
+    tapping_amplitude,
+    harmonic,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    x_0=defaults["x_0"],
+    x_1=defaults["x_1"],
+    N_demod_trapz=defaults["N_demod_trapz"],
+):
+    r"""Return the coefficient for the power of reflection coefficient used
+    by the Taylor series representation of the bulk FDM.
+
+    Parameters
+    ----------
+    z : float
+        Height of the tip above the sample.
+    Taylor_index : integer
+        The corresponding power of the reflection coefficient in the Taylor
+        series.
+    tapping_amplitude : float
+        The tapping amplitude of the AFM tip.
+    harmonic : int
+        The harmonic of the AFM tip tapping frequency at which to
+        demodulate.
+    radius : float
+        Radius of curvature of the AFM tip.
+    semi_maj_axis : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
+    N_demod_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
+
+    Returns
+    -------
+    a_j : complex
+        Coefficient for the power of reflection coefficient used by the
+        Taylor series representation of the bulk FDM
+
+    See also
+    --------
+    geom_func_bulk_Taylor
+    pysnom.demodulate.demod :
+        The function used here for demodulation.
+
+    Notes
+    -----
+    This function implements
+    :math:`a_j = \frac{1}{2} \hat{F_n}(f_t)`, where :math:`\hat{F_n}(f_t)`
+    is the :math:`n^{th}` Fourier coefficient of the function :math:`f_t`,
+    which is implemented here as :func:`geom_func_bulk_Taylor`.
+    """
+    # Set oscillation centre  so AFM tip touches sample at z = 0
+    z_0 = z + tapping_amplitude
+
+    non_zero_terms = (
+        demod(
+            geom_func_bulk_Taylor,
+            z_0,
+            tapping_amplitude,
+            harmonic,
+            f_args=(Taylor_index, radius, semi_maj_axis, g_factor, x_0, x_1),
+            N_demod_trapz=N_demod_trapz,
+        )
+        / 2
+    )
+    return np.where(Taylor_index == 0, 0, non_zero_terms)
+
+
+def eff_pol_n_bulk_Taylor(
+    z,
+    tapping_amplitude,
+    harmonic,
+    eps_sample=None,
+    eps_environment=defaults["eps_environment"],
+    beta=None,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    x_0=None,
+    x_1=defaults["x_1"],
+    N_demod_trapz=defaults["N_demod_trapz"],
+    Taylor_order=defaults["Taylor_order"],
+):
+    r"""Return the effective probe-sample polarizability, demodulated at
+    higher harmonics, using a Taylor series representation of the bulk FDM.
+
+    Parameters
+    ----------
+    z : float
+        Height of the tip above the sample.
+    tapping_amplitude : float
+        The tapping amplitude of the AFM tip.
+    harmonic : int
+        The harmonic of the AFM tip tapping frequency at which to
+        demodulate.
+    eps_sample : complex
+        Dielectric function of the sample. Used to calculate `beta_0`, and
+        ignored if `beta_0` is specified.
+    eps_environment : complex
+        Dielectric function of the environment (superstrate). Used to
+        calculate `beta_0`, and ignored if `beta_0` is specified.
+    beta : complex
+        Electrostatic reflection coefficient of the interface.
+    radius : float
+        Radius of curvature of the AFM tip.
+    semi_maj_axis : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
+    N_demod_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
+    Taylor_order : int
+        Maximum power index for the Taylor series in `beta`.
+
+    Returns
+    -------
+    alpha_eff : complex
+        Effective polarizability of the tip and sample, demodulated at
+        `harmonic`.
+
+    See also
+    --------
+    Taylor_coeff_bulk :
+        Function that calculates the Taylor series coefficients for the
+        bulk FDM.
+    eff_pol_n_bulk : The non-Taylor series version of this function.
+    pysnom.demodulate.demod :
+        The function used here for demodulation.
+
+    Notes
+    -----
+    This function is valid only for reflection coefficients, `beta`, with
+    magnitudes less than around 1. For a more generally applicable function
+    use :func:`eff_pol_n_bulk`
+
+    This function implements
+    :math:`\alpha_{eff, n} = \sum_{j=1}^{J} a_j \beta^j`, where
+    :math:`\beta` is `beta`, :math:`j` is the index of the Taylor series,
+    :math:`J` is `Taylor_order` and :math:`a_j` is the Taylor coefficient
+    implemented here as :func:`Taylor_coeff_bulk`.
+    """
+    # beta calculated from eps_sample if not specified
+    if eps_sample is None:
+        if beta is None:
+            raise ValueError("Either `eps_sample` or `beta` must be specified.")
+    else:
+        if beta is None:
+            beta = refl_coeff(eps_environment, eps_sample)
+        else:
+            warnings.warn("`beta` overrides `eps_sample` when both are specified.")
+
+    if x_0 is None:
+        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+
+    index_pad_dims = np.max(
+        [
+            np.ndim(a)
+            for a in (
+                z,
+                tapping_amplitude,
+                harmonic,
+                beta,
+                radius,
+                semi_maj_axis,
+                g_factor,
+                x_0,
+                x_1,
+            )
+        ]
+    )
+    Taylor_index = np.arange(Taylor_order).reshape(-1, *(1,) * index_pad_dims)
+
+    coeffs = Taylor_coeff_bulk(
+        z,
+        Taylor_index,
+        tapping_amplitude,
+        harmonic,
+        radius,
+        semi_maj_axis,
+        g_factor,
+        x_0,
+        x_1,
+        N_demod_trapz,
+    )
+    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0)
+    return alpha_eff
+
+
+def refl_coeff_from_eff_pol_n_bulk_Taylor(
+    z,
+    tapping_amplitude,
+    harmonic,
+    alpha_eff_n,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    x_0=None,
+    x_1=defaults["x_1"],
+    N_demod_trapz=defaults["N_demod_trapz"],
+    Taylor_order=defaults["Taylor_order"],
+    beta_threshold=defaults["beta_threshold"],
+):
+    r"""Return the reflection coefficient corresponding to a particular
+    effective polarizability, demodulated at higher harmonics, using a
+    Taylor series representation of the bulk FDM.
+
+    Parameters
+    ----------
+    z : float
+        Height of the tip above the sample.
+    tapping_amplitude : float
+        The tapping amplitude of the AFM tip.
+    harmonic : int
+        The harmonic of the AFM tip tapping frequency at which to
+        demodulate.
+    alpha_eff : complex
+        Effective polarizability of the tip and sample, demodulated at
+        `harmonic`.
+    radius : float
+        Radius of curvature of the AFM tip.
+    semi_maj_axis : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    x_0 : float
+        Position of an induced charge 0 within the tip. Specified in units
+        of the tip radius.
+    x_1 : float
+        Position of an induced charge 1 within the tip. Specified in units
+        of the tip radius.
+    N_demod_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
+    Taylor_order : int
+        Maximum power index for the Taylor series in `beta`.
+    beta_threshold : float
+        The maximum amplitude of returned `beta` values determined to be
+        valid.
+
+    Returns
+    -------
+    beta : complex, masked array
+        Electrostatic reflection coefficient of the interface.
+
+    See also
+    --------
+    Taylor_coeff_bulk :
+        Function that calculates the Taylor series coefficients for the
+        bulk FDM.
+    eff_pol_n_bulk_Taylor : The inverse of this function.
+
+    Notes
+    -----
+    This function is valid only `alpha_eff_n` values corresponding to`beta`
+    magnitudes less than around 1.
+
+    This function solves
+    :math:`\alpha_{eff, n} = \sum_{j=1}^{J} a_j \beta^j`, where
+    :math:`\beta` is `beta`, :math:`j` is the index of the Taylor series,
+    :math:`J` is `Taylor_order` and :math:`a_j` is the Taylor coefficient
+    implemented here as :func:`Taylor_coeff_bulk`.
+
+    There may be multiple possible solutions (or none) for different
+    inputs, so this function returns a masked array with first dimension
+    whose length is the maximum number of solutions returned for all input
+    values. Values which are invalid are masked.
+    """
+    if x_0 is None:
+        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+
+    index_pad_dims = np.max(
+        [
+            np.ndim(a)
+            for a in (
+                z,
+                tapping_amplitude,
+                harmonic,
+                alpha_eff_n,
+                radius,
+                semi_maj_axis,
+                g_factor,
+                x_0,
+                x_1,
+            )
+        ]
+    )
+    Taylor_index = np.arange(Taylor_order).reshape(-1, *(1,) * index_pad_dims)
+    coeffs = Taylor_coeff_bulk(
+        z,
+        Taylor_index,
+        tapping_amplitude,
+        harmonic,
+        radius,
+        semi_maj_axis,
+        g_factor,
+        x_0,
+        x_1,
+        N_demod_trapz,
+    )
+    offset_coeffs = np.where(Taylor_index == 0, -alpha_eff_n, coeffs)
+    all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coeffs)
+
+    # Sort roots by abs value
+    all_roots = np.take_along_axis(all_roots, np.abs(all_roots).argsort(axis=0), axis=0)
+
+    # Different numbers of solutions may be returned for different inputs
+    # Here we remove any slices along the first axis that have no valid solutions
+    slice_contains_valid = (np.abs(all_roots) <= beta_threshold).any(
+        axis=tuple(range(1, np.ndim(all_roots)))
+    )
+    unmasked_roots = all_roots[slice_contains_valid]
+    beta = np.ma.array(unmasked_roots, mask=np.abs(unmasked_roots) >= beta_threshold)
+    return beta
 
 
 def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]):
