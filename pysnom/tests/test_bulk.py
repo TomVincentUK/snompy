@@ -82,11 +82,15 @@ def test_eff_pol_n_warning_if_eps_and_beta(eff_pol_n):
 
 @pytest.mark.parametrize("model", (pysnom.fdm,))
 def test_eff_pol_n_Taylor_equals_eff_pol_n(model):
+    n_test_beta = 10
+    beta = np.linspace(1, 0.1, n_test_beta) * np.exp(
+        1j * np.linspace(0, np.pi, n_test_beta)
+    )
     params = dict(
         z=50e-9,
         tapping_amplitude=50e-9,
         harmonic=3,
-        eps_sample=1 + 1j,
+        beta=beta,
     )
 
     np.testing.assert_allclose(
