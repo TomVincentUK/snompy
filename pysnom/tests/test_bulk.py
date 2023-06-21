@@ -96,3 +96,20 @@ def test_eff_pol_n_Taylor_equals_eff_pol_n(model):
     np.testing.assert_allclose(
         model.eff_pol_n_bulk(**params), model.eff_pol_n_bulk_Taylor(**params)
     )
+
+
+@pytest.mark.parametrize("model", (pysnom.fdm,))
+def test_refl_coeff_from_eff_pol_n_bulk_Taylor(model):
+    n_test_beta = 10
+    beta_in = np.linspace(1, 0.1, n_test_beta) * np.exp(
+        1j * np.linspace(0, np.pi, n_test_beta)
+    )
+    # Add a case with multiple solutions
+    beta_in = np.hstack([beta_in, -0.5 + 0.5j])
+    params = dict(z=1e-9, tapping_amplitude=30e-9, harmonic=3)
+    alpha_eff_n = model.eff_pol_n_bulk(beta=beta_in, **params)
+    beta_out = model.refl_coeff_from_eff_pol_n_bulk_Taylor(
+        alpha_eff_n=alpha_eff_n, **params
+    )
+    # Beta out may contain multiple solutions (HOW DO I SOLVE THAT?)
+    assert beta_out == beta_in

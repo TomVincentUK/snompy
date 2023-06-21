@@ -36,6 +36,7 @@ Multilayer finite dipole model
 import warnings
 
 import numpy as np
+from numpy.polynomial import Polynomial
 
 from ._defaults import defaults
 from .demodulate import demod
@@ -408,6 +409,68 @@ def eff_pol_n_bulk_Taylor(
     )
     alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0)
     return alpha_eff
+
+
+def refl_coeff_from_eff_pol_n_bulk_Taylor(
+    z,
+    tapping_amplitude,
+    harmonic,
+    alpha_eff_n,
+    radius=defaults["radius"],
+    semi_maj_axis=defaults["semi_maj_axis"],
+    g_factor=defaults["g_factor"],
+    x_0=None,
+    x_1=defaults["x_1"],
+    N_demod_trapz=defaults["N_demod_trapz"],
+    Taylor_order=defaults["Taylor_order"],
+    beta_threshold=defaults["beta_threshold"],
+):
+    if x_0 is None:
+        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+
+    index_pad_dims = np.max(
+        [
+            np.ndim(a)
+            for a in (
+                z,
+                tapping_amplitude,
+                harmonic,
+                alpha_eff_n,
+                radius,
+                semi_maj_axis,
+                g_factor,
+                x_0,
+                x_1,
+            )
+        ]
+    )
+    Taylor_index = np.arange(Taylor_order).reshape(-1, *(1,) * index_pad_dims)
+    coeffs = Taylor_coeff_bulk(
+        z,
+        Taylor_index,
+        tapping_amplitude,
+        harmonic,
+        radius,
+        semi_maj_axis,
+        g_factor,
+        x_0,
+        x_1,
+        N_demod_trapz,
+    )
+    offset_coeffs = np.where(Taylor_index == 0, -alpha_eff_n, coeffs)
+    all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coeffs)
+
+    # Sort roots by abs value
+    all_roots = np.take_along_axis(all_roots, np.abs(all_roots).argsort(axis=0), axis=0)
+
+    # Different numbers of solutions may be returned for different inputs
+    # Here we remove any slices along the first axis that have no valid solutions
+    slice_contains_valid = (np.abs(all_roots) <= beta_threshold).any(
+        axis=tuple(range(1, np.ndim(all_roots)))
+    )
+    unmasked_roots = all_roots[slice_contains_valid]
+    beta = np.ma.array(unmasked_roots, mask=np.abs(unmasked_roots) >= beta_threshold)
+    return beta
 
 
 def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]):
