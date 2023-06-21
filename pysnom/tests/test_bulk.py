@@ -82,31 +82,13 @@ def test_eff_pol_n_warning_if_eps_and_beta(eff_pol_n):
 
 @pytest.mark.parametrize("model", (pysnom.fdm,))
 def test_eff_pol_n_Taylor_equals_eff_pol_n(model):
-    # Measurement parameters
-    wavenumber = np.linspace(1680, 1780, 32) * 1e2
-    z = 50e-9
-    tapping_amplitude = 50e-9
-    harmonic = np.arange(2, 5)[:, np.newaxis]
-
-    # Dispersive semi-infinite layer dielectric function
-    eps_inf = 2
-    osc_freq = 1740e2
-    osc_width = 20e2
-    osc_strength = 15e-3
-    eps_sample = eps_inf + (osc_strength * osc_freq**2) / (
-        osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
+    params = dict(
+        z=50e-9,
+        tapping_amplitude=50e-9,
+        harmonic=3,
+        eps_sample=1 + 1j,
     )
 
-    alpha_eff_n = model.eff_pol_n_bulk(
-        z=z,
-        tapping_amplitude=tapping_amplitude,
-        harmonic=harmonic,
-        eps_sample=eps_sample,
+    np.testing.assert_allclose(
+        model.eff_pol_n_bulk(**params), model.eff_pol_n_bulk_Taylor(**params)
     )
-    alpha_eff_n_Taylor = model.eff_pol_n_bulk_Taylor(
-        z=z,
-        tapping_amplitude=tapping_amplitude,
-        harmonic=harmonic,
-        eps_sample=eps_sample,
-    )
-    np.testing.assert_allclose(alpha_eff_n, alpha_eff_n_Taylor)

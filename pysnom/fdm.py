@@ -408,7 +408,7 @@ def eff_pol_n_bulk_Taylor(
         N_demod_trapz,
         Taylor_order,
     )
-    print(coeffs.shape, beta.shape)
+
     alpha_eff = np.sum(coeffs * beta ** np.arange(Taylor_order))
     return alpha_eff
 
