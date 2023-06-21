@@ -318,8 +318,9 @@ def geom_func_bulk_Taylor(
     return f_0 * f_1 ** (Taylor_index - 1)
 
 
-def Taylor_coeffs_bulk(
+def Taylor_coeff_bulk(
     z,
+    Taylor_index,
     tapping_amplitude,
     harmonic,
     radius=defaults["radius"],
@@ -328,26 +329,7 @@ def Taylor_coeffs_bulk(
     x_0=defaults["x_0"],
     x_1=defaults["x_1"],
     N_demod_trapz=defaults["N_demod_trapz"],
-    Taylor_order=defaults["Taylor_order"],
 ):
-    Taylor_index = np.arange(Taylor_order)
-    output_ndim = np.max(
-        [
-            np.ndim(a)
-            for a in (
-                z,
-                tapping_amplitude,
-                harmonic,
-                radius,
-                semi_maj_axis,
-                g_factor,
-                x_0,
-                x_1,
-            )
-        ]
-    )
-    Taylor_index = Taylor_index.reshape(-1, *(1,) * output_ndim)
-
     # Set oscillation centre  so AFM tip touches sample at z = 0
     z_0 = z + tapping_amplitude
 
@@ -362,9 +344,7 @@ def Taylor_coeffs_bulk(
         )
         / 2
     )
-    all_terms = np.where(Taylor_index == 0, 0, non_zero_terms)
-
-    return np.moveaxis(all_terms, 0, -1)  # move indices to last axis
+    return np.where(Taylor_index == 0, 0, non_zero_terms)
 
 
 def eff_pol_n_bulk_Taylor(
@@ -396,8 +376,27 @@ def eff_pol_n_bulk_Taylor(
     if x_0 is None:
         x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-    coeffs = Taylor_coeffs_bulk(
+    index_pad_dims = np.max(
+        [
+            np.ndim(a)
+            for a in (
+                z,
+                tapping_amplitude,
+                harmonic,
+                beta,
+                radius,
+                semi_maj_axis,
+                g_factor,
+                x_0,
+                x_1,
+            )
+        ]
+    )
+    Taylor_index = np.arange(Taylor_order).reshape(-1, *(1,) * index_pad_dims)
+
+    coeffs = Taylor_coeff_bulk(
         z,
+        Taylor_index,
         tapping_amplitude,
         harmonic,
         radius,
@@ -406,10 +405,8 @@ def eff_pol_n_bulk_Taylor(
         x_0,
         x_1,
         N_demod_trapz,
-        Taylor_order,
     )
-
-    alpha_eff = np.sum(coeffs * beta ** np.arange(Taylor_order))
+    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0)
     return alpha_eff
 
 
