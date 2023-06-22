@@ -607,9 +607,8 @@ def eff_pol_n_bulk_Taylor(
         x_1,
         N_demod_trapz,
     )
-    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0) + np.where(
-        harmonic == 0, 1, 0
-    )
+    delta = np.where(harmonic == 0, 1, 0)
+    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0) + delta
     return alpha_eff
 
 
@@ -730,7 +729,9 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
         x_1,
         N_demod_trapz,
     )
-    offset_coeffs = np.where(Taylor_index == 0, -alpha_eff_n, coeffs)
+
+    delta = np.where(harmonic == 0, 1, 0)
+    offset_coeffs = np.where(Taylor_index == 0, delta - alpha_eff_n, coeffs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coeffs)
 
     # Sort roots by abs value
