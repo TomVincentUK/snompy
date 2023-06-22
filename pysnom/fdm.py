@@ -48,7 +48,7 @@ Multilayer finite dipole model
 import warnings
 
 import numpy as np
-from numpy.polynomial import Polynomial
+from numpy.polynomial import Polynomial, laguerre
 
 from ._defaults import defaults
 from .demodulate import demod
@@ -460,6 +460,11 @@ def Taylor_coeff_bulk(
     :math:`a_j = \frac{1}{2} \hat{F_n}(f_t)`, where :math:`\hat{F_n}(f_t)`
     is the :math:`n^{th}` Fourier coefficient of the function :math:`f_t`,
     which is implemented here as :func:`geom_func_bulk_Taylor`.
+
+    This function returns 0 when :math:`j = 0`, because the Taylor series
+    representation of the bulk FDM begins at :math:`j = 1`, however
+    :class:`numpy.polynomial.polynomial.Polynomial` requires the first index
+    to be zero.
     """
     # Set oscillation centre  so AFM tip touches sample at z = 0
     z_0 = z + tapping_amplitude
@@ -869,7 +874,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
        doi: 10.1016/S0377-0427(01)00407-1.
     """
     # Evaluate integral in terms of x = k * 2 * z_q
-    x_Lag, w_Lag = np.polynomial.laguerre.laggauss(Laguerre_order)
+    x_Lag, w_Lag = laguerre.laggauss(Laguerre_order)
     k = x_Lag / np.asarray(2 * z_q)[..., np.newaxis]
 
     beta_k = refl_coeff_multi_qs(
