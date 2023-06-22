@@ -558,10 +558,11 @@ def eff_pol_n_bulk_Taylor(
     use :func:`eff_pol_n_bulk`
 
     This function implements
-    :math:`\alpha_{eff, n} = \sum_{j=1}^{J} a_j \beta^j`, where
-    :math:`\beta` is `beta`, :math:`j` is the index of the Taylor series,
-    :math:`J` is `Taylor_order` and :math:`a_j` is the Taylor coefficient
-    implemented here as :func:`Taylor_coeff_bulk`.
+    :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
+    :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
+    :math:`j` is the index of the Taylor series, :math:`J` is
+    `Taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
+    here as :func:`Taylor_coeff_bulk`.
     """
     # beta calculated from eps_sample if not specified
     if eps_sample is None:
@@ -606,7 +607,9 @@ def eff_pol_n_bulk_Taylor(
         x_1,
         N_demod_trapz,
     )
-    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0)
+    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0) + np.where(
+        harmonic == 0, 1, 0
+    )
     return alpha_eff
 
 
@@ -683,11 +686,12 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
     This function is valid only `alpha_eff_n` values corresponding to`beta`
     magnitudes less than around 1.
 
-    This function solves
-    :math:`\alpha_{eff, n} = \sum_{j=1}^{J} a_j \beta^j`, where
-    :math:`\beta` is `beta`, :math:`j` is the index of the Taylor series,
-    :math:`J` is `Taylor_order` and :math:`a_j` is the Taylor coefficient
-    implemented here as :func:`Taylor_coeff_bulk`.
+    This function solves, for :math:`\beta`,
+    :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
+    :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
+    :math:`j` is the index of the Taylor series, :math:`J` is
+    `Taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
+    here as :func:`Taylor_coeff_bulk`.
 
     There may be multiple possible solutions (or none) for different
     inputs, so this function returns a masked array with first dimension
