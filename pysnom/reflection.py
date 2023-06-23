@@ -70,29 +70,29 @@ def refl_coeff(eps_i, eps_j):
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-def refl_coeff_multi_qs(k, beta_stack, t_stack):
+def refl_coeff_multi_qs(q, beta_stack, t_stack):
     r"""Return the quasistatic momentum-dependent effective reflection
     coefficient for the first interface in a stack of interfaces.
 
     Parameters
     ----------
-    k : float or array_like
-        In-plane electromagnetic wave momentum. If `k` is array_like, it
+    q : float or array_like
+        In-plane electromagnetic wave momentum. If `q` is array_like, it
         must be broadcastable with `beta_stack[0]` and `t_stack[0]`.
     beta_stack : array_like
         Electrostatic reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
-        `beta_stack[0]` must be broadcastable with `k` and `t_stack[0]`.
+        `beta_stack[0]` must be broadcastable with `q` and `t_stack[0]`.
     t_stack : array_like
         Thicknesses of each sandwiched layer between the interfaces in
         `beta_stack`. Must have first dimension size one fewer than
-        `beta_stack`. `t_stack[0]` must be broadcastable with `k` and
+        `beta_stack`. `t_stack[0]` must be broadcastable with `q` and
         `beta_stack[0]`. A zero-size array can be used for the case of a
         single interface.
 
     Returns
     -------
-    beta_k : complex
+    beta_q : complex
         The momentum-dependent effective reflection coefficient.
 
     See also
@@ -107,14 +107,14 @@ def refl_coeff_multi_qs(k, beta_stack, t_stack):
 
     .. math::
 
-        \beta(k) =
+        \beta(q) =
         \frac{\beta_{01} + \beta_{12}e^{-2kt_1}}
         {1 + \beta_{01}\beta_{12}e^{-2kt_1}}
 
     as an expression for :math:`\beta_{12}`, where :math:`\beta_{ij}` is
     the electrostatic reflection coefficient between layers :math:`i` and
     :math:`j`, :math:`t_{i}` is the thickness of the :math:`i^{th}`
-    layer, and :math:`k` is the in-plane momentum [1]_.
+    layer, and :math:`q` is the in-plane momentum [1]_.
 
     References
     ----------
@@ -129,21 +129,21 @@ def refl_coeff_multi_qs(k, beta_stack, t_stack):
     Momentum-dependent result for multiple interfaces:
 
     >>> import numpy as np
-    >>> k = np.arange(5)
+    >>> q = np.arange(5)
     >>> beta_stack = np.array([1 / 3, 1 / 5])
     >>> t_stack = np.array([1])
-    >>> refl_coeff_multi_qs(k, beta_stack, t_stack)
+    >>> refl_coeff_multi_qs(q, beta_stack, t_stack)
     array([0.5  , 0.357, 0.337, 0.333, 0.333])
 
     Constant value for single interface:
 
-    >>> k = np.arange(5)
-    >>> refl_coeff_multi_qs(k, beta_stack=np.array([0.5]), t_stack=np.array([]))
+    >>> q = np.arange(5)
+    >>> refl_coeff_multi_qs(q, beta_stack=np.array([0.5]), t_stack=np.array([]))
     array([0.5, 0.5, 0.5, 0.5, 0.5])
     """
-    beta_effective = beta_stack[0] * np.ones_like(k)
+    beta_effective = beta_stack[0] * np.ones_like(q)
     for i in range(t_stack.shape[0]):
-        layer_decay = np.exp(-2 * k * t_stack[i])
+        layer_decay = np.exp(-2 * q * t_stack[i])
         beta_effective = (beta_effective + beta_stack[i + 1] * layer_decay) / (
             1 + beta_effective * beta_stack[i + 1] * layer_decay
         )

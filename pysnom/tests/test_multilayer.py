@@ -21,7 +21,7 @@ BETA_STACK_SINGLE, T_STACK_SINGLE = interface_stack(
 )
 
 # Dispersive beta and different t
-eps_environment = 1
+eps_env = 1
 eps_substrate = 11.7
 eps_inf = 2
 osc_freq = 1738e2
@@ -33,7 +33,7 @@ eps_middle = eps_inf + (osc_strength * osc_freq**2) / (
 )  # Lorentzian oscillator
 thickness = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
 BETA_STACK_VECTOR, T_STACK_VECTOR = interface_stack(
-    eps_stack=(eps_environment, eps_middle, eps_substrate), t_stack=(thickness,)
+    eps_stack=(eps_env, eps_middle, eps_substrate), t_stack=(thickness,)
 )
 
 # Demodulation parameters
@@ -81,9 +81,9 @@ def test_eff_pol_n_multi_broadcasting():
         Z * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0] * TAPPING_AMPLITUDE * HARMONIC
     ).shape
     alpha_eff = eff_pol_n_multi(
-        z=Z,
-        tapping_amplitude=TAPPING_AMPLITUDE,
-        harmonic=HARMONIC,
+        z_tip=Z,
+        A_tip=TAPPING_AMPLITUDE,
+        n=HARMONIC,
         beta_stack=BETA_STACK_VECTOR,
         t_stack=T_STACK_VECTOR,
     )
@@ -93,16 +93,16 @@ def test_eff_pol_n_multi_broadcasting():
 def test_eff_pol_n_multi_two_layers_same_as_bulk():
     eps_stack = 1, 11.7
     alpha_eff_bulk = eff_pol_n_bulk(
-        z=Z,
-        tapping_amplitude=TAPPING_AMPLITUDE,
-        harmonic=HARMONIC,
-        eps_sample=eps_stack[-1],
-        eps_environment=eps_stack[0],
+        z_tip=Z,
+        A_tip=TAPPING_AMPLITUDE,
+        n=HARMONIC,
+        eps_samp=eps_stack[-1],
+        eps_env=eps_stack[0],
     )
     alpha_eff_multi = eff_pol_n_multi(
-        z=Z,
-        tapping_amplitude=TAPPING_AMPLITUDE,
-        harmonic=HARMONIC,
+        z_tip=Z,
+        A_tip=TAPPING_AMPLITUDE,
+        n=HARMONIC,
         eps_stack=eps_stack,
     )
     np.testing.assert_almost_equal(alpha_eff_bulk, alpha_eff_multi)

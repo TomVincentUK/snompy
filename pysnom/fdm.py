@@ -56,10 +56,10 @@ from .reflection import interface_stack, refl_coeff, refl_coeff_multi_qs
 
 
 def geom_func_bulk(
-    z,
-    x,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    z_tip,
+    d_Q,
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
 ):
     r"""Return a complex number that encapsulates various geometric
@@ -67,14 +67,14 @@ def geom_func_bulk(
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    x : float
-        Position of an induced charge within the tip. Specified in units of
+    d_Q : float
+        Depth of an induced charge within the tip. Specified in units of
         the tip radius.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -103,13 +103,13 @@ def geom_func_bulk(
 
         f_{geom} =
         \left(
-            g - \frac{r + 2 z + W}{2 L}
+            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_Q}{2 L_{tip}}
         \right)
-        \frac{\ln{\left(\frac{4 L}{r + 4 z + 2 W}\right)}}
-        {\ln{\left(\frac{4 L}{r}\right)}}
+        \frac{\ln{\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_Q}\right)}}
+        {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z` is `z`, :math:`W` is `x * radius`, :math:`r` is
-    `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
+    where :math:`z_{tip}` is `z_tip`, :math:`d_Q` is `d_Q`, :math:`r_{tip}` is
+    `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g` is `g_factor`.
     This is given as equation (2) in reference [1]_.
 
     References
@@ -120,33 +120,33 @@ def geom_func_bulk(
        doi: 10.1364/OE.20.013173.
     """
     return (
-        (g_factor - (radius + 2 * z + x * radius) / (2 * semi_maj_axis))
-        * np.log(4 * semi_maj_axis / (radius + 4 * z + 2 * x * radius))
-        / np.log(4 * semi_maj_axis / radius)
+        (g_factor - (r_tip + 2 * z_tip + d_Q * r_tip) / (2 * L_tip))
+        * np.log(4 * L_tip / (r_tip + 4 * z_tip + 2 * d_Q * r_tip))
+        / np.log(4 * L_tip / r_tip)
     )
 
 
 def eff_pol_bulk(
-    z,
+    z_tip,
     beta,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
 ):
     r"""Return the effective probe-sample polarizability using the bulk
     finite dipole model.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -155,11 +155,11 @@ def eff_pol_bulk(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units
         of the tip radius.
 
     Returns
@@ -182,11 +182,12 @@ def eff_pol_bulk(
 
         \alpha_{eff} =
         1
-        + \frac{\beta f_{geom}(z, x_0, r, L, g)}
-        {2 (1 - \beta f_{geom}(z, x_1, r, L, g))}
+        + \frac{\beta f_{geom}(z_{tip}, d_{Q0}, r_{tip}, L_{tip}, g)}
+        {2 (1 - \beta f_{geom}(z_{tip}, d_{Q1}, r_{tip}, L_{tip}, g))}
 
     where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\beta` is `beta`,
-    :math:`r` is `radius`, :math:`L` is `semi_maj_axis`, :math:`g` is
+    :math:`z_{tip}` is `z_tip`, :math:`d_{Q0}` is `d_Q0`, :math:`d_{Q1}` is `d_Q1`,
+    :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, :math:`g` is
     `g_factor`, and :math:`f_{geom}` is a function encapsulating the
     geometric properties of the tip-sample system. This is given as
     equation (3) in reference [1]_. The function :math:`f_{geom}` is
@@ -199,48 +200,48 @@ def eff_pol_bulk(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
-    f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
+    f_0 = geom_func_bulk(z_tip, d_Q0, r_tip, L_tip, g_factor)
+    f_1 = geom_func_bulk(z_tip, d_Q1, r_tip, L_tip, g_factor)
     return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
 
 
 def eff_pol_n_bulk(
-    z,
-    tapping_amplitude,
-    harmonic,
-    eps_sample=None,
-    eps_environment=defaults["eps_environment"],
+    z_tip,
+    A_tip,
+    n,
+    eps_samp=None,
+    eps_env=defaults["eps_env"],
     beta=None,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
-    N_demod_trapz=defaults["N_demod_trapz"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
+    n_trapz=defaults["n_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk finite dipole model.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    tapping_amplitude : float
+    A_tip : float
         The tapping amplitude of the AFM tip.
-    harmonic : int
+    n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    eps_sample : complex
+    eps_samp : complex
         Dielectric function of the sample. Used to calculate `beta_0`, and
         ignored if `beta_0` is specified.
-    eps_environment : complex
+    eps_env : complex
         Dielectric function of the environment (superstrate). Used to
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -249,13 +250,13 @@ def eff_pol_n_bulk(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
-    N_demod_trapz : int
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
 
@@ -263,7 +264,7 @@ def eff_pol_n_bulk(
     -------
     alpha_eff : complex
         Effective polarizability of the tip and sample, demodulated at
-        `harmonic`.
+        `n`.
 
     See also
     --------
@@ -289,56 +290,56 @@ def eff_pol_n_bulk(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    # beta calculated from eps_sample if not specified
-    if eps_sample is None:
+    # beta calculated from eps_samp if not specified
+    if eps_samp is None:
         if beta is None:
-            raise ValueError("Either `eps_sample` or `beta` must be specified.")
+            raise ValueError("Either `eps_samp` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(eps_environment, eps_sample)
+            beta = refl_coeff(eps_env, eps_samp)
         else:
-            warnings.warn("`beta` overrides `eps_sample` when both are specified.")
+            warnings.warn("`beta` overrides `eps_samp` when both are specified.")
 
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
-    # Set oscillation centre  so AFM tip touches sample at z = 0
-    z_0 = z + tapping_amplitude
+    # Set oscillation centre so AFM tip touches sample at z_tip = 0
+    z_0 = z_tip + A_tip
 
     alpha_eff = demod(
         eff_pol_bulk,
         z_0,
-        tapping_amplitude,
-        harmonic,
-        f_args=(beta, radius, semi_maj_axis, g_factor, x_0, x_1),
-        N_demod_trapz=N_demod_trapz,
+        A_tip,
+        n,
+        f_args=(beta, r_tip, L_tip, g_factor, d_Q0, d_Q1),
+        n_trapz=n_trapz,
     )
 
     return alpha_eff
 
 
 def geom_func_bulk_taylor(
-    z,
-    taylor_index,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    z_tip,
+    j_taylor,
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
 ):
     r"""The height-dependent part of the separable Taylor series expression
     for the bulk FDM.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    taylor_index : integer
+    j_taylor : integer
         The corresponding power of the reflection coefficient in the Taylor
         series.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -347,12 +348,12 @@ def geom_func_bulk_taylor(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
 
     Returns
     -------
@@ -373,10 +374,10 @@ def geom_func_bulk_taylor(
 
     .. math::
 
-        f_{t} = f_{geom}(z, x_0, r, L, g) f_{geom}(z, x_1, r, L, g)^{j-1}
+        f_{t} = f_{geom}(z_{tip}, d_Q0, r_{tip}, L_{tip}, g) f_{geom}(z_{tip}, d_Q1, r_{tip}, L_{tip}, g)^{j-1}
 
-    where :math:`f_{t}` is `f_t`, :math:`r` is `radius`, :math:`L` is
-    `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `taylor_index`,
+    where :math:`f_{t}` is `f_t`, :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is
+    `L_tip`, :math:`g` is `g_factor`, :math:`j` is `j_taylor`,
     and :math:`f_{geom}` is a function encapsulating the geometric
     properties of the tip-sample system. This is given as equation (3) in
     reference [1]_. The function :math:`f_{geom}` is implemented here as
@@ -389,41 +390,41 @@ def geom_func_bulk_taylor(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
-    f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
-    return f_0 * f_1 ** (taylor_index - 1)
+    f_0 = geom_func_bulk(z_tip, d_Q0, r_tip, L_tip, g_factor)
+    f_1 = geom_func_bulk(z_tip, d_Q1, r_tip, L_tip, g_factor)
+    return f_0 * f_1 ** (j_taylor - 1)
 
 
 def taylor_coeff_bulk(
-    z,
-    taylor_index,
-    tapping_amplitude,
-    harmonic,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    z_tip,
+    j_taylor,
+    A_tip,
+    n,
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
-    N_demod_trapz=defaults["N_demod_trapz"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
+    n_trapz=defaults["n_trapz"],
 ):
     r"""Return the coefficient for the power of reflection coefficient used
     by the Taylor series representation of the bulk FDM.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    taylor_index : integer
+    j_taylor : integer
         The corresponding power of the reflection coefficient in the Taylor
         series.
-    tapping_amplitude : float
+    A_tip : float
         The tapping amplitude of the AFM tip.
-    harmonic : int
+    n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -432,13 +433,13 @@ def taylor_coeff_bulk(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
-    N_demod_trapz : int
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
 
@@ -466,61 +467,61 @@ def taylor_coeff_bulk(
     :class:`numpy.polynomial.polynomial.Polynomial` requires the first index
     to be zero.
     """
-    # Set oscillation centre  so AFM tip touches sample at z = 0
-    z_0 = z + tapping_amplitude
+    # Set oscillation centre so AFM tip touches sample at z_tip = 0
+    z_0 = z_tip + A_tip
 
     non_zero_terms = (
         demod(
             geom_func_bulk_taylor,
             z_0,
-            tapping_amplitude,
-            harmonic,
-            f_args=(taylor_index, radius, semi_maj_axis, g_factor, x_0, x_1),
-            N_demod_trapz=N_demod_trapz,
+            A_tip,
+            n,
+            f_args=(j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1),
+            n_trapz=n_trapz,
         )
         / 2
     )
-    return np.where(taylor_index == 0, 0, non_zero_terms)
+    return np.where(j_taylor == 0, 0, non_zero_terms)
 
 
 def eff_pol_n_bulk_taylor(
-    z,
-    tapping_amplitude,
-    harmonic,
-    eps_sample=None,
-    eps_environment=defaults["eps_environment"],
+    z_tip,
+    A_tip,
+    n,
+    eps_samp=None,
+    eps_env=defaults["eps_env"],
     beta=None,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
-    N_demod_trapz=defaults["N_demod_trapz"],
-    taylor_order=defaults["taylor_order"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
+    n_trapz=defaults["n_trapz"],
+    n_tayl=defaults["n_tayl"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using a Taylor series representation of the bulk FDM.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    tapping_amplitude : float
+    A_tip : float
         The tapping amplitude of the AFM tip.
-    harmonic : int
+    n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    eps_sample : complex
+    eps_samp : complex
         Dielectric function of the sample. Used to calculate `beta_0`, and
         ignored if `beta_0` is specified.
-    eps_environment : complex
+    eps_env : complex
         Dielectric function of the environment (superstrate). Used to
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -529,23 +530,23 @@ def eff_pol_n_bulk_taylor(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
-    N_demod_trapz : int
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
-    taylor_order : int
+    n_tayl : int
         Maximum power index for the Taylor series in `beta`.
 
     Returns
     -------
     alpha_eff : complex
         Effective polarizability of the tip and sample, demodulated at
-        `harmonic`.
+        `n`.
 
     See also
     --------
@@ -566,69 +567,69 @@ def eff_pol_n_bulk_taylor(
     :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
     :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
     :math:`j` is the index of the Taylor series, :math:`J` is
-    `taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
+    `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
     here as :func:`taylor_coeff_bulk`.
     """
-    # beta calculated from eps_sample if not specified
-    if eps_sample is None:
+    # beta calculated from eps_samp if not specified
+    if eps_samp is None:
         if beta is None:
-            raise ValueError("Either `eps_sample` or `beta` must be specified.")
+            raise ValueError("Either `eps_samp` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(eps_environment, eps_sample)
+            beta = refl_coeff(eps_env, eps_samp)
         else:
-            warnings.warn("`beta` overrides `eps_sample` when both are specified.")
+            warnings.warn("`beta` overrides `eps_samp` when both are specified.")
 
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
     index_pad_dims = np.max(
         [
             np.ndim(a)
             for a in (
-                z,
-                tapping_amplitude,
-                harmonic,
+                z_tip,
+                A_tip,
+                n,
                 beta,
-                radius,
-                semi_maj_axis,
+                r_tip,
+                L_tip,
                 g_factor,
-                x_0,
-                x_1,
+                d_Q0,
+                d_Q1,
             )
         ]
     )
-    taylor_index = np.arange(taylor_order).reshape(-1, *(1,) * index_pad_dims)
+    j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
 
     coeffs = taylor_coeff_bulk(
-        z,
-        taylor_index,
-        tapping_amplitude,
-        harmonic,
-        radius,
-        semi_maj_axis,
+        z_tip,
+        j_taylor,
+        A_tip,
+        n,
+        r_tip,
+        L_tip,
         g_factor,
-        x_0,
-        x_1,
-        N_demod_trapz,
+        d_Q0,
+        d_Q1,
+        n_trapz,
     )
-    delta = np.where(harmonic == 0, 1, 0)
-    alpha_eff = np.sum(coeffs * beta**taylor_index, axis=0) + delta
+    delta = np.where(n == 0, 1, 0)
+    alpha_eff = np.sum(coeffs * beta**j_taylor, axis=0) + delta
     return alpha_eff
 
 
 def refl_coeff_from_eff_pol_n_bulk_taylor(
-    z,
-    tapping_amplitude,
-    harmonic,
+    z_tip,
+    A_tip,
+    n,
     alpha_eff_n,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
-    N_demod_trapz=defaults["N_demod_trapz"],
-    taylor_order=defaults["taylor_order"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
+    n_trapz=defaults["n_trapz"],
+    n_tayl=defaults["n_tayl"],
     beta_threshold=defaults["beta_threshold"],
 ):
     r"""Return the reflection coefficient corresponding to a particular
@@ -637,19 +638,19 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    tapping_amplitude : float
+    A_tip : float
         The tapping amplitude of the AFM tip.
-    harmonic : int
+    n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
     alpha_eff : complex
         Effective polarizability of the tip and sample, demodulated at
-        `harmonic`.
-    radius : float
+        `n`.
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -658,16 +659,16 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
-    N_demod_trapz : int
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
-    taylor_order : int
+    n_tayl : int
         Maximum power index for the Taylor series in `beta`.
     beta_threshold : float
         The maximum amplitude of returned `beta` values determined to be
@@ -694,7 +695,7 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
     :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
     :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
     :math:`j` is the index of the Taylor series, :math:`J` is
-    `taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
+    `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
     here as :func:`taylor_coeff_bulk`.
 
     There may be multiple possible solutions (or none) for different
@@ -702,41 +703,41 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
     whose length is the maximum number of solutions returned for all input
     values. Values which are invalid are masked.
     """
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
     index_pad_dims = np.max(
         [
             np.ndim(a)
             for a in (
-                z,
-                tapping_amplitude,
-                harmonic,
+                z_tip,
+                A_tip,
+                n,
                 alpha_eff_n,
-                radius,
-                semi_maj_axis,
+                r_tip,
+                L_tip,
                 g_factor,
-                x_0,
-                x_1,
+                d_Q0,
+                d_Q1,
             )
         ]
     )
-    taylor_index = np.arange(taylor_order).reshape(-1, *(1,) * index_pad_dims)
+    j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
     coeffs = taylor_coeff_bulk(
-        z,
-        taylor_index,
-        tapping_amplitude,
-        harmonic,
-        radius,
-        semi_maj_axis,
+        z_tip,
+        j_taylor,
+        A_tip,
+        n,
+        r_tip,
+        L_tip,
         g_factor,
-        x_0,
-        x_1,
-        N_demod_trapz,
+        d_Q0,
+        d_Q1,
+        n_trapz,
     )
 
-    delta = np.where(harmonic == 0, 1, 0)
-    offset_coeffs = np.where(taylor_index == 0, delta - alpha_eff_n, coeffs)
+    delta = np.where(n == 0, 1, 0)
+    offset_coeffs = np.where(j_taylor == 0, delta - alpha_eff_n, coeffs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coeffs)
 
     # Sort roots by abs value
@@ -752,16 +753,16 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
     return beta
 
 
-def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]):
+def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     r"""Return the electric potential and field at the sample surface,
     induced by a charge above a stack of interfaces.
 
     This function works by performing integrals over all values of in-plane
-    electromagnetic wave momentum `k`, using Gauss-Laguerre quadrature.
+    electromagnetic wave momentum `q`, using Gauss-Laguerre quadrature.
 
     Parameters
     ----------
-    z_q : float
+    z_Q : float
         Height of the charge above the sample.
     beta_stack : array_like
         Electrostatic reflection coefficients of each interface in the
@@ -772,9 +773,9 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    laguerre_order : int
+    n_lag : int
         The order of the Laguerre polynomial used to evaluate the integrals
-        over all `k`.
+        over all `q`.
 
     Returns
     -------
@@ -796,30 +797,30 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
     .. math::
 
         \begin{align*}
-            \phi \rvert_{z=0} &= \int_0^\infty \beta(k) e^{-2 z_q k} dk,
+            \phi \rvert_{z=0} &= \int_0^\infty \beta(q) e^{-2 z_Q q} dk,
             \ \text{and}\\
-            E_z \rvert_{z=0} &= \int_0^\infty \beta(k) k e^{-2 z_q k} dk,
+            E_z \rvert_{z=0} &= \int_0^\infty \beta(q) q e^{-2 z_Q q} dk,
         \end{align*}
 
     where :math:`\phi` is the electric potential, :math:`E_z` is the
-    vertical component of the electric field, :math:`k` is the
-    electromagnetic wave momentum, :math:`\beta(k)` is the
+    vertical component of the electric field, :math:`q` is the
+    electromagnetic wave momentum, :math:`\beta(q)` is the
     momentum-dependent effective reflection coefficient for the surface,
-    and :math:`z_q` is the height of the inducing charge above the
+    and :math:`z_Q` is the height of the inducing charge above the
     surface [1]_.
 
-    To do this, it first makes the substitution :math:`x = 2 z_q k`, such
+    To do this, it first makes the substitution :math:`x = 2 z_Q q`, such
     that the integrals become
 
     .. math::
 
         \begin{align*}
             \phi \rvert_{z=0}
-            & = \frac{1}{2 z_q} \int_0^\infty
-            \beta\left(\frac{x}{2 z_q}\right) e^{-x} dx, \ \text{and}\\
+            & = \frac{1}{2 z_Q} \int_0^\infty
+            \beta\left(\frac{x}{2 z_Q}\right) e^{-x} dx, \ \text{and}\\
             E_z \rvert_{z=0}
-            & = \frac{1}{4 z_q^2} \int_0^\infty
-            \beta\left(\frac{x}{2 z_q}\right) x e^{-x} dx.
+            & = \frac{1}{4 z_Q^2} \int_0^\infty
+            \beta\left(\frac{x}{2 z_Q}\right) x e^{-x} dx.
         \end{align*}
 
     It then uses the Gauss-Laguerre approximation [2]_
@@ -845,15 +846,15 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
 
         \begin{align*}
             \phi \rvert_{z=0}
-            & \approx \frac{1}{2 z_q}
-            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right),
+            & \approx \frac{1}{2 z_Q}
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right),
             \ \text{and}\\
             E_z \rvert_{z=0}
-            & \approx \frac{1}{4 z_q^2}
-            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right) x_n.
+            & \approx \frac{1}{4 z_Q^2}
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
         \end{align*}
 
-    The choice of :math:`N`, defined in this function as `laguerre_order`,
+    The choice of :math:`N`, defined in this function as `n_lag`,
     will affect the accuracy of the approximation, with higher :math:`N`
     values leading to more accurate evaluation of the integrals.
 
@@ -873,23 +874,21 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
        140, no. 1-2, pp. 291-299, Mar. 2002,
        doi: 10.1016/S0377-0427(01)00407-1.
     """
-    # Evaluate integral in terms of x = k * 2 * z_q
-    x_lag, w_lag = laguerre.laggauss(laguerre_order)
-    k = x_lag / np.asarray(2 * z_q)[..., np.newaxis]
+    # Evaluate integral in terms of x = q * 2 * z_Q
+    x_lag, w_lag = laguerre.laggauss(n_lag)
+    q = x_lag / np.asarray(2 * z_Q)[..., np.newaxis]
 
-    beta_k = refl_coeff_multi_qs(
-        k, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
+    beta_q = refl_coeff_multi_qs(
+        q, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
     )
 
-    phi = np.sum(w_lag * beta_k, axis=-1) / (2 * z_q)
-    E = np.sum(w_lag * x_lag * beta_k, axis=-1) / (4 * z_q**2)
+    phi = np.sum(w_lag * beta_q, axis=-1) / (2 * z_Q)
+    E = np.sum(w_lag * x_lag * beta_q, axis=-1) / (4 * z_Q**2)
 
     return phi, E
 
 
-def eff_pos_and_charge(
-    z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]
-):
+def eff_pos_and_charge(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     r"""Calculate the depth and relative charge of an image charge induced
     below the top surface of a stack of interfaces.
 
@@ -898,7 +897,7 @@ def eff_pos_and_charge(
 
     Parameters
     ----------
-    z_q : float
+    z_Q : float
         Height of the charge above the sample.
     beta_stack : array_like
         Electrostatic reflection coefficients of each interface in the
@@ -909,7 +908,7 @@ def eff_pos_and_charge(
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    laguerre_order : int
+    n_lag : int
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
@@ -929,14 +928,14 @@ def eff_pos_and_charge(
     -----
 
     This function calculates the depth of an image charge induced by a
-    charge :math:`q` at height :math:`z_q` above a sample surface using the
+    charge :math:`q` at height :math:`z_Q` above a sample surface using the
     equation
 
     .. math::
 
         z_{image} = \left|
             \frac{\phi \rvert_{z=0}}{E_z \rvert_{z=0}}
-        \right| - z_q,
+        \right| - z_Q,
 
     and the effective charge of the image, relative to :math:`q`, using the
     equation
@@ -949,7 +948,7 @@ def eff_pos_and_charge(
 
     where :math:`\phi` is the electric potential, and :math:`E_z` is the
     vertical component of the electric field. These are based on equations
-    (9) and (10) from reference [1]_. The depth :math:`z_q`  is converted
+    (9) and (10) from reference [1]_. The depth :math:`z_Q`  is converted
     to a real number by taking the absolute value of the
     :math:`\phi`-:math:`E_z` ratio, as described in reference [2]_.
 
@@ -963,17 +962,17 @@ def eff_pos_and_charge(
        suspended topological insulator nanostructures,” pp. 1–23, Dec.
        2021, [Online]. Available: http://arxiv.org/abs/2112.10104
     """
-    phi, E = phi_E_0(z_q, beta_stack, t_stack, laguerre_order)
-    z_image = np.abs(phi / E) - z_q
+    phi, E = phi_E_0(z_Q, beta_stack, t_stack, n_lag)
+    z_image = np.abs(phi / E) - z_Q
     beta_image = phi**2 / E
     return z_image, beta_image
 
 
 def geom_func_multi(
-    z,
-    z_image,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    z_tip,
+    d_image,
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
 ):
     r"""Return a complex number that encapsulates various geometric
@@ -982,14 +981,14 @@ def geom_func_multi(
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    z_image : float
+    d_image : float
         Depth of an image charge induced below the upper surface of a stack
         of interfaces.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -1017,13 +1016,13 @@ def geom_func_multi(
 
         f =
         \left(
-            g - \frac{r + z + z_{image}}{2 L}
+            g - \frac{r_{tip} + z_{tip} + d_{image}}{2 L_{tip}}
         \right)
-        \frac{\ln{\left(\frac{4 L}{r + 2 z + 2 z_{image}}\right)}}
-        {\ln{\left(\frac{4 L}{r}\right)}}
+        \frac{\ln{\left(\frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{image}}\right)}}
+        {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z` is `z`, :math:`z_{image}` is `z_image`, :math:`r` is
-    `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
+    where :math:`z_{tip}` is `z_tip`, :math:`d_{image}` is `d_image`, :math:`r_{tip}` is
+    `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g` is `g_factor`.
     This is given as equation (11) in reference [1]_.
 
     References
@@ -1034,29 +1033,29 @@ def geom_func_multi(
        doi: 10.1364/OE.20.013173.
     """
     return (
-        (g_factor - (radius + z + z_image) / (2 * semi_maj_axis))
-        * np.log(4 * semi_maj_axis / (radius + 2 * z + 2 * z_image))
-        / np.log(4 * semi_maj_axis / radius)
+        (g_factor - (r_tip + z_tip + d_image) / (2 * L_tip))
+        * np.log(4 * L_tip / (r_tip + 2 * z_tip + 2 * d_image))
+        / np.log(4 * L_tip / r_tip)
     )
 
 
 def eff_pol_multi(
-    z,
+    z_tip,
     beta_stack=None,
     t_stack=None,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
-    laguerre_order=defaults["laguerre_order"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
+    n_lag=defaults["n_lag"],
 ):
     r"""Return the effective probe-sample polarizability using the
     multilayer finite dipole model.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
     beta_stack : array_like
         Electrostatic reflection coefficients of each interface in the
@@ -1067,15 +1066,15 @@ def eff_pol_multi(
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
-    radius : float
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -1084,7 +1083,7 @@ def eff_pol_multi(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    laguerre_order : int
+    n_lag : int
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
@@ -1107,14 +1106,14 @@ def eff_pol_multi(
 
         \alpha_{eff} =
         1
-        + \frac{\beta_{image, 0} f_{geom, ML}(z, z_{image, 0}, r, L, g)}
-        {2 (1 - \beta_{image, 1} f_{geom, ML}(z, z_{image, 1}, r, L, g))}
+        + \frac{\beta_{image, 0} f_{geom, ML}(z_{tip}, d_{image, 0}, r_{tip}, L_{tip}, g)}
+        {2 (1 - \beta_{image, 1} f_{geom, ML}(z_{tip}, d_{image, 1}, r_{tip}, L_{tip}, g))}
 
     where :math:`\alpha_{eff}` is `\alpha_eff`; :math:`\beta_{image, i}`
-    and :math:`z_{image, i}` are the depth and relative charge of an image
-    charge induced by a charge in the tip at :math:`x_{i}`
-    (:math:`i=0, 1`), given by `x_0` and `x_1`; :math:`r` is `radius`,
-    :math:`L` is `semi_maj_axis`, :math:`g` is `g_factor`, and
+    and :math:`d_{image, i}` are the relative charge and depth of an image
+    charge induced by a charge in the tip at :math:`d_{Qi}`
+    (:math:`i=0, 1`), given by `d_Q0` and `d_Q1`; :math:`r_{tip}` is `r_tip`,
+    :math:`L_{tip}` is `L_tip`, :math:`g` is `g_factor`, and
     :math:`f_{geom, ML}` is a function encapsulating the geometric
     properties of the tip-sample system for the multilayer finite dipole
     model. This is a modified version of equation (3) from reference [1]_.
@@ -1128,42 +1127,42 @@ def eff_pol_multi(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    z_q_0 = z + radius * x_0
-    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, laguerre_order)
-    f_0 = geom_func_multi(z, z_im_0, radius, semi_maj_axis, g_factor)
+    z_q_0 = z_tip + r_tip * d_Q0
+    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, n_lag)
+    f_0 = geom_func_multi(z_tip, z_im_0, r_tip, L_tip, g_factor)
 
-    z_q_1 = z + radius * x_1
-    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, laguerre_order)
-    f_1 = geom_func_multi(z, z_im_1, radius, semi_maj_axis, g_factor)
+    z_q_1 = z_tip + r_tip * d_Q1
+    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, n_lag)
+    f_1 = geom_func_multi(z_tip, z_im_1, r_tip, L_tip, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
 
 def eff_pol_n_multi(
-    z,
-    tapping_amplitude,
-    harmonic,
+    z_tip,
+    A_tip,
+    n,
     eps_stack=None,
     beta_stack=None,
     t_stack=None,
-    radius=defaults["radius"],
-    semi_maj_axis=defaults["semi_maj_axis"],
+    r_tip=defaults["r_tip"],
+    L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
-    laguerre_order=defaults["laguerre_order"],
-    N_demod_trapz=defaults["N_demod_trapz"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
+    n_lag=defaults["n_lag"],
+    n_trapz=defaults["n_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the multilayer finite dipole model.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    tapping_amplitude : float
+    A_tip : float
         The tapping amplitude of the AFM tip.
-    harmonic : int
+    n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
     eps_stack : array_like
@@ -1180,9 +1179,9 @@ def eff_pol_n_multi(
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
-    semi_maj_axis : float
+    L_tip : float
         Semi-major axis length of the effective spheroid from the finite
         dipole model.
     g_factor : complex
@@ -1191,15 +1190,15 @@ def eff_pol_n_multi(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
-    laguerre_order : complex
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    n_lag : complex
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
-    N_demod_trapz : int
+    n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
 
@@ -1207,7 +1206,7 @@ def eff_pol_n_multi(
     -------
     alpha_eff : complex
         Effective polarizability of the tip and sample, demodulated at
-        `harmonic`.
+        `n`.
 
     See also
     --------
@@ -1232,30 +1231,30 @@ def eff_pol_n_multi(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
     beta_stack, t_stack = interface_stack(eps_stack, beta_stack, t_stack)
 
-    # Set oscillation centre so AFM tip touches sample at z = 0
-    z_0 = z + tapping_amplitude
+    # Set oscillation centre so AFM tip touches sample at z_tip = 0
+    z_0 = z_tip + A_tip
 
     alpha_eff = demod(
         eff_pol_multi,
         z_0,
-        tapping_amplitude,
-        harmonic,
+        A_tip,
+        n,
         f_args=(
             beta_stack,
             t_stack,
-            radius,
-            semi_maj_axis,
+            r_tip,
+            L_tip,
             g_factor,
-            x_0,
-            x_1,
-            laguerre_order,
+            d_Q0,
+            d_Q1,
+            n_lag,
         ),
-        N_demod_trapz=N_demod_trapz,
+        n_trapz=n_trapz,
     )
 
     return alpha_eff

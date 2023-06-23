@@ -10,17 +10,17 @@ x = np.linspace(-width / 2, width / 2, (upsample_factor * width) + 1)
 y = np.linspace(-height / 2, height / 2, (upsample_factor * height) + 1)
 XY = np.meshgrid(x, y)
 
-semi_maj_axis = 100
+L_tip = 100
 semi_min_axis = 50
-radius = 25
-x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+r_tip = 25
+d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
-Q_loc = np.array([0, radius * x_0 - semi_maj_axis])[:, np.newaxis, np.newaxis]
+Q_loc = np.array([0, r_tip * d_Q0 - L_tip])[:, np.newaxis, np.newaxis]
 
 E_0 = (XY - Q_loc) / np.linalg.norm(XY - Q_loc, axis=0) ** 3
 E_dipole = E_0 - E_0[:, ::-1]
 
-ellipse = (XY[0] / semi_min_axis) ** 2 + (XY[1] / semi_maj_axis) ** 2 <= 0.95
+ellipse = (XY[0] / semi_min_axis) ** 2 + (XY[1] / L_tip) ** 2 <= 0.95
 
 fig, ax = plt.subplots(figsize=(width * px_in_inches, height * px_in_inches))
 

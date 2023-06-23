@@ -9,7 +9,7 @@ laser spot is much, much bigger than the electric field from the near
 field (see the page :ref:`scattering` for the definition of
 :math:`\sigma_{scat}`).
 
-Instead, we oscillate the AFM tip height, :math:`z`,  at a frequency
+Instead, we oscillate the AFM tip height, :math:`z_{tip}`,  at a frequency
 :math:`\omega_{tip}`, then use a
 `lock-in amplifier <https://en.wikipedia.org/wiki/Lock-in_amplifier>`_ to
 demodulate the total detected signal at higher harmonics of that frequency,
@@ -40,7 +40,7 @@ with amplitude and phase
 where :math:`\alpha_{eff, n}` is the :math:`n^{th}` Fourier coefficient of
 :math:`\alpha_{eff}` (for a particular tip height and tapping amplitude).
 
-This has the great advantage that the non-linear :math:`z`-dependence of
+This has the great advantage that the non-linear :math:`z_{tip}`-dependence of
 the near-field interaction means we can achieve a greater near-field
 confinement by choosing a higher value of :math:`n`.
 
@@ -69,11 +69,11 @@ switched between the two models using the tabs on this page.
 The undemodulated effective polarisability
 ------------------------------------------
 
-As an example, lets take a look at the :math:`z`-dependence of
+As an example, lets take a look at the :math:`z_{tip}`-dependence of
 :math:`\alpha_{eff}` for a sample of bulk silicon (Si).
 
 The following script plots the amplitude of :math:`\alpha_{eff}` for a
-range of :math:`z` values from 0 to 200 nm.
+range of :math:`z_{tip}` values from 0 to 200 nm.
 
 .. tab-set::
 
@@ -112,7 +112,7 @@ signal will be to modulate the height of the AFM probe according to
 .. math::
    :label: z_mod
 
-   z(t) = z_0 + A_{tip} \left(1 + \cos(\omega_{tip}t)\right),
+   z_{tip}(t) = z_0 + A_{tip} \left(1 + \cos(\omega_{tip}t)\right),
 
 where :math:`z_0` is the bottom of the height oscillation, :math:`A_{tip}`
 is the oscillation amplitude, and :math:`t` is time.
@@ -132,8 +132,8 @@ sinusoidal modulation of the tip height as described above:
       .. plot:: guide/demodulation/modulated_pdm.py
          :align: center
 
-This shows a very important result: thanks to the non-linear :math:`z`
-decay, a sinusoidal modulation of :math:`z` leads to a periodic *but
+This shows a very important result: thanks to the non-linear :math:`z_{tip}`
+decay, a sinusoidal modulation of :math:`z_{tip}` leads to a periodic *but
 non-sinusoidal* modulation of :math:`\alpha_{eff}`.
 
 Fourier analysis
@@ -199,8 +199,8 @@ We can see that the :math:`n=0` term accounts for the DC offset, and that
 the amplitudes of the following terms drop off quickly with increasing
 :math:`n`.
 
-Note that if the :math:`z` decay of :math:`\alpha_{eff}` was linear the
-sinusoidal :math:`z` modulation would create a purely sinusoidal
+Note that if the :math:`z_{tip}` decay of :math:`\alpha_{eff}` was linear the
+sinusoidal :math:`z_{tip}` modulation would create a purely sinusoidal
 :math:`\alpha_{eff}` modulation, which would mean only the :math:`n=0` and
 :math:`n=1` terms would remain in the signal.
 
@@ -304,15 +304,15 @@ that higher order demodulation leads to a faster decay of the SNOM signal
 .. hint::
    :class: dropdown
 
-   In the script above, the `z` value is offset by `tapping_amplitude` for
+   In the script above, the `z_{tip}` value is offset by `A_tip` for
    the approach curve calculated using :func:`pysnom.demodulate.demod`.
    That's because the definition for the AFM oscillation, as given in
    equation :eq:`z_mod`, is set so that the tip just barely contacts the
-   sample at `z = 0`.
+   sample at `z_{tip} = 0`.
    For :func:`pysnom.demodulate.demod`, you need to specify the *centre* of
    the oscillation, not the bottom.
 
    This conversion is taken care of automatically by ``pysnom``'s functions
-   with built-in demodulation, which is why the `z` value isn't offset for
+   with built-in demodulation, which is why the `z_tip` value isn't offset for
    the approach curve calculated using :func:`pysnom.fdm.eff_pol_n_bulk` or
    :func:`pysnom.pdm.eff_pol_n_bulk`.

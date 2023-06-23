@@ -18,11 +18,11 @@ beta_stack = fdm.reflection.refl_coeff(eps_stack[:-1], eps_stack[1:])
 
 N = 512
 z_0 = np.linspace(0, 35, N)[..., np.newaxis] * 1e-9
-tapping_amplitude = 20e-9
+A_tip = 20e-9
 harmonic = np.arange(1, 5, 1)
 
 alpha_eff = fdm.multilayer.eff_pol_ML(
-    z_0, tapping_amplitude, harmonic, beta_stack=beta_stack, t_stack=t_stack
+    z_0, A_tip, harmonic, beta_stack=beta_stack, t_stack=t_stack
 )
 
 # Normalize to z = 0

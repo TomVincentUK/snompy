@@ -23,15 +23,15 @@ def demod(
     f_x,
     x_0,
     x_amplitude,
-    harmonic,
+    n,
     f_args=(),
-    N_demod_trapz=defaults["N_demod_trapz"],
+    n_trapz=defaults["n_trapz"],
 ):
     r"""Simulate a lock-in amplifier measurement by modulating the input of
     an arbitrary function then demodulating the output.
 
     This function multiplies the modulated output of `f_x` by a complex
-    envelope, which has a period of `harmonic` times pi, then integrates
+    envelope, which has a period of `n` times pi, then integrates
     between -pi and pi, using the trapezium method.
 
     Parameters
@@ -43,11 +43,11 @@ def demod(
         The centre of modulation for the parameter `x`.
     x_amplitude : float
         The modulation amplitude for the parameter `x`.
-    harmonic : int
+    n : int
         The harmonic at which to demodulate.
     f_args : tuple
         A tuple of extra arguments to the function `f_x`.
-    N_demod_trapz : int
+    n_trapz : int
         The number of intervals to use for the trapezium-method
         integration.
 
@@ -66,7 +66,7 @@ def demod(
         \int_{-\pi}^{\pi}
         \mathtt{f\_x(x\_0} + \mathtt{x\_amplitude} \cdot \cos(\theta)
         \mathtt{, *args)}
-        e^{-i \theta \cdot \mathtt{harmonic}}
+        e^{-i \theta \cdot \mathtt{n}}
         d{\theta}
 
     using the trapezium method.
@@ -88,16 +88,14 @@ def demod(
     >>> import numpy as np
     >>> x_0 = 1
     >>> x_amplitude = np.arange(2)[:, np.newaxis]
-    >>> harmonic = np.arange(3)[:, np.newaxis, np.newaxis]
+    >>> n = np.arange(3)[:, np.newaxis, np.newaxis]
     >>> y = np.arange(4)[:, np.newaxis, np.newaxis, np.newaxis]
-    >>> demod(lambda x, y: x * y, x_0, x_amplitude, harmonic, (y,)).shape
+    >>> demod(lambda x, y: x * y, x_0, x_amplitude, n, (y,)).shape
     (4, 3, 2, 1)
     """
-    output_ndim = np.asarray(f_x(x_0 + 0 * x_amplitude, *f_args) * harmonic).ndim
-    theta = np.linspace(-np.pi, np.pi, N_demod_trapz + 1).reshape(
-        -1, *(1,) * output_ndim
-    )
+    output_ndim = np.asarray(f_x(x_0 + 0 * x_amplitude, *f_args) * n).ndim
+    theta = np.linspace(-np.pi, np.pi, n_trapz + 1).reshape(-1, *(1,) * output_ndim)
     integrand = f_x(x_0 + np.cos(theta) * x_amplitude, *f_args) * np.exp(
-        -1j * harmonic * theta
+        -1j * n * theta
     )
-    return np.trapz(integrand, axis=0) / (N_demod_trapz)
+    return np.trapz(integrand, axis=0) / (n_trapz)

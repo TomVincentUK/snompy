@@ -6,27 +6,27 @@ import pysnom
 
 # Set some experimental parameters for an oscillating AFM probe
 tapping_freq = 2 * np.pi * 250e3  # 250 kHz tapping frequency
-tapping_amplitude = 25e-9  # 25 nm oscillation amplitude
-z_0 = 10e-9  # 10 nm from sample at bottom of oscillation
+A_tip = 25e-9  # 25 nm oscillation amplitude
+z_bottom = 10e-9  # 10 nm from sample at bottom of oscillation
 periods = 3  # Number of oscillations to show
 
 # Material parameters
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_environment = 1  # Vacuum/air dielectric function
-refl_coeff = pysnom.reflection.refl_coeff(eps_environment, eps_Si)
+eps_env = 1  # Vacuum/air dielectric function
+refl_coeff = pysnom.reflection.refl_coeff(eps_env, eps_Si)
 
-# Find z as a function of t
+# Find z_tip as a function of t
 t = np.linspace(-periods * np.pi / tapping_freq, periods * np.pi / tapping_freq, 512)
-z = z_0 + tapping_amplitude * (1 + np.cos(tapping_freq * t))
+z_tip = z_bottom + A_tip * (1 + np.cos(tapping_freq * t))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.fdm.eff_pol_bulk(z=z, beta=refl_coeff)
+alpha_eff = pysnom.fdm.eff_pol_bulk(z_tip=z_tip, beta=refl_coeff)
 
 # Demodulation
 n_max = 5
 harmonics = np.arange(n_max + 1)
 components = pysnom.fdm.eff_pol_n_bulk(
-    z=z_0, tapping_amplitude=tapping_amplitude, harmonic=harmonics, beta=refl_coeff
+    z_tip=z_bottom, A_tip=A_tip, n=harmonics, beta=refl_coeff
 )
 waves = [components[n] * np.exp(1j * t * tapping_freq * n) for n in harmonics]
 
