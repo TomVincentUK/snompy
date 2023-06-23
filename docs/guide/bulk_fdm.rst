@@ -49,7 +49,7 @@ The position of the two charges are found at distances
 .. math::
    :label: z_q0_pos
 
-   z_{Q0} \approx \frac{1.31 L_{tip} r_{tip}}{L_{tip} + 2 r_{tip}}
+   d_{Q0} \approx \frac{1.31 L_{tip} r_{tip}}{L_{tip} + 2 r_{tip}}
 
 from the ends of the ellipsoid, where :math:`r_{tip}` is the radius of curvature
 at the pointy end, and :math:`L_{tip}` is the semi-major axis length (the
@@ -61,7 +61,7 @@ and their separation as
 .. math::
    :label: p_0
 
-   p_0 = 2 (L_{tip} - z_{Q0}) Q_0 \quad (\approx 2 L_{tip} Q_0, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
+   p_0 = 2 (L_{tip} - d_{Q0}) Q_0 \quad (\approx 2 L_{tip} Q_0, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
 Tip-sample interaction
 ----------------------
@@ -86,12 +86,12 @@ interaction.
    :align: center
 
 We can model the electric field response of the sample to the charge
-:math:`Q_0`, at a height of :math:`z_{tip} + z_{Q0}`, using
+:math:`Q_0`, at a height of :math:`z_{tip} + d_{Q0}`, using
 the
 `method of image charges <https://en.wikipedia.org/wiki/Method_of_image_charges>`_.
 
 This means we can add a fictitious image charge, :math:`Q'_0 = -\beta Q_0`,
-at a depth of :math:`z_{tip} + z_{Q0}` below the surface.
+at a depth of :math:`z_{tip} + d_{Q0}` below the surface.
 Here, :math:`\beta` is the electrostatic reflection coefficient of the
 surface, given by
 
@@ -111,7 +111,7 @@ In ``pysnom``, equation :eq:`beta` is provided by the function
 
 The charge :math:`Q'_0` acts back on the tip and induces a further
 polarisation, which we can model as another point charge :math:`Q_1`, at a
-distance :math:`z_{Q1} \approx r_{tip} / 2` away from the end of the tip.
+distance :math:`d_{Q1} \approx r_{tip} / 2` away from the end of the tip.
 
 .. hint::
    :class: toggle
@@ -127,7 +127,7 @@ distance :math:`z_{Q1} \approx r_{tip} / 2` away from the end of the tip.
 With the addition of :math:`Q_1`, we need to add some more charges to our
 model:
 the sample response to :math:`Q_1` can be represented by another image
-charge, :math:`Q'_1 = \beta Q_1`, at a depth of :math:`z_{tip} + z_{Q1}` below
+charge, :math:`Q'_1 = \beta Q_1`, at a depth of :math:`z_{tip} + d_{Q1}` below
 the surface;
 and, for conservation of charge within the tip, :math:`Q_1` must have a
 counter charge :math:`-Q_1`, which is situated in the centre of the
@@ -152,8 +152,8 @@ They are given by the formula
 .. math::
    :label: f_i_bulk
 
-   f_i = \left(g - \frac{r_{tip} + 2 z_{tip} + z_{Qi}}{2 L_{tip}} \right)
-   \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 z_{Qi}}\right)}
+   f_i = \left(g - \frac{r_{tip} + 2 z_{tip} + d_{Qi}}{2 L_{tip}} \right)
+   \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 d_{Qi}}\right)}
    {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
 
 where :math:`g \approx 0.7` is an empirical factor that describes how much
@@ -167,7 +167,7 @@ The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 .. math::
    :label: p_1
 
-   p_1 = (L_{tip} - z_{Q1}) Q_1 \quad (\approx L_{tip} Q_1, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
+   p_1 = (L_{tip} - d_{Q1}) Q_1 \quad (\approx L_{tip} Q_1, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
 The effective polarisability of the tip and sample can then be found from
 the total induced dipole, as
