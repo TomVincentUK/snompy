@@ -88,14 +88,14 @@ def eff_pol_bulk(
 def eff_pol_n_bulk(
     z_tip,
     A_tip,
-    harmonic,
-    eps_sample=None,
-    eps_environment=defaults["eps_environment"],
+    n,
+    eps_samp=None,
+    eps_env=defaults["eps_env"],
     beta=None,
     r_tip=defaults["r_tip"],
     eps_sphere=None,
     alpha_sphere=None,
-    N_demod_trapz=defaults["N_demod_trapz"],
+    n_trapz=defaults["n_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk point dipole model.
@@ -106,13 +106,13 @@ def eff_pol_n_bulk(
         Height of the tip above the sample.
     A_tip : float
         The tapping amplitude of the AFM tip.
-    harmonic : int
+    n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    eps_sample : complex
+    eps_samp : complex
         Dielectric function of the sample. Used to calculate `beta_0`, and
         ignored if `beta_0` is specified.
-    eps_environment : complex
+    eps_env : complex
         Dielectric function of the environment (superstrate). Used to
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
@@ -127,7 +127,7 @@ def eff_pol_n_bulk(
     alpha_sphere : complex
         Polarisability of the conducting sphere used as a model for the AFM
         tip.
-    N_demod_trapz : int
+    n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
 
@@ -135,7 +135,7 @@ def eff_pol_n_bulk(
     -------
     alpha_eff : complex
         Effective polarizability of the tip and sample, demodulated at
-        `harmonic`.
+        `n`.
 
     See also
     --------
@@ -177,15 +177,15 @@ def eff_pol_n_bulk(
        2004, doi: 10.1098/rsta.2003.1347.
 
     """
-    # beta calculated from eps_sample if not specified
-    if eps_sample is None:
+    # beta calculated from eps_samp if not specified
+    if eps_samp is None:
         if beta is None:
-            raise ValueError("Either `eps_sample` or `beta` must be specified.")
+            raise ValueError("Either `eps_samp` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(eps_environment, eps_sample)
+            beta = refl_coeff(eps_env, eps_samp)
         else:
-            warnings.warn("`beta` overrides `eps_sample` when both are specified.")
+            warnings.warn("`beta` overrides `eps_samp` when both are specified.")
 
     # alpha_sphere calculated from eps_sphere if not specified
     if eps_sphere is None:
@@ -206,9 +206,9 @@ def eff_pol_n_bulk(
         eff_pol_bulk,
         z_0,
         A_tip,
-        harmonic,
+        n,
         f_args=(beta, r_tip, alpha_sphere),
-        N_demod_trapz=N_demod_trapz,
+        n_trapz=n_trapz,
     )
 
     return alpha_eff

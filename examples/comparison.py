@@ -58,9 +58,7 @@ eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 beta_Au = fdm.reflection.refl_coeff(1 + 0j, eps_Au)  # Not used except for comparison
 
 alpha_SiC_n = fdm.fdm.eff_pol_n_bulk(z_0, A_tip, harmonic, beta=beta_SiC, r_tip=radius)
-alpha_Au_n = fdm.fdm.eff_pol_n_bulk(
-    z_0, A_tip, harmonic, eps_sample=eps_Au, r_tip=radius
-)
+alpha_Au_n = fdm.fdm.eff_pol_n_bulk(z_0, A_tip, harmonic, eps_samp=eps_Au, r_tip=radius)
 
 # Plotting defaults
 c_real = "C0"

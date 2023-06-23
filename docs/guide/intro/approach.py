@@ -13,14 +13,14 @@ eps_Si = 11.7  # Si dielectric function in the mid-infrared
 alpha_eff_fdm = pysnom.fdm.eff_pol_n_bulk(
     z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
-    harmonic=harmonics,
-    eps_sample=eps_Si,
+    n=harmonics,
+    eps_samp=eps_Si,
 )
 alpha_eff_pdm = pysnom.pdm.eff_pol_n_bulk(
     z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
-    harmonic=harmonics,
-    eps_sample=eps_Si,
+    n=harmonics,
+    eps_samp=eps_Si,
 )
 
 # Normalize to value at z_tip = 0

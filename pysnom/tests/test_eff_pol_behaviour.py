@@ -3,19 +3,19 @@ import pytest
 
 import pysnom
 
-eps_environment = 1
+eps_env = 1
 eps_middle = 2 + 1j
 eps_substrate = 11.7
 t_middle = 50e-9
 
-beta = pysnom.reflection.refl_coeff(eps_environment, eps_substrate)
+beta = pysnom.reflection.refl_coeff(eps_env, eps_substrate)
 beta_stack, t_stack = pysnom.reflection.interface_stack(
-    eps_stack=(eps_environment, eps_middle, eps_substrate), t_stack=(t_middle,)
+    eps_stack=(eps_env, eps_middle, eps_substrate), t_stack=(t_middle,)
 )
 
 bulk_kwargs = dict(beta=beta)
 ML_kwargs = dict(beta_stack=beta_stack, t_stack=t_stack)
-demod_kwargs = dict(A_tip=50e-9, harmonic=np.arange(2, 10))
+demod_kwargs = dict(A_tip=50e-9, n=np.arange(2, 10))
 funcs_0_kwargs = [
     (pysnom.pdm.eff_pol_bulk, bulk_kwargs),
     (pysnom.fdm.eff_pol_bulk, bulk_kwargs),

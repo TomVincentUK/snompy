@@ -277,8 +277,8 @@ amplitude :math:`A_{tip}` (see :ref:`demodulation` for details on this
 parameter), the demodulation harmonic :math:`n`, and some way of specifying
 the sample's response to light (in this first example we'll use
 :math:`\varepsilon_{sub}`).
-These arguments are called `z_tip`, `A_tip`, `harmonic`, and
-`eps_sample`.
+These arguments are called `z_tip`, `A_tip`, `n`, and
+`eps_samp`.
 
 Let's use :math:`A_{tip} = 25` nm, :math:`n = 2`, and
 :math:`\varepsilon_{sub} = 11.7` (the mid-IR dielectric function of Si) [3]_ to
@@ -292,15 +292,15 @@ calculate our first approach curve.
    # Set the parameters for our first approach curve
    A_tip = 25e-9
    single_harmonic = 2
-   eps_sample = 11.7  # The mid-IR dielectric function of Si
+   eps_samp = 11.7  # The mid-IR dielectric function of Si
 
 
    # Calculate an approach curve using the dielectric function
    alpha_eff_0 = pysnom.fdm.eff_pol_n_bulk(
       z_tip=z_tip,
       A_tip=A_tip,
-      harmonic=single_harmonic,
-      eps_sample=eps_sample,
+      n=single_harmonic,
+      eps_samp=eps_samp,
    )
    alpha_eff_0 /= alpha_eff_0[0]  # Normalise to z_tip = 0
 
@@ -322,7 +322,7 @@ Sometimes it's easier to specify the sample's response as a reflection
 coefficient :math:`\beta`, instead of a dielectric function
 :math:`\varepsilon_{sub}`.
 In :func:`pysnom.fdm.eff_pol_n_bulk`, we can do this by using the argument
-`beta` instead of `eps_sample`.
+`beta` instead of `eps_samp`.
 
 To calculate the reflection coefficient of Si, we'll use the function
 :func:`pysnom.reflection.refl_coeff`, and assume that our environment has a
@@ -338,13 +338,13 @@ still see the original plot.
    :alt: Add a second approach curve calculated from the reflection coefficient.
 
    # Calculate reflection coefficient from the Si dielectric function
-   beta = pysnom.reflection.refl_coeff(1, eps_sample)
+   beta = pysnom.reflection.refl_coeff(1, eps_samp)
 
    # Calculate an approach curve using the reflection coefficient
    alpha_eff_1 = pysnom.fdm.eff_pol_n_bulk(
       z_tip=z_tip,
       A_tip=A_tip,
-      harmonic=single_harmonic,
+      n=single_harmonic,
       beta=beta,
    )
    alpha_eff_1 /= alpha_eff_1[0]  # Normalise to z_tip = 0
@@ -385,8 +385,8 @@ Lets add a new approach curve with a different set of tip parameters.
    alpha_eff_2 = pysnom.fdm.eff_pol_n_bulk(
       z_tip=z_tip,
       A_tip=A_tip,
-      harmonic=single_harmonic,
-      eps_sample=eps_sample,
+      n=single_harmonic,
+      eps_samp=eps_samp,
       r_tip=r_tip,
       L_tip=L_tip,
       g_factor=g_factor,
@@ -426,8 +426,8 @@ once, for some more harmonics using our custom parameters.
    alpha_eff_3 = pysnom.fdm.eff_pol_n_bulk(
       z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
       A_tip=A_tip,
-      harmonic=multiple_harmonics,
-      eps_sample=eps_sample,
+      n=multiple_harmonics,
+      eps_samp=eps_samp,
       r_tip=r_tip,
       L_tip=L_tip,
       g_factor=g_factor,

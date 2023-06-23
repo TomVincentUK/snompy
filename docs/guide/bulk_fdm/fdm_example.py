@@ -7,7 +7,7 @@ import pysnom
 z_nm = np.linspace(0, 100, 512)  # Useful for plotting
 z_tip = z_nm * 1e-9  # Convert to nm to m (we'll work in SI units)
 A_tip = 25e-9
-eps_sample = 11.7  # The mid-IR dielectric function of Si
+eps_samp = 11.7  # The mid-IR dielectric function of Si
 
 # Set up an axis for plotting
 fig, ax = plt.subplots()
@@ -23,8 +23,8 @@ single_harmonic = 2
 alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z_tip=z_tip,
     A_tip=A_tip,
-    harmonic=single_harmonic,
-    eps_sample=eps_sample,
+    n=single_harmonic,
+    eps_samp=eps_samp,
 )
 alpha_eff /= alpha_eff[0]  # Normalise to z_tip=0
 ax.plot(
@@ -34,12 +34,12 @@ ax.plot(
 )
 ax.legend()
 
-# Use beta instead of eps_sample
-beta = pysnom.reflection.refl_coeff(1, eps_sample)
+# Use beta instead of eps_samp
+beta = pysnom.reflection.refl_coeff(1, eps_samp)
 alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z_tip=z_tip,
     A_tip=A_tip,
-    harmonic=single_harmonic,
+    n=single_harmonic,
     beta=beta,
 )
 alpha_eff /= alpha_eff[0]  # Normalise to z_tip=0
@@ -58,8 +58,8 @@ g_factor = 0.7
 alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z_tip=z_tip,
     A_tip=A_tip,
-    harmonic=single_harmonic,
-    eps_sample=eps_sample,
+    n=single_harmonic,
+    eps_samp=eps_samp,
     r_tip=r_tip,
     L_tip=L_tip,
     g_factor=g_factor,
@@ -78,8 +78,8 @@ multiple_harmonics = np.arange(3, 6)
 alpha_eff = pysnom.fdm.eff_pol_n_bulk(
     z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
-    harmonic=multiple_harmonics,
-    eps_sample=eps_sample,
+    n=multiple_harmonics,
+    eps_samp=eps_samp,
     r_tip=r_tip,
     L_tip=L_tip,
     g_factor=g_factor,

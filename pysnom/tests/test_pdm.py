@@ -12,7 +12,7 @@ def test_eff_pol_warning_if_eps_and_alpha_sphere():
         pysnom.pdm.eff_pol_n_bulk(
             z_tip=50e-9,
             A_tip=50e-9,
-            harmonic=np.arange(2, 10),
+            n=np.arange(2, 10),
             beta=0.75,
             eps_sphere=2,
             alpha_sphere=0.75,
@@ -24,14 +24,14 @@ def test_eff_pol_uses_perfect_conducting_sphere_if_no_material_specified():
     alpha_eff_unspecified = pysnom.pdm.eff_pol_n_bulk(
         z_tip=50e-9,
         A_tip=50e-9,
-        harmonic=np.arange(2, 10),
+        n=np.arange(2, 10),
         beta=0.75,
         r_tip=r_tip,
     )
     alpha_eff_perfect = pysnom.pdm.eff_pol_n_bulk(
         z_tip=50e-9,
         A_tip=50e-9,
-        harmonic=np.arange(2, 10),
+        n=np.arange(2, 10),
         beta=0.75,
         r_tip=r_tip,
         alpha_sphere=4 * np.pi * r_tip**3,
@@ -43,14 +43,14 @@ def test_eff_pol_eps_tip_has_effect():
     alpha_eff_dielectric = pysnom.pdm.eff_pol_n_bulk(
         z_tip=50e-9,
         A_tip=50e-9,
-        harmonic=np.arange(2, 10),
+        n=np.arange(2, 10),
         beta=0.75,
         eps_sphere=11.7,
     )
     alpha_eff_perfect = pysnom.pdm.eff_pol_n_bulk(
         z_tip=50e-9,
         A_tip=50e-9,
-        harmonic=np.arange(2, 10),
+        n=np.arange(2, 10),
         beta=0.75,
     )
     np.testing.assert_raises(

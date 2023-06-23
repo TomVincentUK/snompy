@@ -4,14 +4,14 @@ import numpy as np
 import pysnom
 
 # Set some experimental parameters for an oscillating AFM probe
-harmonic = 3
+n = 3
 A_tip = 25e-9  # 25 nm oscillation amplitude
 z_bottom = 10e-9  # 10 nm from sample at bottom of oscillation
 
 # Material parameters
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_environment = 1  # Vacuum/air dielectric function
-refl_coeff = pysnom.reflection.refl_coeff(eps_environment, eps_Si)
+eps_env = 1  # Vacuum/air dielectric function
+refl_coeff = pysnom.reflection.refl_coeff(eps_env, eps_Si)
 
 # Find z_tip as a function of theta
 theta = np.linspace(-np.pi, np.pi, 512)
@@ -21,7 +21,7 @@ z_tip = z_bottom + A_tip * (1 + np.cos(theta))
 alpha_eff = pysnom.pdm.eff_pol_bulk(z_tip=z_tip, beta=refl_coeff)
 
 # Generate a complex sinusoidal envelope
-envelope = np.exp(1j * harmonic * theta)
+envelope = np.exp(1j * n * theta)
 
 # Get the integrand and evaluate the integral using the trapezium method
 integrand = alpha_eff * envelope
@@ -42,7 +42,7 @@ for ax, twin, component in zip(axes, twins, (np.real, np.imag)):
         component(envelope),
         c="k",
         ls="--",
-        label=r"$e^{" f"{harmonic}" r"i \theta}$",
+        label=r"$e^{" f"{n}" r"i \theta}$",
     )
     for side, visible in zip(
         ("top", "right", "bottom", "left"), (False, True, False, False)
@@ -57,9 +57,9 @@ axes[-1].set(
 axes[0].legend(handles=(f, env, filled))
 axes[0].set_title(  # Print integration result as title
     r"$\alpha_{eff, "
-    f"{harmonic}"
+    f"{n}"
     r"} = \int_{-\pi}^{\pi} \alpha_{eff}(\theta) e^{"
-    f"{harmonic}"
+    f"{n}"
     r"i \theta} d\theta \approx ("
     f"{np.abs(alpha_eff_n):.2e}"
     r") e^{"
