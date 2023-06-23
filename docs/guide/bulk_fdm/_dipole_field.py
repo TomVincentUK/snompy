@@ -13,9 +13,9 @@ XY = np.meshgrid(x, y)
 semi_maj_axis = 100
 semi_min_axis = 50
 radius = 25
-x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+d_Q0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
-Q_loc = np.array([0, radius * x_0 - semi_maj_axis])[:, np.newaxis, np.newaxis]
+Q_loc = np.array([0, radius * d_Q0 - semi_maj_axis])[:, np.newaxis, np.newaxis]
 
 E_0 = (XY - Q_loc) / np.linalg.norm(XY - Q_loc, axis=0) ** 3
 E_dipole = E_0 - E_0[:, ::-1]

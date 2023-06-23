@@ -57,7 +57,7 @@ from .reflection import interface_stack, refl_coeff, refl_coeff_multi_qs
 
 def geom_func_bulk(
     z,
-    x,
+    d_Q,
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
@@ -69,8 +69,8 @@ def geom_func_bulk(
     ----------
     z : float
         Height of the tip above the sample.
-    x : float
-        Position of an induced charge within the tip. Specified in units of
+    d_Q : float
+        Depth of an induced charge within the tip. Specified in units of
         the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
@@ -103,12 +103,12 @@ def geom_func_bulk(
 
         f_{geom} =
         \left(
-            g - \frac{r + 2 z + W}{2 L}
+            g - \frac{r + 2 z + r d_Q}{2 L}
         \right)
-        \frac{\ln{\left(\frac{4 L}{r + 4 z + 2 W}\right)}}
+        \frac{\ln{\left(\frac{4 L}{r + 4 z + 2 r d_Q}\right)}}
         {\ln{\left(\frac{4 L}{r}\right)}}
 
-    where :math:`z` is `z`, :math:`W` is `x * radius`, :math:`r` is
+    where :math:`z` is `z`, :math:`d_Q` is `d_Q`, :math:`r` is
     `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
     This is given as equation (2) in reference [1]_.
 
@@ -120,8 +120,8 @@ def geom_func_bulk(
        doi: 10.1364/OE.20.013173.
     """
     return (
-        (g_factor - (radius + 2 * z + x * radius) / (2 * semi_maj_axis))
-        * np.log(4 * semi_maj_axis / (radius + 4 * z + 2 * x * radius))
+        (g_factor - (radius + 2 * z + d_Q * radius) / (2 * semi_maj_axis))
+        * np.log(4 * semi_maj_axis / (radius + 4 * z + 2 * d_Q * radius))
         / np.log(4 * semi_maj_axis / radius)
     )
 
@@ -132,8 +132,8 @@ def eff_pol_bulk(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
 ):
     r"""Return the effective probe-sample polarizability using the bulk
     finite dipole model.
@@ -155,11 +155,11 @@ def eff_pol_bulk(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units
         of the tip radius.
 
     Returns
@@ -182,10 +182,11 @@ def eff_pol_bulk(
 
         \alpha_{eff} =
         1
-        + \frac{\beta f_{geom}(z, x_0, r, L, g)}
-        {2 (1 - \beta f_{geom}(z, x_1, r, L, g))}
+        + \frac{\beta f_{geom}(z, d_{Q0}, r, L, g)}
+        {2 (1 - \beta f_{geom}(z, d_{Q1}, r, L, g))}
 
     where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\beta` is `beta`,
+    :math:`z` is `z`, :math:`d_{Q0}` is `d_Q0`, :math:`d_{Q1}` is `d_Q1`,
     :math:`r` is `radius`, :math:`L` is `semi_maj_axis`, :math:`g` is
     `g_factor`, and :math:`f_{geom}` is a function encapsulating the
     geometric properties of the tip-sample system. This is given as
@@ -199,8 +200,8 @@ def eff_pol_bulk(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
-    f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
+    f_0 = geom_func_bulk(z, d_Q0, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func_bulk(z, d_Q1, radius, semi_maj_axis, g_factor)
     return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
 
 
@@ -214,8 +215,8 @@ def eff_pol_n_bulk(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
     N_demod_trapz=defaults["N_demod_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
@@ -249,12 +250,12 @@ def eff_pol_n_bulk(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
@@ -299,8 +300,8 @@ def eff_pol_n_bulk(
         else:
             warnings.warn("`beta` overrides `eps_sample` when both are specified.")
 
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
     # Set oscillation centre  so AFM tip touches sample at z = 0
     z_0 = z + tapping_amplitude
@@ -310,7 +311,7 @@ def eff_pol_n_bulk(
         z_0,
         tapping_amplitude,
         harmonic,
-        f_args=(beta, radius, semi_maj_axis, g_factor, x_0, x_1),
+        f_args=(beta, radius, semi_maj_axis, g_factor, d_Q0, d_Q1),
         N_demod_trapz=N_demod_trapz,
     )
 
@@ -323,8 +324,8 @@ def geom_func_bulk_taylor(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
 ):
     r"""The height-dependent part of the separable Taylor series expression
     for the bulk FDM.
@@ -347,12 +348,12 @@ def geom_func_bulk_taylor(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
 
     Returns
     -------
@@ -373,7 +374,7 @@ def geom_func_bulk_taylor(
 
     .. math::
 
-        f_{t} = f_{geom}(z, x_0, r, L, g) f_{geom}(z, x_1, r, L, g)^{j-1}
+        f_{t} = f_{geom}(z, d_Q0, r, L, g) f_{geom}(z, d_Q1, r, L, g)^{j-1}
 
     where :math:`f_{t}` is `f_t`, :math:`r` is `radius`, :math:`L` is
     `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `taylor_index`,
@@ -389,8 +390,8 @@ def geom_func_bulk_taylor(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
-    f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
+    f_0 = geom_func_bulk(z, d_Q0, radius, semi_maj_axis, g_factor)
+    f_1 = geom_func_bulk(z, d_Q1, radius, semi_maj_axis, g_factor)
     return f_0 * f_1 ** (taylor_index - 1)
 
 
@@ -402,8 +403,8 @@ def taylor_coeff_bulk(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
     N_demod_trapz=defaults["N_demod_trapz"],
 ):
     r"""Return the coefficient for the power of reflection coefficient used
@@ -432,12 +433,12 @@ def taylor_coeff_bulk(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
@@ -475,7 +476,7 @@ def taylor_coeff_bulk(
             z_0,
             tapping_amplitude,
             harmonic,
-            f_args=(taylor_index, radius, semi_maj_axis, g_factor, x_0, x_1),
+            f_args=(taylor_index, radius, semi_maj_axis, g_factor, d_Q0, d_Q1),
             N_demod_trapz=N_demod_trapz,
         )
         / 2
@@ -493,8 +494,8 @@ def eff_pol_n_bulk_taylor(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
     N_demod_trapz=defaults["N_demod_trapz"],
     taylor_order=defaults["taylor_order"],
 ):
@@ -529,12 +530,12 @@ def eff_pol_n_bulk_taylor(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
@@ -579,8 +580,8 @@ def eff_pol_n_bulk_taylor(
         else:
             warnings.warn("`beta` overrides `eps_sample` when both are specified.")
 
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
     index_pad_dims = np.max(
         [
@@ -593,8 +594,8 @@ def eff_pol_n_bulk_taylor(
                 radius,
                 semi_maj_axis,
                 g_factor,
-                x_0,
-                x_1,
+                d_Q0,
+                d_Q1,
             )
         ]
     )
@@ -608,8 +609,8 @@ def eff_pol_n_bulk_taylor(
         radius,
         semi_maj_axis,
         g_factor,
-        x_0,
-        x_1,
+        d_Q0,
+        d_Q1,
         N_demod_trapz,
     )
     delta = np.where(harmonic == 0, 1, 0)
@@ -625,8 +626,8 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
     N_demod_trapz=defaults["N_demod_trapz"],
     taylor_order=defaults["taylor_order"],
     beta_threshold=defaults["beta_threshold"],
@@ -658,12 +659,12 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
@@ -702,8 +703,8 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
     whose length is the maximum number of solutions returned for all input
     values. Values which are invalid are masked.
     """
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
     index_pad_dims = np.max(
         [
@@ -716,8 +717,8 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
                 radius,
                 semi_maj_axis,
                 g_factor,
-                x_0,
-                x_1,
+                d_Q0,
+                d_Q1,
             )
         ]
     )
@@ -730,8 +731,8 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
         radius,
         semi_maj_axis,
         g_factor,
-        x_0,
-        x_1,
+        d_Q0,
+        d_Q1,
         N_demod_trapz,
     )
 
@@ -971,7 +972,7 @@ def eff_pos_and_charge(
 
 def geom_func_multi(
     z,
-    z_image,
+    d_image,
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
@@ -984,7 +985,7 @@ def geom_func_multi(
     ----------
     z : float
         Height of the tip above the sample.
-    z_image : float
+    d_image : float
         Depth of an image charge induced below the upper surface of a stack
         of interfaces.
     radius : float
@@ -1017,12 +1018,12 @@ def geom_func_multi(
 
         f =
         \left(
-            g - \frac{r + z + z_{image}}{2 L}
+            g - \frac{r + z + d_{image}}{2 L}
         \right)
-        \frac{\ln{\left(\frac{4 L}{r + 2 z + 2 z_{image}}\right)}}
+        \frac{\ln{\left(\frac{4 L}{r + 2 z + 2 d_{image}}\right)}}
         {\ln{\left(\frac{4 L}{r}\right)}}
 
-    where :math:`z` is `z`, :math:`z_{image}` is `z_image`, :math:`r` is
+    where :math:`z` is `z`, :math:`d_{image}` is `d_image`, :math:`r` is
     `radius`, :math:`L` is `semi_maj_axis`, and :math:`g` is `g_factor`.
     This is given as equation (11) in reference [1]_.
 
@@ -1034,8 +1035,8 @@ def geom_func_multi(
        doi: 10.1364/OE.20.013173.
     """
     return (
-        (g_factor - (radius + z + z_image) / (2 * semi_maj_axis))
-        * np.log(4 * semi_maj_axis / (radius + 2 * z + 2 * z_image))
+        (g_factor - (radius + z + d_image) / (2 * semi_maj_axis))
+        * np.log(4 * semi_maj_axis / (radius + 2 * z + 2 * d_image))
         / np.log(4 * semi_maj_axis / radius)
     )
 
@@ -1047,8 +1048,8 @@ def eff_pol_multi(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=defaults["x_0"],
-    x_1=defaults["x_1"],
+    d_Q0=defaults["d_Q0"],
+    d_Q1=defaults["d_Q1"],
     laguerre_order=defaults["laguerre_order"],
 ):
     r"""Return the effective probe-sample polarizability using the
@@ -1067,12 +1068,12 @@ def eff_pol_multi(
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
     radius : float
         Radius of curvature of the AFM tip.
     semi_maj_axis : float
@@ -1107,13 +1108,13 @@ def eff_pol_multi(
 
         \alpha_{eff} =
         1
-        + \frac{\beta_{image, 0} f_{geom, ML}(z, z_{image, 0}, r, L, g)}
-        {2 (1 - \beta_{image, 1} f_{geom, ML}(z, z_{image, 1}, r, L, g))}
+        + \frac{\beta_{image, 0} f_{geom, ML}(z, d_{image, 0}, r, L, g)}
+        {2 (1 - \beta_{image, 1} f_{geom, ML}(z, d_{image, 1}, r, L, g))}
 
     where :math:`\alpha_{eff}` is `\alpha_eff`; :math:`\beta_{image, i}`
-    and :math:`z_{image, i}` are the depth and relative charge of an image
-    charge induced by a charge in the tip at :math:`x_{i}`
-    (:math:`i=0, 1`), given by `x_0` and `x_1`; :math:`r` is `radius`,
+    and :math:`d_{image, i}` are the relative charge and depth of an image
+    charge induced by a charge in the tip at :math:`d_{Qi}`
+    (:math:`i=0, 1`), given by `d_Q0` and `d_Q1`; :math:`r` is `radius`,
     :math:`L` is `semi_maj_axis`, :math:`g` is `g_factor`, and
     :math:`f_{geom, ML}` is a function encapsulating the geometric
     properties of the tip-sample system for the multilayer finite dipole
@@ -1128,11 +1129,11 @@ def eff_pol_multi(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    z_q_0 = z + radius * x_0
+    z_q_0 = z + radius * d_Q0
     z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, laguerre_order)
     f_0 = geom_func_multi(z, z_im_0, radius, semi_maj_axis, g_factor)
 
-    z_q_1 = z + radius * x_1
+    z_q_1 = z + radius * d_Q1
     z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, laguerre_order)
     f_1 = geom_func_multi(z, z_im_1, radius, semi_maj_axis, g_factor)
 
@@ -1149,8 +1150,8 @@ def eff_pol_n_multi(
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
-    x_0=None,
-    x_1=defaults["x_1"],
+    d_Q0=None,
+    d_Q1=defaults["d_Q1"],
     laguerre_order=defaults["laguerre_order"],
     N_demod_trapz=defaults["N_demod_trapz"],
 ):
@@ -1191,12 +1192,12 @@ def eff_pol_n_multi(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    x_0 : float
-        Position of an induced charge 0 within the tip. Specified in units
-        of the tip radius.
-    x_1 : float
-        Position of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
     laguerre_order : complex
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
     N_demod_trapz : int
@@ -1232,8 +1233,8 @@ def eff_pol_n_multi(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    if x_0 is None:
-        x_0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
+    if d_Q0 is None:
+        d_Q0 = 1.31 * semi_maj_axis / (semi_maj_axis + 2 * radius)
 
     beta_stack, t_stack = interface_stack(eps_stack, beta_stack, t_stack)
 
@@ -1251,8 +1252,8 @@ def eff_pol_n_multi(
             radius,
             semi_maj_axis,
             g_factor,
-            x_0,
-            x_1,
+            d_Q0,
+            d_Q1,
             laguerre_order,
         ),
         N_demod_trapz=N_demod_trapz,
