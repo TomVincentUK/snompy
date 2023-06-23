@@ -5,20 +5,20 @@ import pysnom
 
 # Set some experimental parameters for an oscillating AFM probe
 harmonic = 3
-tapping_amplitude = 25e-9  # 25 nm oscillation amplitude
-z_0 = 10e-9  # 10 nm from sample at bottom of oscillation
+A_tip = 25e-9  # 25 nm oscillation amplitude
+z_bottom = 10e-9  # 10 nm from sample at bottom of oscillation
 
 # Material parameters
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
 eps_environment = 1  # Vacuum/air dielectric function
 refl_coeff = pysnom.reflection.refl_coeff(eps_environment, eps_Si)
 
-# Find z as a function of theta
+# Find z_tip as a function of theta
 theta = np.linspace(-np.pi, np.pi, 512)
-z = z_0 + tapping_amplitude * (1 + np.cos(theta))
+z_tip = z_bottom + A_tip * (1 + np.cos(theta))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.pdm.eff_pol_bulk(z=z, beta=refl_coeff)
+alpha_eff = pysnom.pdm.eff_pol_bulk(z_tip=z_tip, beta=refl_coeff)
 
 # Generate a complex sinusoidal envelope
 envelope = np.exp(1j * harmonic * theta)

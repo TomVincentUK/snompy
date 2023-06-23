@@ -46,7 +46,7 @@ def eps_Drude(omega, eps_inf, omega_plasma, gamma):
 
 wavenumber = np.linspace(885, 955, 512)[..., np.newaxis] * 1e2
 z_0 = np.linspace(0, 100, 21) * 1e-9
-tapping_amplitude = 25e-9
+A_tip = 25e-9
 radius = 35e-9
 harmonic = 2
 
@@ -59,11 +59,9 @@ beta_SiC = (beta_par + beta_perp) / 2
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 
-alpha_SiC_n = fdm.fdm.eff_pol_n_bulk(
-    z_0, tapping_amplitude, harmonic, beta=beta_SiC, radius=radius
-)
+alpha_SiC_n = fdm.fdm.eff_pol_n_bulk(z_0, A_tip, harmonic, beta=beta_SiC, r_tip=radius)
 alpha_Au_n = fdm.fdm.eff_pol_n_bulk(
-    z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
+    z_0, A_tip, harmonic, eps_sample=eps_Au, r_tip=radius
 )
 
 # Plotting

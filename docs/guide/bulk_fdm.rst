@@ -49,10 +49,10 @@ The position of the two charges are found at distances
 .. math::
    :label: z_q0_pos
 
-   z_{Q0} \approx \frac{1.31 L r}{L + 2 r}
+   z_{Q0} \approx \frac{1.31 L_{tip} r_{tip}}{L_{tip} + 2 r_{tip}}
 
-from the ends of the ellipsoid, where :math:`r` is the radius of curvature
-at the pointy end, and :math:`L` is the semi-major axis length (the
+from the ends of the ellipsoid, where :math:`r_{tip}` is the radius of curvature
+at the pointy end, and :math:`L_{tip}` is the semi-major axis length (the
 distance from the ellipsoid centre to the pointy end).
 
 The strength of the electric dipole moment can be related to the charges
@@ -61,13 +61,13 @@ and their separation as
 .. math::
    :label: p_0
 
-   p_0 = 2 (L - z_{Q0}) Q_0 \quad (\approx 2 L Q_0, \ \mathrm{for} \ r \ll L).
+   p_0 = 2 (L_{tip} - z_{Q0}) Q_0 \quad (\approx 2 L_{tip} Q_0, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
 Tip-sample interaction
 ----------------------
 
 Now let's consider what happens when we move our model AFM tip close to a
-sample's surface, with a tip-sample separation of :math:`z`.
+sample's surface, with a tip-sample separation of :math:`z_{tip}`.
 
 When they are close enough, charges induced in the ellipsoid will interact
 with the sample.
@@ -86,12 +86,12 @@ interaction.
    :align: center
 
 We can model the electric field response of the sample to the charge
-:math:`Q_0`, at a height of :math:`z + z_{Q0}`, using
+:math:`Q_0`, at a height of :math:`z_{tip} + z_{Q0}`, using
 the
 `method of image charges <https://en.wikipedia.org/wiki/Method_of_image_charges>`_.
 
 This means we can add a fictitious image charge, :math:`Q'_0 = -\beta Q_0`,
-at a depth of :math:`z + z_{Q0}` below the surface.
+at a depth of :math:`z_{tip} + z_{Q0}` below the surface.
 Here, :math:`\beta` is the electrostatic reflection coefficient of the
 surface, given by
 
@@ -111,7 +111,7 @@ In ``pysnom``, equation :eq:`beta` is provided by the function
 
 The charge :math:`Q'_0` acts back on the tip and induces a further
 polarisation, which we can model as another point charge :math:`Q_1`, at a
-distance :math:`z_{Q1} \approx r / 2` away from the end of the tip.
+distance :math:`z_{Q1} \approx r_{tip} / 2` away from the end of the tip.
 
 .. hint::
    :class: toggle
@@ -127,7 +127,7 @@ distance :math:`z_{Q1} \approx r / 2` away from the end of the tip.
 With the addition of :math:`Q_1`, we need to add some more charges to our
 model:
 the sample response to :math:`Q_1` can be represented by another image
-charge, :math:`Q'_1 = \beta Q_1`, at a depth of :math:`z + z_{Q1}` below
+charge, :math:`Q'_1 = \beta Q_1`, at a depth of :math:`z_{tip} + z_{Q1}` below
 the surface;
 and, for conservation of charge within the tip, :math:`Q_1` must have a
 counter charge :math:`-Q_1`, which is situated in the centre of the
@@ -152,9 +152,9 @@ They are given by the formula
 .. math::
    :label: f_i_bulk
 
-   f_i = \left(g - \frac{r + 2 z + z_{Qi}}{2 L} \right)
-   \frac{\ln\left(\frac{4 L}{r + 4 z + 2 z_{Qi}}\right)}
-   {\ln\left(\frac{4 L}{r}\right)},
+   f_i = \left(g - \frac{r_{tip} + 2 z_{tip} + z_{Qi}}{2 L_{tip}} \right)
+   \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 z_{Qi}}\right)}
+   {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
 
 where :math:`g \approx 0.7` is an empirical factor that describes how much
 of the induced charge is relevant for the near-field interaction (see
@@ -167,7 +167,7 @@ The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 .. math::
    :label: p_1
 
-   p_1 = (L - z_{Q1}) Q_1 \quad (\approx L Q_1, \ \mathrm{for} \ r \ll L).
+   p_1 = (L_{tip} - z_{Q1}) Q_1 \quad (\approx L_{tip} Q_1, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
 The effective polarisability of the tip and sample can then be found from
 the total induced dipole, as
@@ -177,7 +177,7 @@ the total induced dipole, as
 
    \alpha_{eff}
    = \frac{p_0 + p_1}{E_{in}}
-   \approx \frac{2 L Q_0}{E_{in}}
+   \approx \frac{2 L_{tip} Q_0}{E_{in}}
    \left(1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}\right)
    \propto 1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}.
 
@@ -235,12 +235,12 @@ Initial setup
 ^^^^^^^^^^^^^
 
 To begin with, let's import the libraries that we'll need, set the
-:math:`z` values for our approach curves, and set up some axes that we can
+:math:`z_{tip}` values for our approach curves, and set up some axes that we can
 plot our results in.
-For :math:`z`, we'll set a range of points from 0 to 100 nm.
+For :math:`z_{tip}`, we'll set a range of points from 0 to 100 nm.
 
 We'll do all the calculations in `SI base units <https://en.wikipedia.org/wiki/SI_base_unit>`_,
-but we can also plot :math:`z` in nm to make our figure tidier.
+but we can also plot :math:`z_{tip}` in nm to make our figure tidier.
 
 .. plot::
    :context:
@@ -254,14 +254,14 @@ but we can also plot :math:`z` in nm to make our figure tidier.
 
    # Define an approach curve on Si
    z_nm = np.linspace(0, 100, 512)  # Useful for plotting
-   z = z_nm * 1e-9  # Convert to nm to m (we'll work in SI base units)
+   z_tip = z_nm * 1e-9  # Convert to nm to m (we'll work in SI base units)
 
    # Set up an axis for plotting
    fig, ax = plt.subplots()
    ax.set(
-      xlabel=r"$z$ / nm",
+      xlabel=r"$z_{tip}$ / nm",
       xlim=(z_nm.min(), z_nm.max()),
-      ylabel=r"$\frac{\alpha_{eff, \ n}}{(\alpha_{eff, \ n})|_{z = 0}}$",
+      ylabel=r"$\frac{\alpha_{eff, \ n}}{(\alpha_{eff, \ n})|_{z_{tip} = 0}}$",
    )
    fig.tight_layout()
 
@@ -272,12 +272,12 @@ Now let's create an approach curve to display in these axes.
 We'll use :func:`pysnom.fdm.eff_pol_n_bulk` to calculate the effective
 polarisability.
 
-We need to tell the function our tip height :math:`z`, the tapping
+We need to tell the function our tip height :math:`z_{tip}`, the tapping
 amplitude :math:`A_{tip}` (see :ref:`demodulation` for details on this
 parameter), the demodulation harmonic :math:`n`, and some way of specifying
 the sample's response to light (in this first example we'll use
 :math:`\varepsilon_{sub}`).
-These arguments are called `z`, `tapping_amplitude`, `harmonic`, and
+These arguments are called `z_tip`, `A_tip`, `harmonic`, and
 `eps_sample`.
 
 Let's use :math:`A_{tip} = 25` nm, :math:`n = 2`, and
@@ -290,19 +290,19 @@ calculate our first approach curve.
    :alt: An approach curve from Si, calculated from the dielectric function.
 
    # Set the parameters for our first approach curve
-   tapping_amplitude = 25e-9
+   A_tip = 25e-9
    single_harmonic = 2
    eps_sample = 11.7  # The mid-IR dielectric function of Si
 
 
    # Calculate an approach curve using the dielectric function
    alpha_eff_0 = pysnom.fdm.eff_pol_n_bulk(
-      z=z,
-      tapping_amplitude=tapping_amplitude,
+      z_tip=z_tip,
+      A_tip=A_tip,
       harmonic=single_harmonic,
       eps_sample=eps_sample,
    )
-   alpha_eff_0 /= alpha_eff_0[0]  # Normalise to z = 0
+   alpha_eff_0 /= alpha_eff_0[0]  # Normalise to z_tip = 0
 
    # Add the approach curve to the figure
    ax.plot(
@@ -342,12 +342,12 @@ still see the original plot.
 
    # Calculate an approach curve using the reflection coefficient
    alpha_eff_1 = pysnom.fdm.eff_pol_n_bulk(
-      z=z,
-      tapping_amplitude=tapping_amplitude,
+      z_tip=z_tip,
+      A_tip=A_tip,
       harmonic=single_harmonic,
       beta=beta,
    )
-   alpha_eff_1 /= alpha_eff_1[0]  # Normalise to z = 0
+   alpha_eff_1 /= alpha_eff_1[0]  # Normalise to z_tip = 0
 
    # Add the new approach curve to the figure
    ax.plot(
@@ -365,7 +365,7 @@ Changing the default parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the above examples, we didn't specify parameters like the radius
-:math:`r` or semi-major axis length :math:`L` of the ellipsoid, or the
+:math:`r_{tip}` or semi-major axis length :math:`L_{tip}` of the ellipsoid, or the
 empirical factor :math:`g`, so the function reverted to its default values
 (see :func:`pysnom.fdm.eff_pol_n_bulk` for the values of these defaults).
 
@@ -377,21 +377,21 @@ Lets add a new approach curve with a different set of tip parameters.
    :alt: Add an approach curve with changes to the default parameters.
 
    # Updates to the default parameters
-   radius = 100e-9
-   semi_maj_axis = 400e-9
+   r_tip = 100e-9
+   L_tip = 400e-9
    g_factor = 0.7
 
    # Calculate an approach curve with the updated parameters
    alpha_eff_2 = pysnom.fdm.eff_pol_n_bulk(
-      z=z,
-      tapping_amplitude=tapping_amplitude,
+      z_tip=z_tip,
+      A_tip=A_tip,
       harmonic=single_harmonic,
       eps_sample=eps_sample,
-      radius=radius,
-      semi_maj_axis=semi_maj_axis,
+      r_tip=r_tip,
+      L_tip=L_tip,
       g_factor=g_factor,
    )
-   alpha_eff_2 /= alpha_eff_2[0]  # Normalise to z = 0
+   alpha_eff_2 /= alpha_eff_2[0]  # Normalise to z_tip = 0
 
    # Add the new approach curve to the figure
    ax.plot(
@@ -424,15 +424,15 @@ once, for some more harmonics using our custom parameters.
 
    # Calculate several approach curves at once using array broadcasting
    alpha_eff_3 = pysnom.fdm.eff_pol_n_bulk(
-      z=z[:, np.newaxis],  # newaxis added for array broadcasting
-      tapping_amplitude=tapping_amplitude,
+      z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
+      A_tip=A_tip,
       harmonic=multiple_harmonics,
       eps_sample=eps_sample,
-      radius=radius,
-      semi_maj_axis=semi_maj_axis,
+      r_tip=r_tip,
+      L_tip=L_tip,
       g_factor=g_factor,
    )
-   alpha_eff_3 /= alpha_eff_3[0]  # Normalise to z = 0
+   alpha_eff_3 /= alpha_eff_3[0]  # Normalise to z_tip = 0
 
    ax.plot(
       z_nm,

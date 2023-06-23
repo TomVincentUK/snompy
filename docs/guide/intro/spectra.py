@@ -20,10 +20,10 @@ def eps_Drude(wavenumber, eps_inf, plasma_frequency, gamma):
 
 
 # Set some experimental parameters
-z = 20e-9  # AFM tip height
-tapping_amplitude = 20e-9  # AFM tip tapping amplitude
-radius = 30e-9  # AFM tip radius of curvature
-semi_maj_axis = 350e-9  # Semi-major axis length of ellipsoid tip model
+z_tip = 20e-9  # AFM tip height
+A_tip = 20e-9  # AFM tip tapping amplitude
+r_tip = 30e-9  # AFM tip radius of curvature
+L_tip = 350e-9  # Semi-major axis length of ellipsoid tip model
 harmonic = 3  # Harmonic for demodulation
 wavenumber = np.linspace(1680, 1780, 128) * 1e2
 
@@ -40,24 +40,24 @@ eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)
 
 # Measurement
 alpha_eff_PMMA = pysnom.fdm.eff_pol_n_multi(
-    z=z,
-    tapping_amplitude=tapping_amplitude,
+    z_tip=z_tip,
+    A_tip=A_tip,
     harmonic=harmonic,
     eps_stack=(eps_air, eps_PMMA, eps_Si),
     t_stack=(PMMA_thickness[:, np.newaxis],),
-    radius=radius,
-    semi_maj_axis=semi_maj_axis,
+    r_tip=r_tip,
+    L_tip=L_tip,
 )
 
 # Gold reference
 alpha_eff_Au = pysnom.fdm.eff_pol_n_bulk(
-    z=z,
-    tapping_amplitude=tapping_amplitude,
+    z_tip=z_tip,
+    A_tip=A_tip,
     harmonic=harmonic,
     eps_sample=eps_Au,
     eps_environment=eps_air,
-    radius=radius,
-    semi_maj_axis=semi_maj_axis,
+    r_tip=r_tip,
+    L_tip=L_tip,
 )
 
 # Normalised complex scattering

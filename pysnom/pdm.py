@@ -29,21 +29,21 @@ from .reflection import refl_coeff
 
 
 def eff_pol_bulk(
-    z,
+    z_tip,
     beta,
-    radius=defaults["radius"],
-    alpha_sphere=4 * np.pi * defaults["radius"] ** 3,
+    r_tip=defaults["r_tip"],
+    alpha_sphere=4 * np.pi * defaults["r_tip"] ** 3,
 ):
     r"""Return the effective probe-sample polarizability using the bulk
     point dipole model.
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
     alpha_sphere : complex
         Polarisability of the conducting sphere used as a model for the AFM
@@ -66,10 +66,10 @@ def eff_pol_bulk(
 
     .. math::
 
-        \alpha_{eff} = \frac{\alpha_t}{1 - \left(\frac{\alpha_t \beta}{16 \pi (r + z)^3} \right)}
+        \alpha_{eff} = \frac{\alpha_t}{1 - \left(\frac{\alpha_t \beta}{16 \pi (r_{tip} + z_{tip})^3} \right)}
 
     where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\alpha_{t}` is
-    `alpha_sphere`, :math:`\beta` is `beta`, and :math:`r` is `radius`.
+    `alpha_sphere`, :math:`\beta` is `beta`, and :math:`r_{tip}` is `r_tip`.
     This is given as equation (14) in reference [1]_.
 
     References
@@ -80,17 +80,19 @@ def eff_pol_bulk(
        p. 8550, 2007, doi: 10.1364/oe.15.008550.
 
     """
-    return alpha_sphere / (1 - (alpha_sphere * beta / (16 * np.pi * (radius + z) ** 3)))
+    return alpha_sphere / (
+        1 - (alpha_sphere * beta / (16 * np.pi * (r_tip + z_tip) ** 3))
+    )
 
 
 def eff_pol_n_bulk(
-    z,
-    tapping_amplitude,
+    z_tip,
+    A_tip,
     harmonic,
     eps_sample=None,
     eps_environment=defaults["eps_environment"],
     beta=None,
-    radius=defaults["radius"],
+    r_tip=defaults["r_tip"],
     eps_sphere=None,
     alpha_sphere=None,
     N_demod_trapz=defaults["N_demod_trapz"],
@@ -100,9 +102,9 @@ def eff_pol_n_bulk(
 
     Parameters
     ----------
-    z : float
+    z_tip : float
         Height of the tip above the sample.
-    tapping_amplitude : float
+    A_tip : float
         The tapping amplitude of the AFM tip.
     harmonic : int
         The harmonic of the AFM tip tapping frequency at which to
@@ -115,7 +117,7 @@ def eff_pol_n_bulk(
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
         Electrostatic reflection coefficient of the interface.
-    radius : float
+    r_tip : float
         Radius of curvature of the AFM tip.
     eps_sphere : complex
         Dielectric function of the sample. Used to calculate
@@ -157,9 +159,9 @@ def eff_pol_n_bulk(
 
     .. math ::
 
-        \alpha_{t} = 4 \pi r^3 \frac{\varepsilon_t - 1}{\varepsilon_t + 2}
+        \alpha_{t} = 4 \pi r_{tip}^3 \frac{\varepsilon_t - 1}{\varepsilon_t + 2}
 
-    where :math:`\alpha_{t}` is `alpha_sphere`, :math:`r` is `radius` and
+    where :math:`\alpha_{t}` is `alpha_sphere`, :math:`r_{tip}` is `r_tip` and
     :math:`\varepsilon_t` is `eps_t`, which is given as equation (3.1) in
     reference [2]_.
 
@@ -188,24 +190,24 @@ def eff_pol_n_bulk(
     # alpha_sphere calculated from eps_sphere if not specified
     if eps_sphere is None:
         if alpha_sphere is None:
-            alpha_sphere = 4 * np.pi * radius**3
+            alpha_sphere = 4 * np.pi * r_tip**3
     else:
         if alpha_sphere is None:
-            alpha_sphere = 4 * np.pi * radius**3 * (eps_sphere - 1) / (eps_sphere + 2)
+            alpha_sphere = 4 * np.pi * r_tip**3 * (eps_sphere - 1) / (eps_sphere + 2)
         else:
             warnings.warn(
                 "`alpha_sphere` overrides `eps_sphere` when both are specified."
             )
 
-    # Set oscillation centre  so AFM tip touches sample at z = 0
-    z_0 = z + tapping_amplitude
+    # Set oscillation centre  so AFM tip touches sample at z_tip = 0
+    z_0 = z_tip + A_tip
 
     alpha_eff = demod(
         eff_pol_bulk,
         z_0,
-        tapping_amplitude,
+        A_tip,
         harmonic,
-        f_args=(beta, radius, alpha_sphere),
+        f_args=(beta, r_tip, alpha_sphere),
         N_demod_trapz=N_demod_trapz,
     )
 

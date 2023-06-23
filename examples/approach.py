@@ -34,13 +34,13 @@ def eps_Drude(omega, eps_inf, omega_plasma, gamma):
 
 wavenumber = 1000 * 1e2
 z_0 = np.linspace(0, 35, 512)[..., np.newaxis] * 1e-9
-tapping_amplitude = 18e-9
+A_tip = 18e-9
 radius = 20e-9
 harmonic = np.arange(1, 5, 1)
 
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)  # values from [2]_
 alpha_Au_n = fdm.fdm.eff_pol_n_bulk(
-    z_0, tapping_amplitude, harmonic, eps_sample=eps_Au, radius=radius
+    z_0, A_tip, harmonic, eps_sample=eps_Au, r_tip=radius
 )
 
 # Normalize to z = 0

@@ -42,7 +42,7 @@ def eps_Drude(omega, eps_inf, omega_plasma, gamma):
 
 wavenumber = np.linspace(1680, 1780, 128) * 1e2
 z_0 = 50e-9
-tapping_amplitude = 50e-9
+A_tip = 50e-9
 radius = 20e-9
 harmonic = 3
 
@@ -62,11 +62,9 @@ eps_stack_ref = eps_air, eps_Au
 t_PMMA = np.linspace(0, 100, 10)[:, np.newaxis] * 1e-9
 
 alpha_eff = fdm.multilayer.eff_pol_ML(
-    z_0, tapping_amplitude, harmonic, eps_stack=eps_stack, t_stack=(t_PMMA,)
+    z_0, A_tip, harmonic, eps_stack=eps_stack, t_stack=(t_PMMA,)
 )
-alpha_eff_ref = fdm.multilayer.eff_pol_ML(
-    z_0, tapping_amplitude, harmonic, eps_stack=eps_stack_ref
-)
+alpha_eff_ref = fdm.multilayer.eff_pol_ML(z_0, A_tip, harmonic, eps_stack=eps_stack_ref)
 signal = alpha_eff / alpha_eff_ref
 
 # Plotting
