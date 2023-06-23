@@ -8,7 +8,7 @@ import pysnom
     "eff_pol_n",
     (
         pysnom.fdm.eff_pol_n_bulk,
-        pysnom.fdm.eff_pol_n_bulk_Taylor,
+        pysnom.fdm.eff_pol_n_bulk_taylor,
         pysnom.pdm.eff_pol_n_bulk,
     ),
 )
@@ -44,7 +44,7 @@ def test_eff_pol_n_broadcasting(eff_pol_n):
     "eff_pol_n",
     (
         pysnom.fdm.eff_pol_n_bulk,
-        pysnom.fdm.eff_pol_n_bulk_Taylor,
+        pysnom.fdm.eff_pol_n_bulk_taylor,
         pysnom.pdm.eff_pol_n_bulk,
     ),
 )
@@ -63,7 +63,7 @@ def test_eff_pol_n_error_if_no_material(eff_pol_n):
     "eff_pol_n",
     (
         pysnom.fdm.eff_pol_n_bulk,
-        pysnom.fdm.eff_pol_n_bulk_Taylor,
+        pysnom.fdm.eff_pol_n_bulk_taylor,
         pysnom.pdm.eff_pol_n_bulk,
     ),
 )
@@ -81,7 +81,7 @@ def test_eff_pol_n_warning_if_eps_and_beta(eff_pol_n):
 
 
 @pytest.mark.parametrize("model", (pysnom.fdm,))
-def test_eff_pol_n_Taylor_equals_eff_pol_n(model):
+def test_eff_pol_n_taylor_equals_eff_pol_n(model):
     n_test_beta = 10
     beta = np.linspace(1, 0.1, n_test_beta) * np.exp(
         1j * np.linspace(0, np.pi, n_test_beta)
@@ -94,12 +94,12 @@ def test_eff_pol_n_Taylor_equals_eff_pol_n(model):
     )
 
     np.testing.assert_allclose(
-        model.eff_pol_n_bulk(**params), model.eff_pol_n_bulk_Taylor(**params)
+        model.eff_pol_n_bulk(**params), model.eff_pol_n_bulk_taylor(**params)
     )
 
 
 @pytest.mark.parametrize("model", (pysnom.fdm,))
-def test_refl_coeff_from_eff_pol_n_bulk_Taylor(model):
+def test_refl_coeff_from_eff_pol_n_bulk_taylor(model):
     n_test_beta = 10
     beta_in = np.linspace(1, 0.1, n_test_beta) * np.exp(
         1j * np.linspace(0, np.pi, n_test_beta)
@@ -109,8 +109,8 @@ def test_refl_coeff_from_eff_pol_n_bulk_Taylor(model):
     params = dict(
         z=1e-9, tapping_amplitude=30e-9, harmonic=np.arange(2, 6)[:, np.newaxis]
     )
-    alpha_eff_n = model.eff_pol_n_bulk_Taylor(beta=beta_in, **params)
-    beta_out = model.refl_coeff_from_eff_pol_n_bulk_Taylor(
+    alpha_eff_n = model.eff_pol_n_bulk_taylor(beta=beta_in, **params)
+    beta_out = model.refl_coeff_from_eff_pol_n_bulk_taylor(
         alpha_eff_n=alpha_eff_n, **params
     )
 

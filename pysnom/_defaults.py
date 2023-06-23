@@ -8,7 +8,7 @@ defaults = dict(
     semi_maj_axis=300e-9,
     g_factor=0.7 * np.exp(0.06j),
     N_demod_trapz=64,
-    Laguerre_order=64,
-    Taylor_order=16,
+    laguerre_order=64,
+    taylor_order=16,
     beta_threshold=1.01,
 )

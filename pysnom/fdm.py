@@ -26,10 +26,10 @@ Taylor series representation
     :nosignatures:
     :toctree: generated/
 
-    refl_coeff_from_eff_pol_n_bulk_Taylor
-    eff_pol_n_bulk_Taylor
-    Taylor_coeff_bulk
-    geom_func_bulk_Taylor
+    refl_coeff_from_eff_pol_n_bulk_taylor
+    eff_pol_n_bulk_taylor
+    taylor_coeff_bulk
+    geom_func_bulk_taylor
 
 Multilayer finite dipole model
 ------------------------------
@@ -317,9 +317,9 @@ def eff_pol_n_bulk(
     return alpha_eff
 
 
-def geom_func_bulk_Taylor(
+def geom_func_bulk_taylor(
     z,
-    Taylor_index,
+    taylor_index,
     radius=defaults["radius"],
     semi_maj_axis=defaults["semi_maj_axis"],
     g_factor=defaults["g_factor"],
@@ -333,7 +333,7 @@ def geom_func_bulk_Taylor(
     ----------
     z : float
         Height of the tip above the sample.
-    Taylor_index : integer
+    taylor_index : integer
         The corresponding power of the reflection coefficient in the Taylor
         series.
     radius : float
@@ -357,13 +357,13 @@ def geom_func_bulk_Taylor(
     Returns
     -------
     f_t : complex
-        The height-dependent part of the separable Taylor series expression
+        The height-dependent part of the separable taylor series expression
         for the bulk FDM.
 
     See also
     --------
     geom_func_bulk
-    Taylor_coeff_bulk :
+    taylor_coeff_bulk :
         Function that uses this to calculate the Taylor series coefficients
         for the bulk FDM.
 
@@ -376,7 +376,7 @@ def geom_func_bulk_Taylor(
         f_{t} = f_{geom}(z, x_0, r, L, g) f_{geom}(z, x_1, r, L, g)^{j-1}
 
     where :math:`f_{t}` is `f_t`, :math:`r` is `radius`, :math:`L` is
-    `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `Taylor_index`,
+    `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `taylor_index`,
     and :math:`f_{geom}` is a function encapsulating the geometric
     properties of the tip-sample system. This is given as equation (3) in
     reference [1]_. The function :math:`f_{geom}` is implemented here as
@@ -391,12 +391,12 @@ def geom_func_bulk_Taylor(
     """
     f_0 = geom_func_bulk(z, x_0, radius, semi_maj_axis, g_factor)
     f_1 = geom_func_bulk(z, x_1, radius, semi_maj_axis, g_factor)
-    return f_0 * f_1 ** (Taylor_index - 1)
+    return f_0 * f_1 ** (taylor_index - 1)
 
 
-def Taylor_coeff_bulk(
+def taylor_coeff_bulk(
     z,
-    Taylor_index,
+    taylor_index,
     tapping_amplitude,
     harmonic,
     radius=defaults["radius"],
@@ -413,7 +413,7 @@ def Taylor_coeff_bulk(
     ----------
     z : float
         Height of the tip above the sample.
-    Taylor_index : integer
+    taylor_index : integer
         The corresponding power of the reflection coefficient in the Taylor
         series.
     tapping_amplitude : float
@@ -450,7 +450,7 @@ def Taylor_coeff_bulk(
 
     See also
     --------
-    geom_func_bulk_Taylor
+    geom_func_bulk_taylor
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -459,7 +459,7 @@ def Taylor_coeff_bulk(
     This function implements
     :math:`a_j = \frac{1}{2} \hat{F_n}(f_t)`, where :math:`\hat{F_n}(f_t)`
     is the :math:`n^{th}` Fourier coefficient of the function :math:`f_t`,
-    which is implemented here as :func:`geom_func_bulk_Taylor`.
+    which is implemented here as :func:`geom_func_bulk_taylor`.
 
     This function returns 0 when :math:`j = 0`, because the Taylor series
     representation of the bulk FDM begins at :math:`j = 1`, however
@@ -471,19 +471,19 @@ def Taylor_coeff_bulk(
 
     non_zero_terms = (
         demod(
-            geom_func_bulk_Taylor,
+            geom_func_bulk_taylor,
             z_0,
             tapping_amplitude,
             harmonic,
-            f_args=(Taylor_index, radius, semi_maj_axis, g_factor, x_0, x_1),
+            f_args=(taylor_index, radius, semi_maj_axis, g_factor, x_0, x_1),
             N_demod_trapz=N_demod_trapz,
         )
         / 2
     )
-    return np.where(Taylor_index == 0, 0, non_zero_terms)
+    return np.where(taylor_index == 0, 0, non_zero_terms)
 
 
-def eff_pol_n_bulk_Taylor(
+def eff_pol_n_bulk_taylor(
     z,
     tapping_amplitude,
     harmonic,
@@ -496,7 +496,7 @@ def eff_pol_n_bulk_Taylor(
     x_0=None,
     x_1=defaults["x_1"],
     N_demod_trapz=defaults["N_demod_trapz"],
-    Taylor_order=defaults["Taylor_order"],
+    taylor_order=defaults["taylor_order"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using a Taylor series representation of the bulk FDM.
@@ -538,7 +538,7 @@ def eff_pol_n_bulk_Taylor(
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
-    Taylor_order : int
+    taylor_order : int
         Maximum power index for the Taylor series in `beta`.
 
     Returns
@@ -549,7 +549,7 @@ def eff_pol_n_bulk_Taylor(
 
     See also
     --------
-    Taylor_coeff_bulk :
+    taylor_coeff_bulk :
         Function that calculates the Taylor series coefficients for the
         bulk FDM.
     eff_pol_n_bulk : The non-Taylor series version of this function.
@@ -566,8 +566,8 @@ def eff_pol_n_bulk_Taylor(
     :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
     :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
     :math:`j` is the index of the Taylor series, :math:`J` is
-    `Taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
-    here as :func:`Taylor_coeff_bulk`.
+    `taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
+    here as :func:`taylor_coeff_bulk`.
     """
     # beta calculated from eps_sample if not specified
     if eps_sample is None:
@@ -598,11 +598,11 @@ def eff_pol_n_bulk_Taylor(
             )
         ]
     )
-    Taylor_index = np.arange(Taylor_order).reshape(-1, *(1,) * index_pad_dims)
+    taylor_index = np.arange(taylor_order).reshape(-1, *(1,) * index_pad_dims)
 
-    coeffs = Taylor_coeff_bulk(
+    coeffs = taylor_coeff_bulk(
         z,
-        Taylor_index,
+        taylor_index,
         tapping_amplitude,
         harmonic,
         radius,
@@ -613,11 +613,11 @@ def eff_pol_n_bulk_Taylor(
         N_demod_trapz,
     )
     delta = np.where(harmonic == 0, 1, 0)
-    alpha_eff = np.sum(coeffs * beta**Taylor_index, axis=0) + delta
+    alpha_eff = np.sum(coeffs * beta**taylor_index, axis=0) + delta
     return alpha_eff
 
 
-def refl_coeff_from_eff_pol_n_bulk_Taylor(
+def refl_coeff_from_eff_pol_n_bulk_taylor(
     z,
     tapping_amplitude,
     harmonic,
@@ -628,7 +628,7 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
     x_0=None,
     x_1=defaults["x_1"],
     N_demod_trapz=defaults["N_demod_trapz"],
-    Taylor_order=defaults["Taylor_order"],
+    taylor_order=defaults["taylor_order"],
     beta_threshold=defaults["beta_threshold"],
 ):
     r"""Return the reflection coefficient corresponding to a particular
@@ -667,7 +667,7 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
-    Taylor_order : int
+    taylor_order : int
         Maximum power index for the Taylor series in `beta`.
     beta_threshold : float
         The maximum amplitude of returned `beta` values determined to be
@@ -680,10 +680,10 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
 
     See also
     --------
-    Taylor_coeff_bulk :
+    taylor_coeff_bulk :
         Function that calculates the Taylor series coefficients for the
         bulk FDM.
-    eff_pol_n_bulk_Taylor : The inverse of this function.
+    eff_pol_n_bulk_taylor : The inverse of this function.
 
     Notes
     -----
@@ -694,8 +694,8 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
     :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
     :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
     :math:`j` is the index of the Taylor series, :math:`J` is
-    `Taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
-    here as :func:`Taylor_coeff_bulk`.
+    `taylor_order` and :math:`a_j` is the Taylor coefficient, implemented
+    here as :func:`taylor_coeff_bulk`.
 
     There may be multiple possible solutions (or none) for different
     inputs, so this function returns a masked array with first dimension
@@ -721,10 +721,10 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
             )
         ]
     )
-    Taylor_index = np.arange(Taylor_order).reshape(-1, *(1,) * index_pad_dims)
-    coeffs = Taylor_coeff_bulk(
+    taylor_index = np.arange(taylor_order).reshape(-1, *(1,) * index_pad_dims)
+    coeffs = taylor_coeff_bulk(
         z,
-        Taylor_index,
+        taylor_index,
         tapping_amplitude,
         harmonic,
         radius,
@@ -736,7 +736,7 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
     )
 
     delta = np.where(harmonic == 0, 1, 0)
-    offset_coeffs = np.where(Taylor_index == 0, delta - alpha_eff_n, coeffs)
+    offset_coeffs = np.where(taylor_index == 0, delta - alpha_eff_n, coeffs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coeffs)
 
     # Sort roots by abs value
@@ -752,7 +752,7 @@ def refl_coeff_from_eff_pol_n_bulk_Taylor(
     return beta
 
 
-def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]):
+def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]):
     r"""Return the electric potential and field at the sample surface,
     induced by a charge above a stack of interfaces.
 
@@ -772,7 +772,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    Laguerre_order : int
+    laguerre_order : int
         The order of the Laguerre polynomial used to evaluate the integrals
         over all `k`.
 
@@ -853,7 +853,7 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
             \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right) x_n.
         \end{align*}
 
-    The choice of :math:`N`, defined in this function as `Laguerre_order`,
+    The choice of :math:`N`, defined in this function as `laguerre_order`,
     will affect the accuracy of the approximation, with higher :math:`N`
     values leading to more accurate evaluation of the integrals.
 
@@ -874,21 +874,21 @@ def phi_E_0(z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"])
        doi: 10.1016/S0377-0427(01)00407-1.
     """
     # Evaluate integral in terms of x = k * 2 * z_q
-    x_Lag, w_Lag = laguerre.laggauss(Laguerre_order)
-    k = x_Lag / np.asarray(2 * z_q)[..., np.newaxis]
+    x_lag, w_lag = laguerre.laggauss(laguerre_order)
+    k = x_lag / np.asarray(2 * z_q)[..., np.newaxis]
 
     beta_k = refl_coeff_multi_qs(
         k, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
     )
 
-    phi = np.sum(w_Lag * beta_k, axis=-1) / (2 * z_q)
-    E = np.sum(w_Lag * x_Lag * beta_k, axis=-1) / (4 * z_q**2)
+    phi = np.sum(w_lag * beta_k, axis=-1) / (2 * z_q)
+    E = np.sum(w_lag * x_lag * beta_k, axis=-1) / (4 * z_q**2)
 
     return phi, E
 
 
 def eff_pos_and_charge(
-    z_q, beta_stack, t_stack, Laguerre_order=defaults["Laguerre_order"]
+    z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]
 ):
     r"""Calculate the depth and relative charge of an image charge induced
     below the top surface of a stack of interfaces.
@@ -909,7 +909,7 @@ def eff_pos_and_charge(
         superstrate and substrate. Must have length one fewer than
         `beta_stack` or two fewer than `eps_stack`. An empty list can be
         used for the case of a single interface.
-    Laguerre_order : int
+    laguerre_order : int
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
@@ -963,7 +963,7 @@ def eff_pos_and_charge(
        suspended topological insulator nanostructures,” pp. 1–23, Dec.
        2021, [Online]. Available: http://arxiv.org/abs/2112.10104
     """
-    phi, E = phi_E_0(z_q, beta_stack, t_stack, Laguerre_order)
+    phi, E = phi_E_0(z_q, beta_stack, t_stack, laguerre_order)
     z_image = np.abs(phi / E) - z_q
     beta_image = phi**2 / E
     return z_image, beta_image
@@ -1049,7 +1049,7 @@ def eff_pol_multi(
     g_factor=defaults["g_factor"],
     x_0=defaults["x_0"],
     x_1=defaults["x_1"],
-    Laguerre_order=defaults["Laguerre_order"],
+    laguerre_order=defaults["laguerre_order"],
 ):
     r"""Return the effective probe-sample polarizability using the
     multilayer finite dipole model.
@@ -1084,7 +1084,7 @@ def eff_pol_multi(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    Laguerre_order : int
+    laguerre_order : int
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
     Returns
@@ -1129,11 +1129,11 @@ def eff_pol_multi(
        doi: 10.1364/OE.20.013173.
     """
     z_q_0 = z + radius * x_0
-    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, Laguerre_order)
+    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, laguerre_order)
     f_0 = geom_func_multi(z, z_im_0, radius, semi_maj_axis, g_factor)
 
     z_q_1 = z + radius * x_1
-    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, Laguerre_order)
+    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, laguerre_order)
     f_1 = geom_func_multi(z, z_im_1, radius, semi_maj_axis, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
@@ -1151,7 +1151,7 @@ def eff_pol_n_multi(
     g_factor=defaults["g_factor"],
     x_0=None,
     x_1=defaults["x_1"],
-    Laguerre_order=defaults["Laguerre_order"],
+    laguerre_order=defaults["laguerre_order"],
     N_demod_trapz=defaults["N_demod_trapz"],
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
@@ -1197,7 +1197,7 @@ def eff_pol_n_multi(
     x_1 : float
         Position of an induced charge 1 within the tip. Specified in units
         of the tip radius.
-    Laguerre_order : complex
+    laguerre_order : complex
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
     N_demod_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
@@ -1253,7 +1253,7 @@ def eff_pol_n_multi(
             g_factor,
             x_0,
             x_1,
-            Laguerre_order,
+            laguerre_order,
         ),
         N_demod_trapz=N_demod_trapz,
     )
