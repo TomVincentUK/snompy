@@ -376,9 +376,9 @@ def geom_func_bulk_Taylor(
         f_{t} = f_{geom}(z, x_0, r, L, g) f_{geom}(z, x_1, r, L, g)^{j-1}
 
     where :math:`f_{t}` is `f_t`, :math:`r` is `radius`, :math:`L` is
-    `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `Taylor_index,
+    `semi_maj_axis`, :math:`g` is `g_factor`, :math:`j` is `Taylor_index`,
     and :math:`f_{geom}` is a function encapsulating the geometric
-    properties of the tip-sample system`. This is given as equation (3) in
+    properties of the tip-sample system. This is given as equation (3) in
     reference [1]_. The function :math:`f_{geom}` is implemented here as
     :func:`geom_func_bulk`.
 
