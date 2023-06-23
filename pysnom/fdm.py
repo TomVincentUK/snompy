@@ -752,16 +752,16 @@ def refl_coeff_from_eff_pol_n_bulk_taylor(
     return beta
 
 
-def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]):
+def phi_E_0(z_Q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]):
     r"""Return the electric potential and field at the sample surface,
     induced by a charge above a stack of interfaces.
 
     This function works by performing integrals over all values of in-plane
-    electromagnetic wave momentum `k`, using Gauss-Laguerre quadrature.
+    electromagnetic wave momentum `q`, using Gauss-Laguerre quadrature.
 
     Parameters
     ----------
-    z_q : float
+    z_Q : float
         Height of the charge above the sample.
     beta_stack : array_like
         Electrostatic reflection coefficients of each interface in the
@@ -774,7 +774,7 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
         used for the case of a single interface.
     laguerre_order : int
         The order of the Laguerre polynomial used to evaluate the integrals
-        over all `k`.
+        over all `q`.
 
     Returns
     -------
@@ -796,30 +796,30 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
     .. math::
 
         \begin{align*}
-            \phi \rvert_{z=0} &= \int_0^\infty \beta(k) e^{-2 z_q k} dk,
+            \phi \rvert_{z=0} &= \int_0^\infty \beta(q) e^{-2 z_Q q} dk,
             \ \text{and}\\
-            E_z \rvert_{z=0} &= \int_0^\infty \beta(k) k e^{-2 z_q k} dk,
+            E_z \rvert_{z=0} &= \int_0^\infty \beta(q) q e^{-2 z_Q q} dk,
         \end{align*}
 
     where :math:`\phi` is the electric potential, :math:`E_z` is the
-    vertical component of the electric field, :math:`k` is the
-    electromagnetic wave momentum, :math:`\beta(k)` is the
+    vertical component of the electric field, :math:`q` is the
+    electromagnetic wave momentum, :math:`\beta(q)` is the
     momentum-dependent effective reflection coefficient for the surface,
-    and :math:`z_q` is the height of the inducing charge above the
+    and :math:`z_Q` is the height of the inducing charge above the
     surface [1]_.
 
-    To do this, it first makes the substitution :math:`x = 2 z_q k`, such
+    To do this, it first makes the substitution :math:`x = 2 z_Q q`, such
     that the integrals become
 
     .. math::
 
         \begin{align*}
             \phi \rvert_{z=0}
-            & = \frac{1}{2 z_q} \int_0^\infty
-            \beta\left(\frac{x}{2 z_q}\right) e^{-x} dx, \ \text{and}\\
+            & = \frac{1}{2 z_Q} \int_0^\infty
+            \beta\left(\frac{x}{2 z_Q}\right) e^{-x} dx, \ \text{and}\\
             E_z \rvert_{z=0}
-            & = \frac{1}{4 z_q^2} \int_0^\infty
-            \beta\left(\frac{x}{2 z_q}\right) x e^{-x} dx.
+            & = \frac{1}{4 z_Q^2} \int_0^\infty
+            \beta\left(\frac{x}{2 z_Q}\right) x e^{-x} dx.
         \end{align*}
 
     It then uses the Gauss-Laguerre approximation [2]_
@@ -845,12 +845,12 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
 
         \begin{align*}
             \phi \rvert_{z=0}
-            & \approx \frac{1}{2 z_q}
-            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right),
+            & \approx \frac{1}{2 z_Q}
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right),
             \ \text{and}\\
             E_z \rvert_{z=0}
-            & \approx \frac{1}{4 z_q^2}
-            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_q}\right) x_n.
+            & \approx \frac{1}{4 z_Q^2}
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
         \end{align*}
 
     The choice of :math:`N`, defined in this function as `laguerre_order`,
@@ -873,22 +873,22 @@ def phi_E_0(z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"])
        140, no. 1-2, pp. 291-299, Mar. 2002,
        doi: 10.1016/S0377-0427(01)00407-1.
     """
-    # Evaluate integral in terms of x = k * 2 * z_q
+    # Evaluate integral in terms of x = q * 2 * z_Q
     x_lag, w_lag = laguerre.laggauss(laguerre_order)
-    k = x_lag / np.asarray(2 * z_q)[..., np.newaxis]
+    q = x_lag / np.asarray(2 * z_Q)[..., np.newaxis]
 
-    beta_k = refl_coeff_multi_qs(
-        k, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
+    beta_q = refl_coeff_multi_qs(
+        q, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
     )
 
-    phi = np.sum(w_lag * beta_k, axis=-1) / (2 * z_q)
-    E = np.sum(w_lag * x_lag * beta_k, axis=-1) / (4 * z_q**2)
+    phi = np.sum(w_lag * beta_q, axis=-1) / (2 * z_Q)
+    E = np.sum(w_lag * x_lag * beta_q, axis=-1) / (4 * z_Q**2)
 
     return phi, E
 
 
 def eff_pos_and_charge(
-    z_q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]
+    z_Q, beta_stack, t_stack, laguerre_order=defaults["laguerre_order"]
 ):
     r"""Calculate the depth and relative charge of an image charge induced
     below the top surface of a stack of interfaces.
@@ -898,7 +898,7 @@ def eff_pos_and_charge(
 
     Parameters
     ----------
-    z_q : float
+    z_Q : float
         Height of the charge above the sample.
     beta_stack : array_like
         Electrostatic reflection coefficients of each interface in the
@@ -929,14 +929,14 @@ def eff_pos_and_charge(
     -----
 
     This function calculates the depth of an image charge induced by a
-    charge :math:`q` at height :math:`z_q` above a sample surface using the
+    charge :math:`q` at height :math:`z_Q` above a sample surface using the
     equation
 
     .. math::
 
         z_{image} = \left|
             \frac{\phi \rvert_{z=0}}{E_z \rvert_{z=0}}
-        \right| - z_q,
+        \right| - z_Q,
 
     and the effective charge of the image, relative to :math:`q`, using the
     equation
@@ -949,7 +949,7 @@ def eff_pos_and_charge(
 
     where :math:`\phi` is the electric potential, and :math:`E_z` is the
     vertical component of the electric field. These are based on equations
-    (9) and (10) from reference [1]_. The depth :math:`z_q`  is converted
+    (9) and (10) from reference [1]_. The depth :math:`z_Q`  is converted
     to a real number by taking the absolute value of the
     :math:`\phi`-:math:`E_z` ratio, as described in reference [2]_.
 
@@ -963,8 +963,8 @@ def eff_pos_and_charge(
        suspended topological insulator nanostructures,” pp. 1–23, Dec.
        2021, [Online]. Available: http://arxiv.org/abs/2112.10104
     """
-    phi, E = phi_E_0(z_q, beta_stack, t_stack, laguerre_order)
-    z_image = np.abs(phi / E) - z_q
+    phi, E = phi_E_0(z_Q, beta_stack, t_stack, laguerre_order)
+    z_image = np.abs(phi / E) - z_Q
     beta_image = phi**2 / E
     return z_image, beta_image
 
