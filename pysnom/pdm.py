@@ -15,8 +15,8 @@ Bulk point dipole model
     :nosignatures:
     :toctree: generated/
 
-    eff_pol_n_bulk
-    eff_pol_bulk
+    eff_pol_n
+    eff_pol
 
 """
 import warnings
@@ -28,7 +28,7 @@ from .demodulate import demod
 from .reflection import refl_coeff
 
 
-def eff_pol_bulk(
+def eff_pol(
     z_tip,
     beta,
     r_tip=defaults["r_tip"],
@@ -56,9 +56,9 @@ def eff_pol_bulk(
 
     See also
     --------
-    pysnom.fdm.eff_pol_bulk :
+    pysnom.fdm.eff_pol :
         The finite dipole model (FDM) equivalent of this function.
-    eff_pol_n_bulk : The modulated/demodulated version of this function.
+    eff_pol_n : The modulated/demodulated version of this function.
 
     Notes
     -----
@@ -85,7 +85,7 @@ def eff_pol_bulk(
     )
 
 
-def eff_pol_n_bulk(
+def eff_pol_n(
     z_tip,
     A_tip,
     n,
@@ -139,9 +139,9 @@ def eff_pol_n_bulk(
 
     See also
     --------
-    pysnom.fdm.eff_pol_n_bulk :
+    pysnom.fdm.eff_pol_n :
         The finite dipole model equivalent of this function.
-    eff_pol_bulk : The unmodulated/demodulated version of this function.
+    eff_pol : The unmodulated/demodulated version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -152,7 +152,7 @@ def eff_pol_n_bulk(
     :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
     coefficient of the effective polarizability of the tip and sample,
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol_bulk`.
+    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol`.
 
     If `eps_sphere` is specified it is used to calculate `alpha_sphere`
     according to
@@ -203,7 +203,7 @@ def eff_pol_n_bulk(
     z_0 = z_tip + A_tip
 
     alpha_eff = demod(
-        eff_pol_bulk,
+        eff_pol,
         z_0,
         A_tip,
         n,

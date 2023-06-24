@@ -18,7 +18,7 @@ theta = np.linspace(-np.pi, np.pi, 512)
 z_tip = z_bottom + A_tip * (1 + np.cos(theta))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.fdm.eff_pol_bulk(z_tip=z_tip, beta=refl_coeff)
+alpha_eff = pysnom.fdm.bulk.eff_pol(z_tip=z_tip, beta=refl_coeff)
 
 # Generate a complex sinusoidal envelope
 envelope = np.exp(1j * n * theta)

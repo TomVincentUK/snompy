@@ -1,13 +1,14 @@
 import numpy as np
 from scipy.integrate import quad_vec
 
-from pysnom.fdm import (
-    eff_pol_multi,
-    eff_pol_n_bulk,
-    eff_pol_n_multi,
-    eff_pos_and_charge,
-    phi_E_0,
-)
+# from pysnom.fdm.bulk import (
+#     eff_pol,
+#     eff_pol_n,
+#     eff_pol_n,
+#     eff_pos_and_charge,
+#     phi_E_0,
+# )
+from pysnom.fdm import bulk, multi
 from pysnom.reflection import interface_stack, refl_coeff_multi_qs
 
 # Measurement parameters
@@ -42,7 +43,7 @@ HARMONIC = np.arange(2, 5)[:, np.newaxis, np.newaxis]
 
 
 def test_phi_E_0_integrals():
-    phi, E = phi_E_0(Z_Q, BETA_STACK_SINGLE, T_STACK_SINGLE)
+    phi, E = multi.phi_E_0(Z_Q, BETA_STACK_SINGLE, T_STACK_SINGLE)
 
     phi_scipy, _ = quad_vec(
         lambda x: refl_coeff_multi_qs(x / (2 * Z_Q), BETA_STACK_SINGLE, T_STACK_SINGLE)
@@ -66,13 +67,15 @@ def test_phi_E_0_integrals():
 
 def test_eff_pos_and_charge_broadcasting():
     target_shape = (Z_Q * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0]).shape
-    z_image, beta_image = eff_pos_and_charge(Z_Q, BETA_STACK_VECTOR, T_STACK_VECTOR)
+    z_image, beta_image = multi.eff_pos_and_charge(
+        Z_Q, BETA_STACK_VECTOR, T_STACK_VECTOR
+    )
     assert z_image.shape == beta_image.shape == target_shape
 
 
 def test_eff_pol_multi_broadcasting():
     target_shape = (Z * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0]).shape
-    alpha_eff = eff_pol_multi(Z, BETA_STACK_VECTOR, T_STACK_VECTOR)
+    alpha_eff = multi.eff_pol(Z, BETA_STACK_VECTOR, T_STACK_VECTOR)
     assert alpha_eff.shape == target_shape
 
 
@@ -80,7 +83,7 @@ def test_eff_pol_n_multi_broadcasting():
     target_shape = (
         Z * BETA_STACK_VECTOR[0] * T_STACK_VECTOR[0] * TAPPING_AMPLITUDE * HARMONIC
     ).shape
-    alpha_eff = eff_pol_n_multi(
+    alpha_eff = multi.eff_pol_n(
         z_tip=Z,
         A_tip=TAPPING_AMPLITUDE,
         n=HARMONIC,
@@ -92,14 +95,14 @@ def test_eff_pol_n_multi_broadcasting():
 
 def test_eff_pol_n_multi_two_layers_same_as_bulk():
     eps_stack = 1, 11.7
-    alpha_eff_bulk = eff_pol_n_bulk(
+    alpha_eff_bulk = bulk.eff_pol_n(
         z_tip=Z,
         A_tip=TAPPING_AMPLITUDE,
         n=HARMONIC,
         eps_samp=eps_stack[-1],
         eps_env=eps_stack[0],
     )
-    alpha_eff_multi = eff_pol_n_multi(
+    alpha_eff_multi = multi.eff_pol_n(
         z_tip=Z,
         A_tip=TAPPING_AMPLITUDE,
         n=HARMONIC,

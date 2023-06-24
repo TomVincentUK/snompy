@@ -62,9 +62,9 @@ switched between the two models using the tabs on this page.
 
    In fact, as it's such in integral part of simulating SNOM experiments,
    ``pysnom`` provides functions with built-in demodulation for directly
-   calculating :math:`\alpha_{eff, n}`: :func:`pysnom.fdm.eff_pol_n_bulk`,
-   :func:`pysnom.fdm.eff_pol_n_multi`, and
-   :func:`pysnom.pdm.eff_pol_n_bulk`.
+   calculating :math:`\alpha_{eff, n}`: :func:`pysnom.fdm.eff_pol_n`,
+   :func:`pysnom.fdm.eff_pol_n`, and
+   :func:`pysnom.pdm.eff_pol_n`.
 
 The undemodulated effective polarisability
 ------------------------------------------
@@ -278,8 +278,8 @@ arrays of data at once, with no need for looping.
 
 Additionally, ``pysnom`` provides functions with built-in demodulation for
 directly calculating :math:`\alpha_{eff, n}`:
-:func:`pysnom.fdm.eff_pol_n_bulk`, :func:`pysnom.fdm.eff_pol_n_multi`, and
-:func:`pysnom.pdm.eff_pol_n_bulk`.
+:func:`pysnom.fdm.eff_pol_n`, :func:`pysnom.fdm.eff_pol_n`, and
+:func:`pysnom.pdm.eff_pol_n`.
 These should be even simpler to use.
 
 The script below shows the use of both to calculate approach curves for
@@ -314,5 +314,5 @@ that higher order demodulation leads to a faster decay of the SNOM signal
 
    This conversion is taken care of automatically by ``pysnom``'s functions
    with built-in demodulation, which is why the `z_tip` value isn't offset for
-   the approach curve calculated using :func:`pysnom.fdm.eff_pol_n_bulk` or
-   :func:`pysnom.pdm.eff_pol_n_bulk`.
+   the approach curve calculated using :func:`pysnom.fdm.eff_pol_n` or
+   :func:`pysnom.pdm.eff_pol_n`.

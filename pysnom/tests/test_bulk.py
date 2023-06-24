@@ -7,9 +7,9 @@ import pysnom
 @pytest.mark.parametrize(
     "eff_pol_n",
     (
-        pysnom.fdm.eff_pol_n_bulk,
-        pysnom.fdm.eff_pol_n_bulk_taylor,
-        pysnom.pdm.eff_pol_n_bulk,
+        pysnom.fdm.bulk.eff_pol_n,
+        pysnom.fdm.bulk.eff_pol_n_taylor,
+        pysnom.pdm.eff_pol_n,
     ),
 )
 def test_eff_pol_n_broadcasting(eff_pol_n):
@@ -43,9 +43,9 @@ def test_eff_pol_n_broadcasting(eff_pol_n):
 @pytest.mark.parametrize(
     "eff_pol_n",
     (
-        pysnom.fdm.eff_pol_n_bulk,
-        pysnom.fdm.eff_pol_n_bulk_taylor,
-        pysnom.pdm.eff_pol_n_bulk,
+        pysnom.fdm.bulk.eff_pol_n,
+        pysnom.fdm.bulk.eff_pol_n_taylor,
+        pysnom.pdm.eff_pol_n,
     ),
 )
 def test_eff_pol_n_error_if_no_material(eff_pol_n):
@@ -62,9 +62,9 @@ def test_eff_pol_n_error_if_no_material(eff_pol_n):
 @pytest.mark.parametrize(
     "eff_pol_n",
     (
-        pysnom.fdm.eff_pol_n_bulk,
-        pysnom.fdm.eff_pol_n_bulk_taylor,
-        pysnom.pdm.eff_pol_n_bulk,
+        pysnom.fdm.bulk.eff_pol_n,
+        pysnom.fdm.bulk.eff_pol_n_taylor,
+        pysnom.pdm.eff_pol_n,
     ),
 )
 def test_eff_pol_n_warning_if_eps_and_beta(eff_pol_n):
@@ -80,7 +80,7 @@ def test_eff_pol_n_warning_if_eps_and_beta(eff_pol_n):
         )
 
 
-@pytest.mark.parametrize("model", (pysnom.fdm,))
+@pytest.mark.parametrize("model", (pysnom.fdm.bulk,))
 def test_eff_pol_n_taylor_equals_eff_pol_n(model):
     n_test_beta = 10
     beta = np.linspace(1, 0.1, n_test_beta) * np.exp(
@@ -94,11 +94,11 @@ def test_eff_pol_n_taylor_equals_eff_pol_n(model):
     )
 
     np.testing.assert_allclose(
-        model.eff_pol_n_bulk(**params), model.eff_pol_n_bulk_taylor(**params)
+        model.eff_pol_n(**params), model.eff_pol_n_taylor(**params)
     )
 
 
-@pytest.mark.parametrize("model", (pysnom.fdm,))
+@pytest.mark.parametrize("model", (pysnom.fdm.bulk,))
 def test_refl_coeff_from_eff_pol_n_bulk_taylor(model):
     n_test_beta = 10
     beta_in = np.linspace(1, 0.1, n_test_beta) * np.exp(
@@ -107,10 +107,8 @@ def test_refl_coeff_from_eff_pol_n_bulk_taylor(model):
     # Add a case with multiple solutions
     beta_in = np.hstack([beta_in, -0.5 + 0.5j])
     params = dict(z_tip=1e-9, A_tip=30e-9, n=np.arange(2, 6)[:, np.newaxis])
-    alpha_eff_n = model.eff_pol_n_bulk_taylor(beta=beta_in, **params)
-    beta_out = model.refl_coeff_from_eff_pol_n_bulk_taylor(
-        alpha_eff_n=alpha_eff_n, **params
-    )
+    alpha_eff_n = model.eff_pol_n_taylor(beta=beta_in, **params)
+    beta_out = model.refl_coeff_from_eff_pol_n_taylor(alpha_eff_n=alpha_eff_n, **params)
 
     # beta_out may contain multiple solutions
     # need to check if any solutions correspond to the input

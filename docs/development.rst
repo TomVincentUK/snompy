@@ -20,7 +20,7 @@ Naming style
   :math:`d_{Q1}` instead of :math:`W_1` for the depth of charge :math:`Q_1`
   within the tip.
 * Proper nouns should be uncapitalised in variable and function names. For
-  example `eff_pol_n_bulk_taylor` and `n_lag`, instead of
+  example `eff_pol_n_taylor` and `n_lag`, instead of
   `eff_pol_n_bulk_Taylor` and `n_Lag`, named after Taylor and Laguerre.
   (Any classes should be CapWords as per
   `PEP 8 <https://peps.python.org/pep-0008/#naming-conventions>`_, though

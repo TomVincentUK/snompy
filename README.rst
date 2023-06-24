@@ -13,4 +13,4 @@ Tasks / issues
 *  Add captions and alt text to all docs figures
 
 * Create an eff_pol_n() func that automatically chooses between
-eff_pol_n_multi() and eff_pol_n_bulk()
+eff_pol_n() and eff_pol_n()

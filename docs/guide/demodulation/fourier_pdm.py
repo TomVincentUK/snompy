@@ -20,12 +20,12 @@ t = np.linspace(-periods * np.pi / tapping_freq, periods * np.pi / tapping_freq,
 z_tip = z_bottom + A_tip * (1 + np.cos(tapping_freq * t))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.pdm.eff_pol_bulk(z_tip=z_tip, beta=refl_coeff)
+alpha_eff = pysnom.pdm.eff_pol(z_tip=z_tip, beta=refl_coeff)
 
 # Demodulation
 n_max = 5
 harmonics = np.arange(n_max + 1)
-components = pysnom.pdm.eff_pol_n_bulk(
+components = pysnom.pdm.eff_pol_n(
     z_tip=z_bottom, A_tip=A_tip, n=harmonics, beta=refl_coeff
 )
 waves = [components[n] * np.exp(1j * t * tapping_freq * n) for n in harmonics]

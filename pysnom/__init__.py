@@ -1,5 +1,6 @@
-from . import _version, demodulate, fdm, pdm, reflection
+from . import _version, demodulate, pdm, reflection
+from .fdm import bulk
 
-__all__ = [fdm, pdm, demodulate, reflection]
+__all__ = [bulk, pdm, demodulate, reflection]
 
 __version__ = _version.get_versions()["version"]

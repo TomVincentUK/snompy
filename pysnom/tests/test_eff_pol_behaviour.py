@@ -17,14 +17,14 @@ bulk_kwargs = dict(beta=beta)
 ML_kwargs = dict(beta_stack=beta_stack, t_stack=t_stack)
 demod_kwargs = dict(A_tip=50e-9, n=np.arange(2, 10))
 funcs_0_kwargs = [
-    (pysnom.pdm.eff_pol_bulk, bulk_kwargs),
-    (pysnom.fdm.eff_pol_bulk, bulk_kwargs),
-    (pysnom.fdm.eff_pol_multi, ML_kwargs),
+    (pysnom.pdm.eff_pol, bulk_kwargs),
+    (pysnom.fdm.bulk.eff_pol, bulk_kwargs),
+    (pysnom.fdm.multi.eff_pol, ML_kwargs),
 ]
 funcs_demod_kwargs = [
-    (pysnom.pdm.eff_pol_n_bulk, bulk_kwargs | demod_kwargs),
-    (pysnom.fdm.eff_pol_n_bulk, bulk_kwargs | demod_kwargs),
-    (pysnom.fdm.eff_pol_n_multi, ML_kwargs | demod_kwargs),
+    (pysnom.pdm.eff_pol_n, bulk_kwargs | demod_kwargs),
+    (pysnom.fdm.bulk.eff_pol_n, bulk_kwargs | demod_kwargs),
+    (pysnom.fdm.multi.eff_pol_n, ML_kwargs | demod_kwargs),
 ]
 
 
