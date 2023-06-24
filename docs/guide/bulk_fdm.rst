@@ -160,7 +160,7 @@ where :math:`g \approx 0.7` is an empirical factor that describes how much
 of the induced charge is relevant for the near-field interaction (see
 `Parameters`_ for more details on how this factor affects the results).
 In ``pysnom``, equation :eq:`f_i_bulk` is provided by the function
-:func:`pysnom.fdm.geom_func`.
+:func:`pysnom.fdm.bulk.geom_func`.
 
 The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 
@@ -182,7 +182,7 @@ the total induced dipole, as
    \propto 1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}.
 
 In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
-:func:`pysnom.fdm.eff_pol`.
+:func:`pysnom.bulk.eff_pol`.
 
 Demodulating the FDM
 --------------------
@@ -211,7 +211,7 @@ with amplitude and phase
 This is explained in detail on the dedicated page :ref:`demodulation`.
 
 In ``pysnom``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
-function :func:`pysnom.fdm.eff_pol_n`.
+function :func:`pysnom.fdm.bulk.eff_pol_n`.
 
 Using pysnom for bulk FDM
 -------------------------
@@ -269,7 +269,7 @@ Using dielectric function
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now let's create an approach curve to display in these axes.
-We'll use :func:`pysnom.fdm.eff_pol_n` to calculate the effective
+We'll use :func:`pysnom.fdm.bulk.eff_pol_n` to calculate the effective
 polarisability.
 
 We need to tell the function our tip height :math:`z_{tip}`, the tapping
@@ -296,7 +296,7 @@ calculate our first approach curve.
 
 
    # Calculate an approach curve using the dielectric function
-   alpha_eff_0 = pysnom.fdm.eff_pol_n(
+   alpha_eff_0 = pysnom.fdm.bulk.eff_pol_n(
       z_tip=z_tip,
       A_tip=A_tip,
       n=single_harmonic,
@@ -321,7 +321,7 @@ Using reflection coefficient
 Sometimes it's easier to specify the sample's response as a reflection
 coefficient :math:`\beta`, instead of a dielectric function
 :math:`\varepsilon_{sub}`.
-In :func:`pysnom.fdm.eff_pol_n`, we can do this by using the argument
+In :func:`pysnom.fdm.bulk.eff_pol_n`, we can do this by using the argument
 `beta` instead of `eps_samp`.
 
 To calculate the reflection coefficient of Si, we'll use the function
@@ -341,7 +341,7 @@ still see the original plot.
    beta = pysnom.reflection.refl_coeff(1, eps_samp)
 
    # Calculate an approach curve using the reflection coefficient
-   alpha_eff_1 = pysnom.fdm.eff_pol_n(
+   alpha_eff_1 = pysnom.fdm.bulk.eff_pol_n(
       z_tip=z_tip,
       A_tip=A_tip,
       n=single_harmonic,
@@ -367,7 +367,7 @@ Changing the default parameters
 In the above examples, we didn't specify parameters like the radius
 :math:`r_{tip}` or semi-major axis length :math:`L_{tip}` of the ellipsoid, or the
 empirical factor :math:`g`, so the function reverted to its default values
-(see :func:`pysnom.fdm.eff_pol_n` for the values of these defaults).
+(see :func:`pysnom.fdm.bulk.eff_pol_n` for the values of these defaults).
 
 Lets add a new approach curve with a different set of tip parameters.
 
@@ -382,7 +382,7 @@ Lets add a new approach curve with a different set of tip parameters.
    g_factor = 0.7
 
    # Calculate an approach curve with the updated parameters
-   alpha_eff_2 = pysnom.fdm.eff_pol_n(
+   alpha_eff_2 = pysnom.fdm.bulk.eff_pol_n(
       z_tip=z_tip,
       A_tip=A_tip,
       n=single_harmonic,
@@ -423,7 +423,7 @@ once, for some more harmonics using our custom parameters.
    multiple_harmonics = np.arange(3, 6)
 
    # Calculate several approach curves at once using array broadcasting
-   alpha_eff_3 = pysnom.fdm.eff_pol_n(
+   alpha_eff_3 = pysnom.fdm.bulk.eff_pol_n(
       z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
       A_tip=A_tip,
       n=multiple_harmonics,

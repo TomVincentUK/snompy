@@ -47,4 +47,4 @@ Multilayer finite dipole model
 """
 from . import bulk, multi
 
-__all__ = [bulk, multi]
+__all__ = ["bulk", "multi"]
