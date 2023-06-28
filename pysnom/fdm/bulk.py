@@ -571,7 +571,7 @@ def eff_pol_n_taylor(
     return alpha_eff
 
 
-def refl_coef_from_eff_pol_n(
+def refl_coef_qs_from_eff_pol_n(
     z_tip,
     A_tip,
     n,
