@@ -11,7 +11,7 @@ harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
 # Material parameters
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
 eps_env = 1  # Vacuum/air dielectric function
-refl_coeff = pysnom.reflection.refl_coeff(eps_env, eps_Si)
+refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Calculate the effective polarisability using demod
 # offset by tapping amplitude so oscillation doesn't intersect with sample
@@ -21,7 +21,7 @@ alpha_eff_demod = pysnom.demodulate.demod(
     x_0=z_shift[:, np.newaxis],  # newaxis added for array broadcasting
     x_amplitude=A_tip,
     n=harmonics,
-    f_args=(refl_coeff,),
+    f_args=(refl_coef_qs,),
 )
 
 # Calculate the effective polarisability directly
@@ -29,7 +29,7 @@ alpha_eff_direct = pysnom.pdm.eff_pol_n(
     z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
     n=harmonics,
-    beta=refl_coeff,
+    beta=refl_coef_qs,
 )
 
 # Normalize to value at z_tip = 0

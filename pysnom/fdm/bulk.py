@@ -5,7 +5,7 @@ from numpy.polynomial import Polynomial
 
 from .._defaults import defaults
 from ..demodulate import demod
-from ..reflection import refl_coeff
+from ..reflection import refl_coef_qs
 
 
 def geom_func(
@@ -96,7 +96,7 @@ def eff_pol(
     z_tip : float
         Height of the tip above the sample.
     beta : complex
-        Electrostatic reflection coefficient of the interface.
+        Quasistatic  reflection coefficient of the interface.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -191,7 +191,7 @@ def eff_pol_n(
         Dielectric function of the environment (superstrate). Used to
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
-        Electrostatic reflection coefficient of the interface.
+        Quasistatic  reflection coefficient of the interface.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -249,7 +249,7 @@ def eff_pol_n(
             raise ValueError("Either `eps_samp` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(eps_env, eps_samp)
+            beta = refl_coef_qs(eps_env, eps_samp)
         else:
             warnings.warn("`beta` overrides `eps_samp` when both are specified.")
 
@@ -471,7 +471,7 @@ def eff_pol_n_taylor(
         Dielectric function of the environment (superstrate). Used to
         calculate `beta_0`, and ignored if `beta_0` is specified.
     beta : complex
-        Electrostatic reflection coefficient of the interface.
+        Quasistatic  reflection coefficient of the interface.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -529,7 +529,7 @@ def eff_pol_n_taylor(
             raise ValueError("Either `eps_samp` or `beta` must be specified.")
     else:
         if beta is None:
-            beta = refl_coeff(eps_env, eps_samp)
+            beta = refl_coef_qs(eps_env, eps_samp)
         else:
             warnings.warn("`beta` overrides `eps_samp` when both are specified.")
 
@@ -630,7 +630,7 @@ def refl_coeff_from_eff_pol_n_taylor(
     Returns
     -------
     beta : complex, masked array
-        Electrostatic reflection coefficient of the interface.
+        Quasistatic  reflection coefficient of the interface.
 
     See also
     --------

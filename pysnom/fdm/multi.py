@@ -3,7 +3,7 @@ from numpy.polynomial import laguerre
 
 from .._defaults import defaults
 from ..demodulate import demod
-from ..reflection import interface_stack, refl_coeff_multi_qs
+from ..reflection import interface_stack, refl_coef_qs_ml
 
 
 def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
@@ -18,7 +18,7 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     z_Q : float
         Height of the charge above the sample.
     beta_stack : array_like
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
@@ -114,7 +114,7 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     In this function the Laguerre weights and roots are found using
     :func:`numpy.polynomial.laguerre.laggauss` and the momentum-dependent
     reflection coefficient is found using
-    :func:`pysnom.reflection.refl_coeff_multi_qs`.
+    :func:`pysnom.reflection.refl_coef_qs_ml`.
 
     References
     ----------
@@ -131,9 +131,7 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     x_lag, w_lag = laguerre.laggauss(n_lag)
     q = x_lag / np.asarray(2 * z_Q)[..., np.newaxis]
 
-    beta_q = refl_coeff_multi_qs(
-        q, beta_stack[..., np.newaxis], t_stack[..., np.newaxis]
-    )
+    beta_q = refl_coef_qs_ml(q, beta_stack[..., np.newaxis], t_stack[..., np.newaxis])
 
     phi = np.sum(w_lag * beta_q, axis=-1) / (2 * z_Q)
     E = np.sum(w_lag * x_lag * beta_q, axis=-1) / (4 * z_Q**2)
@@ -153,7 +151,7 @@ def eff_pos_and_charge(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     z_Q : float
         Height of the charge above the sample.
     beta_stack : array_like
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
@@ -311,7 +309,7 @@ def eff_pol(
     z_tip : float
         Height of the tip above the sample.
     beta_stack : array_like
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
@@ -424,7 +422,7 @@ def eff_pol_n(
         superstrate and ending with the semi-infinite substrate. Ignored
         if `beta_stack` is specified.
     beta_stack : array_like
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like

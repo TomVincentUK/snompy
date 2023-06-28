@@ -12,8 +12,8 @@ reflection coefficient for a stack of three or more materials.
     :nosignatures:
     :toctree: generated/
 
-    refl_coeff
-    refl_coeff_multi_qs
+    refl_coef_qs
+    refl_coef_qs_ml
     interface_stack
 """
 import warnings
@@ -21,8 +21,8 @@ import warnings
 import numpy as np
 
 
-def refl_coeff(eps_i, eps_j):
-    """Return the electrostatic reflection coefficient for an interface
+def refl_coef_qs(eps_i, eps_j):
+    """Return the quasistatic  reflection coefficient for an interface
     between two materials.
 
     Calculated using ``(eps_j - eps_i) / (eps_j + eps_i)``, where `eps_i`
@@ -38,30 +38,30 @@ def refl_coeff(eps_i, eps_j):
     Returns
     -------
     beta_ij : complex
-        Electrostatic reflection coefficient of the sample.
+        Quasistatic  reflection coefficient of the sample.
 
     See also
     --------
-    refl_coeff_multi_qs :
+    refl_coef_qs_ml :
         Momentum-dependent reflection coefficient for multilayer samples.
 
     Examples
     --------
     Works with real inputs:
 
-    >>> refl_coeff(1, 3)
+    >>> refl_coef_qs(1, 3)
     0.5
 
     Works with complex inputs:
 
-    >>> refl_coeff(1, 1 + 1j)
+    >>> refl_coef_qs(1, 1 + 1j)
     (0.2+0.4j)
 
     Performs vectorised operations:
 
-    >>> refl_coeff([1, 3], [3, 5])
+    >>> refl_coef_qs([1, 3], [3, 5])
     array([0.5 , 0.25])
-    >>> refl_coeff([1, 3], [[1], [3]])
+    >>> refl_coef_qs([1, 3], [[1], [3]])
     array([[ 0. , -0.5],
           [ 0.5,  0. ]])
     """
@@ -70,7 +70,7 @@ def refl_coeff(eps_i, eps_j):
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-def refl_coeff_multi_qs(q, beta_stack, t_stack):
+def refl_coef_qs_ml(q, beta_stack, t_stack):
     r"""Return the quasistatic momentum-dependent effective reflection
     coefficient for the first interface in a stack of interfaces.
 
@@ -80,7 +80,7 @@ def refl_coeff_multi_qs(q, beta_stack, t_stack):
         In-plane electromagnetic wave momentum. If `q` is array_like, it
         must be broadcastable with `beta_stack[0]` and `t_stack[0]`.
     beta_stack : array_like
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
         `beta_stack[0]` must be broadcastable with `q` and `t_stack[0]`.
     t_stack : array_like
@@ -97,7 +97,7 @@ def refl_coeff_multi_qs(q, beta_stack, t_stack):
 
     See also
     --------
-    refl_coeff : Reflection coefficient for a single interface.
+    refl_coef_qs : Reflection coefficient for a single interface.
     interface_stack :
         A helper function to prepare inputs that work with this function.
 
@@ -112,7 +112,7 @@ def refl_coeff_multi_qs(q, beta_stack, t_stack):
         {1 + \beta_{01}\beta_{12}e^{-2kt_1}}
 
     as an expression for :math:`\beta_{12}`, where :math:`\beta_{ij}` is
-    the electrostatic reflection coefficient between layers :math:`i` and
+    the quasistatic  reflection coefficient between layers :math:`i` and
     :math:`j`, :math:`t_{i}` is the thickness of the :math:`i^{th}`
     layer, and :math:`q` is the in-plane momentum [1]_.
 
@@ -132,13 +132,13 @@ def refl_coeff_multi_qs(q, beta_stack, t_stack):
     >>> q = np.arange(5)
     >>> beta_stack = np.array([1 / 3, 1 / 5])
     >>> t_stack = np.array([1])
-    >>> refl_coeff_multi_qs(q, beta_stack, t_stack)
+    >>> refl_coef_qs_ml(q, beta_stack, t_stack)
     array([0.5  , 0.357, 0.337, 0.333, 0.333])
 
     Constant value for single interface:
 
     >>> q = np.arange(5)
-    >>> refl_coeff_multi_qs(q, beta_stack=np.array([0.5]), t_stack=np.array([]))
+    >>> refl_coef_qs_ml(q, beta_stack=np.array([0.5]), t_stack=np.array([]))
     array([0.5, 0.5, 0.5, 0.5, 0.5])
     """
     beta_effective = beta_stack[0] * np.ones_like(q)
@@ -152,7 +152,7 @@ def refl_coeff_multi_qs(q, beta_stack, t_stack):
 
 def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
     r"""Return a stack of reflection coefficients and layer thicknesses in
-    the form required by :func:`refl_coeff_multi_qs`.
+    the form required by :func:`refl_coef_qs_ml`.
 
     Parameters
     ----------
@@ -162,7 +162,7 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
         superstrate and ending with the semi-infinite substrate. Ignored
         if `beta_stack` is specified.
     beta_stack : array_like
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
         Used instead of `eps_stack`, if both are specified.
     t_stack : array_like
@@ -174,7 +174,7 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
     Returns
     -------
     beta_stack : np.ndarray
-        Electrostatic reflection coefficients of each interface in the
+        Quasistatic  reflection coefficients of each interface in the
         stack (with the first element corresponding to the top interface).
     t_stack : np.ndarray
         Thicknesses of each sandwiched layer between the interfaces in
@@ -183,7 +183,7 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
 
     See also
     --------
-    refl_coeff_multi_qs :
+    refl_coef_qs_ml :
         Momentum-dependent reflection coefficient for multilayer samples.
 
     Examples
@@ -248,7 +248,7 @@ def interface_stack(eps_stack=None, beta_stack=None, t_stack=None):
                 raise ValueError(
                     "`eps_stack` must be 2 longer than `t_stack` along the first axis."
                 )
-            beta_stack = refl_coeff(eps_stack[:-1], eps_stack[1:])
+            beta_stack = refl_coef_qs(eps_stack[:-1], eps_stack[1:])
         else:
             warnings.warn("`beta_stack` overrides `eps_stack` when both are specified.")
             beta_stack = np.asarray(np.broadcast_arrays(*beta_stack))

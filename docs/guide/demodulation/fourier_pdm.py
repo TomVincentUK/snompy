@@ -13,20 +13,20 @@ periods = 3  # Number of oscillations to show
 # Material parameters
 eps_Si = 11.7  # Si dielectric function in the mid-infrared
 eps_env = 1  # Vacuum/air dielectric function
-refl_coeff = pysnom.reflection.refl_coeff(eps_env, eps_Si)
+refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Find z_tip as a function of t
 t = np.linspace(-periods * np.pi / tapping_freq, periods * np.pi / tapping_freq, 512)
 z_tip = z_bottom + A_tip * (1 + np.cos(tapping_freq * t))
 
 # Calculate the effective polarisability
-alpha_eff = pysnom.pdm.eff_pol(z_tip=z_tip, beta=refl_coeff)
+alpha_eff = pysnom.pdm.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
 
 # Demodulation
 n_max = 5
 harmonics = np.arange(n_max + 1)
 components = pysnom.pdm.eff_pol_n(
-    z_tip=z_bottom, A_tip=A_tip, n=harmonics, beta=refl_coeff
+    z_tip=z_bottom, A_tip=A_tip, n=harmonics, beta=refl_coef_qs
 )
 waves = [components[n] * np.exp(1j * t * tapping_freq * n) for n in harmonics]
 

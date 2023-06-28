@@ -8,7 +8,7 @@ eps_middle = 2 + 1j
 eps_substrate = 11.7
 t_middle = 50e-9
 
-beta = pysnom.reflection.refl_coeff(eps_env, eps_substrate)
+beta = pysnom.reflection.refl_coef_qs(eps_env, eps_substrate)
 beta_stack, t_stack = pysnom.reflection.interface_stack(
     eps_stack=(eps_env, eps_middle, eps_substrate), t_stack=(t_middle,)
 )

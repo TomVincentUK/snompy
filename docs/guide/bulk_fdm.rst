@@ -92,7 +92,7 @@ the
 
 This means we can add a fictitious image charge, :math:`Q'_0 = -\beta Q_0`,
 at a depth of :math:`z_{tip} + d_{Q0}` below the surface.
-Here, :math:`\beta` is the electrostatic reflection coefficient of the
+Here, :math:`\beta` is the quasistatic  reflection coefficient of the
 surface, given by
 
 .. math::
@@ -107,7 +107,7 @@ environment (:math:`\varepsilon_{env} = 1` for air or vacuum), and
 :math:`\varepsilon_{sub}` is the dielectric function of the sample (the
 subscript "sub" here is short for substrate).
 In ``pysnom``, equation :eq:`beta` is provided by the function
-:func:`pysnom.reflection.refl_coeff`.
+:func:`pysnom.reflection.refl_coef_qs`.
 
 The charge :math:`Q'_0` acts back on the tip and induces a further
 polarisation, which we can model as another point charge :math:`Q_1`, at a
@@ -325,7 +325,7 @@ In :func:`pysnom.fdm.bulk.eff_pol_n`, we can do this by using the argument
 `beta` instead of `eps_samp`.
 
 To calculate the reflection coefficient of Si, we'll use the function
-:func:`pysnom.reflection.refl_coeff`, and assume that our environment has a
+:func:`pysnom.reflection.refl_coef_qs`, and assume that our environment has a
 dielectric function of 1 (for air or vacuum).
 
 We should expect to see exactly the same approach curve here that we
@@ -338,7 +338,7 @@ still see the original plot.
    :alt: Add a second approach curve calculated from the reflection coefficient.
 
    # Calculate reflection coefficient from the Si dielectric function
-   beta = pysnom.reflection.refl_coeff(1, eps_samp)
+   beta = pysnom.reflection.refl_coef_qs(1, eps_samp)
 
    # Calculate an approach curve using the reflection coefficient
    alpha_eff_1 = pysnom.fdm.bulk.eff_pol_n(

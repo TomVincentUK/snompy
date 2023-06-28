@@ -9,7 +9,7 @@ from scipy.integrate import quad_vec
 #     phi_E_0,
 # )
 from pysnom.fdm import bulk, multi
-from pysnom.reflection import interface_stack, refl_coeff_multi_qs
+from pysnom.reflection import interface_stack, refl_coef_qs_ml
 
 # Measurement parameters
 Z = 40e-9
@@ -46,7 +46,7 @@ def test_phi_E_0_integrals():
     phi, E = multi.phi_E_0(Z_Q, BETA_STACK_SINGLE, T_STACK_SINGLE)
 
     phi_scipy, _ = quad_vec(
-        lambda x: refl_coeff_multi_qs(x / (2 * Z_Q), BETA_STACK_SINGLE, T_STACK_SINGLE)
+        lambda x: refl_coef_qs_ml(x / (2 * Z_Q), BETA_STACK_SINGLE, T_STACK_SINGLE)
         * np.exp(-x),
         0,
         np.inf,
@@ -55,7 +55,7 @@ def test_phi_E_0_integrals():
     np.testing.assert_allclose(phi, phi_scipy)
 
     E_scipy, _ = quad_vec(
-        lambda x: refl_coeff_multi_qs(x / (2 * Z_Q), BETA_STACK_SINGLE, T_STACK_SINGLE)
+        lambda x: refl_coef_qs_ml(x / (2 * Z_Q), BETA_STACK_SINGLE, T_STACK_SINGLE)
         * x
         * np.exp(-x),
         0,

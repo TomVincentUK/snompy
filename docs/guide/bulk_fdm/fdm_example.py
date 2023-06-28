@@ -35,7 +35,7 @@ ax.plot(
 ax.legend()
 
 # Use beta instead of eps_samp
-beta = pysnom.reflection.refl_coeff(1, eps_samp)
+beta = pysnom.reflection.refl_coef_qs(1, eps_samp)
 alpha_eff = pysnom.fdm.bulk.eff_pol_n(
     z_tip=z_tip,
     A_tip=A_tip,

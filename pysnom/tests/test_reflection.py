@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from pysnom.reflection import interface_stack, refl_coeff_multi_qs
+from pysnom.reflection import interface_stack, refl_coef_qs_ml
 
 VALID_EPS_AND_T_STACK_PAIRS = [
     ([1, 2], []),
@@ -97,7 +97,7 @@ def test_refl_coeff_multi_qs_broadcasting():
         eps_stack=(eps_super, eps_middle, eps_sub), t_stack=(layer_thickness,)
     )
     target_shape = (k + beta_stack[0] + t_stack[0]).shape
-    assert refl_coeff_multi_qs(k, beta_stack, t_stack).shape == target_shape
+    assert refl_coef_qs_ml(k, beta_stack, t_stack).shape == target_shape
 
 
 def test_interface_stack_warns_for_zero_thickness():
