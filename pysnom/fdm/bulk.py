@@ -317,7 +317,7 @@ def geom_func_taylor(
     See also
     --------
     geom_func
-    taylor_coeff :
+    taylor_coef :
         Function that uses this to calculate the Taylor series coefficients
         for the bulk FDM.
 
@@ -348,7 +348,7 @@ def geom_func_taylor(
     return f_0 * f_1 ** (j_taylor - 1)
 
 
-def taylor_coeff(
+def taylor_coef(
     z_tip,
     j_taylor,
     A_tip,
@@ -503,7 +503,7 @@ def eff_pol_n_taylor(
 
     See also
     --------
-    taylor_coeff :
+    taylor_coef :
         Function that calculates the Taylor series coefficients for the
         bulk FDM.
     eff_pol_n : The non-Taylor series version of this function.
@@ -521,7 +521,7 @@ def eff_pol_n_taylor(
     :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
     :math:`j` is the index of the Taylor series, :math:`J` is
     `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
-    here as :func:`taylor_coeff`.
+    here as :func:`taylor_coef`.
     """
     # beta calculated from eps_samp if not specified
     if eps_samp is None:
@@ -554,7 +554,7 @@ def eff_pol_n_taylor(
     )
     j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
 
-    coeffs = taylor_coeff(
+    coeffs = taylor_coef(
         z_tip,
         j_taylor,
         A_tip,
@@ -571,7 +571,7 @@ def eff_pol_n_taylor(
     return alpha_eff
 
 
-def refl_coeff_from_eff_pol_n_taylor(
+def refl_coef_from_eff_pol_n(
     z_tip,
     A_tip,
     n,
@@ -634,7 +634,7 @@ def refl_coeff_from_eff_pol_n_taylor(
 
     See also
     --------
-    taylor_coeff :
+    taylor_coef :
         Function that calculates the Taylor series coefficients for the
         bulk FDM.
     eff_pol_n_taylor : The inverse of this function.
@@ -649,7 +649,7 @@ def refl_coeff_from_eff_pol_n_taylor(
     :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
     :math:`j` is the index of the Taylor series, :math:`J` is
     `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
-    here as :func:`taylor_coeff`.
+    here as :func:`taylor_coef`.
 
     There may be multiple possible solutions (or none) for different
     inputs, so this function returns a masked array with first dimension
@@ -676,7 +676,7 @@ def refl_coeff_from_eff_pol_n_taylor(
         ]
     )
     j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
-    coeffs = taylor_coeff(
+    coeffs = taylor_coef(
         z_tip,
         j_taylor,
         A_tip,
@@ -690,8 +690,8 @@ def refl_coeff_from_eff_pol_n_taylor(
     )
 
     delta = np.where(n == 0, 1, 0)
-    offset_coeffs = np.where(j_taylor == 0, delta - alpha_eff_n, coeffs)
-    all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coeffs)
+    offset_coefs = np.where(j_taylor == 0, delta - alpha_eff_n, coeffs)
+    all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coefs)
 
     # Sort roots by abs value
     all_roots = np.take_along_axis(all_roots, np.abs(all_roots).argsort(axis=0), axis=0)

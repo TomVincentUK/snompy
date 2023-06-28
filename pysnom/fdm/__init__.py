@@ -26,9 +26,9 @@ Taylor series representation
     :nosignatures:
     :toctree: generated/
 
-    bulk.refl_coeff_from_eff_pol_n_taylor
+    bulk.refl_coef_from_eff_pol_n
     bulk.eff_pol_n_taylor
-    bulk.taylor_coeff
+    bulk.taylor_coef
     bulk.geom_func_taylor
 
 Multilayer finite dipole model

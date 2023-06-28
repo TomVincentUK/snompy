@@ -74,7 +74,7 @@ def test_beta_and_t_stack_from_inputs_beta_leaves_beta_unchanged(beta_stack, t_s
     np.testing.assert_equal(beta_stack_new, beta_stack)
 
 
-def test_refl_coeff_multi_qs_broadcasting():
+def test_refl_coef_multi_qs_broadcasting():
     # Measurement parameters
     k = np.linspace(0, 1, 128)
     wavenumber = np.linspace(1680, 1780, 16)[:, np.newaxis] * 1e2
