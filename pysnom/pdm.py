@@ -23,7 +23,7 @@ import warnings
 
 import numpy as np
 
-from ._defaults import defaults
+from ._utils import defaults
 from .demodulate import demod
 from .reflection import refl_coef_qs
 

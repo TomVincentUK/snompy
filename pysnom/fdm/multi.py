@@ -1,8 +1,8 @@
 import numpy as np
-from numpy.polynomial import laguerre
+from numpy.polynomial.laguerre import laggauss
 
-from .._defaults import defaults
-from ..demodulate import demod
+from .._utils import defaults
+from ..demodulate import _pad_for_broadcasting, demod
 from ..reflection import interface_stack, refl_coef_qs_ml
 
 
@@ -128,13 +128,17 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
        doi: 10.1016/S0377-0427(01)00407-1.
     """
     # Evaluate integral in terms of x = q * 2 * z_Q
-    x_lag, w_lag = laguerre.laggauss(n_lag)
-    q = x_lag / np.asarray(2 * z_Q)[..., np.newaxis]
+    x_lag, w_lag = [
+        _pad_for_broadcasting(a, (refl_coef_qs_ml(z_Q, beta_stack, t_stack),))
+        for a in laggauss(n_lag)
+    ]
 
-    beta_q = refl_coef_qs_ml(q, beta_stack[..., np.newaxis], t_stack[..., np.newaxis])
+    q = x_lag / np.asarray(2 * z_Q)
 
-    phi = np.sum(w_lag * beta_q, axis=-1) / (2 * z_Q)
-    E = np.sum(w_lag * x_lag * beta_q, axis=-1) / (4 * z_Q**2)
+    beta_q = refl_coef_qs_ml(q, beta_stack, t_stack)
+
+    phi = np.sum(w_lag * beta_q, axis=0) / (2 * z_Q)
+    E = np.sum(w_lag * x_lag * beta_q, axis=0) / (4 * z_Q**2)
 
     return phi, E
 

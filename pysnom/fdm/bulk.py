@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 from numpy.polynomial import Polynomial
 
-from .._defaults import defaults
+from .._utils import _pad_for_broadcasting, defaults
 from ..demodulate import demod
 from ..reflection import refl_coef_qs
 
@@ -536,23 +536,9 @@ def eff_pol_n_taylor(
     if d_Q0 is None:
         d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
-    index_pad_dims = np.max(
-        [
-            np.ndim(a)
-            for a in (
-                z_tip,
-                A_tip,
-                n,
-                beta,
-                r_tip,
-                L_tip,
-                g_factor,
-                d_Q0,
-                d_Q1,
-            )
-        ]
+    j_taylor = _pad_for_broadcasting(
+        np.arange(n_tayl), (z_tip, A_tip, n, beta, r_tip, L_tip, g_factor, d_Q0, d_Q1)
     )
-    j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
 
     coeffs = taylor_coef(
         z_tip,
@@ -659,34 +645,12 @@ def refl_coef_qs_from_eff_pol_n(
     if d_Q0 is None:
         d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
-    index_pad_dims = np.max(
-        [
-            np.ndim(a)
-            for a in (
-                z_tip,
-                A_tip,
-                n,
-                alpha_eff_n,
-                r_tip,
-                L_tip,
-                g_factor,
-                d_Q0,
-                d_Q1,
-            )
-        ]
+    j_taylor = _pad_for_broadcasting(
+        np.arange(n_tayl),
+        (z_tip, A_tip, n, alpha_eff_n, r_tip, L_tip, g_factor, d_Q0, d_Q1),
     )
-    j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
     coeffs = taylor_coef(
-        z_tip,
-        j_taylor,
-        A_tip,
-        n,
-        r_tip,
-        L_tip,
-        g_factor,
-        d_Q0,
-        d_Q1,
-        n_trapz,
+        z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_trapz
     )
 
     delta = np.where(n == 0, 1, 0)

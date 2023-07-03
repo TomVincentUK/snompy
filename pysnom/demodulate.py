@@ -16,7 +16,7 @@ of arbitrary functions.
 
 import numpy as np
 
-from ._defaults import defaults
+from ._utils import _pad_for_broadcasting, defaults
 
 
 def demod(
@@ -93,8 +93,10 @@ def demod(
     >>> demod(lambda x, y: x * y, x_0, x_amplitude, n, (y,)).shape
     (4, 3, 2, 1)
     """
-    output_ndim = np.asarray(f_x(x_0 + 0 * x_amplitude, *f_args) * n).ndim
-    theta = np.linspace(-np.pi, np.pi, n_trapz + 1).reshape(-1, *(1,) * output_ndim)
+    theta = _pad_for_broadcasting(
+        np.linspace(-np.pi, np.pi, n_trapz + 1),
+        (f_x(x_0 + 0 * x_amplitude, *f_args), n),
+    )
     integrand = f_x(x_0 + np.cos(theta) * x_amplitude, *f_args) * np.exp(
         -1j * n * theta
     )
