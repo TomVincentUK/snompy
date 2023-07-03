@@ -77,6 +77,7 @@ class Sample:
 
     @property
     def multilayer(self):
+        # True if more than one interface
         return self._t_stack.shape()[0] > 0
 
     def refl_coef_qs(self, q=0):
