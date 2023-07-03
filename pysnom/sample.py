@@ -75,6 +75,10 @@ class Sample:
         eps_stack[1:] = np.cumprod(dielec_fn(beta))
         self.eps_stack = eps_stack
 
+    @property
+    def multilayer(self):
+        return self._t_stack.shape()[0] > 0
+
     def refl_coef_qs(self, q=0):
         beta_effective = self.beta_stack[0] * np.ones_like(q)
         for i in range(self.t_stack.shape[0]):
