@@ -71,6 +71,11 @@ class TestSample:
 
     # Behaviour tests
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
+    def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
+        sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
+        assert sample.multilayer == (np.shape(sample.t_stack)[0] > 0)
+
+    @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_eps_beta_conversion_reversible(self, eps_stack, beta_stack, t_stack):
         sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
         if eps_stack is not None:
@@ -81,9 +86,18 @@ class TestSample:
             np.testing.assert_almost_equal(sample.eps_stack, from_eps.eps_stack)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
-    def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
+    def test_outputs_correct_shape(self, eps_stack, beta_stack, t_stack):
         sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
-        assert sample.multilayer == (np.shape(sample.t_stack)[0] > 0)
+        assert (
+            np.shape(sample.refl_coef_qs())
+            == np.shape(sample.eps_stack[0])
+            == np.shape(sample.beta_stack[0])
+        )
 
-    # def test_expected_shape_from_inputs(self):
-    #     pass
+    def test_refl_coeff_qs_flat_for_bulk(self):
+        sample = Sample(eps_stack=(1, 10))
+        q = np.linspace(0, 10, 64)
+        assert (
+            sample.refl_coef_qs(q).real.std() + 1j * sample.refl_coef_qs(q).real.std()
+            == 0 + 0j
+        )
