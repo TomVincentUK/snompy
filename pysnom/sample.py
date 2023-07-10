@@ -10,8 +10,8 @@ class Sample:
             raise ValueError(
                 " ".join(
                     [
-                        "Either `eps_stack` or `beta_stack` must be specified,"
-                        "(but not both)."
+                        "Either `eps_stack` or `beta_stack` must be specified,",
+                        "(but not both).",
                     ]
                 )
             )
@@ -72,13 +72,13 @@ class Sample:
         # Calculate eps_stack from beta assuming first eps is 1
         beta = np.asarray(np.broadcast_arrays(*val))
         eps_stack = np.ones([beta.shape[0] + 1, *beta.shape[1:]], dtype=complex)
-        eps_stack[1:] = np.cumprod(dielec_fn(beta))
+        eps_stack[1:] = np.cumprod(dielec_fn(beta), axis=0)
         self.eps_stack = eps_stack
 
     @property
     def multilayer(self):
         # True if more than one interface
-        return self._t_stack.shape()[0] > 0
+        return self._t_stack.shape[0] > 0
 
     def refl_coef_qs(self, q=0):
         beta_effective = self.beta_stack[0] * np.ones_like(q)
