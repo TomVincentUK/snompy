@@ -34,17 +34,20 @@ eps_Si = 11.7  # Si dielectric function in the mid-infrared
 # Very simplified model of PMMA dielectric function based on ref [1] below
 eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-3, 20e2)
 PMMA_thickness = np.geomspace(10, 100, 32) * 1e-9
+sample_PMMA = pysnom.sample.Sample(
+    eps_stack=(eps_air, eps_PMMA, eps_Si), t_stack=(PMMA_thickness[:, np.newaxis],)
+)
 
 # Model of Au dielectric function from ref [2] below
 eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)
+sample_Au = pysnom.sample.Sample(eps_stack=(eps_air, eps_Au))
 
 # Measurement
 alpha_eff_PMMA = pysnom.fdm.multi.eff_pol_n(
     z_tip=z_tip,
     A_tip=A_tip,
     n=n,
-    eps_stack=(eps_air, eps_PMMA, eps_Si),
-    t_stack=(PMMA_thickness[:, np.newaxis],),
+    sample=sample_PMMA,
     r_tip=r_tip,
     L_tip=L_tip,
 )
@@ -54,8 +57,7 @@ alpha_eff_Au = pysnom.fdm.bulk.eff_pol_n(
     z_tip=z_tip,
     A_tip=A_tip,
     n=n,
-    eps_samp=eps_Au,
-    eps_env=eps_air,
+    sample=sample_Au,
     r_tip=r_tip,
     L_tip=L_tip,
 )

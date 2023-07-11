@@ -9,4 +9,4 @@ API reference
    fdm
    pdm
    demodulate
-   reflection
+   sample

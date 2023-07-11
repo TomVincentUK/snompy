@@ -1,3 +1,21 @@
+"""
+Sample properties (:mod:`pysnom.sample`)
+========================================
+
+.. currentmodule:: pysnom.sample
+
+This module provides a class to represent layered and bulk samples within
+``pysnom``, and functions for converting between reflection coefficients
+and dielectric functions.
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    Sample
+    refl_coef_qs_single
+    dielec_fn
+"""
 import warnings
 
 import numpy as np
