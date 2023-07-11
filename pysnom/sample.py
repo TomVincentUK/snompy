@@ -4,6 +4,49 @@ import numpy as np
 
 
 class Sample:
+    r"""A class representing a layered sample with a semi-infinite
+    substrate and superstrate.
+
+    Parameters
+    ----------
+    eps_stack : array_like
+        Dielectric function of each layer in the stack (with the first
+        element corresponding to the semi-infinite superstrate, and the
+        last to the semi-infinite substrate).
+        `eps_stack` should have first dimension size two greater than
+        `t_stack`, and all `eps_stack[i, ...]` should be broadcastable with
+        all `t_stack[i, ...]`.
+        Either `eps_stack` or `beta_stack` must be None.
+    beta_stack : array_like
+        Quasistatic  reflection coefficients of each interface in the
+        stack (with the first element corresponding to the top interface).
+        `beta_stack` should have first dimension size one greater than
+        `t_stack`, and all `beta_stack[i, ...]` should be broadcastable
+        with all `t_stack[i, ...]`.
+        Either `eps_stack` or `beta_stack` must be None.
+    t_stack : array_like
+        Thicknesses of each finite-thickness layer sandwiched between the
+        interfaces in the stack. A zero-size array can be used for the case
+        of a bulk sample with a single interface.
+
+    Attributes
+    ----------
+    eps_stack :
+        Dielectric function of each layer in the stack (with the first
+        element corresponding to the semi-infinite superstrate, and the
+        last to the semi-infinite substrate).
+    beta_stack :
+        Quasistatic  reflection coefficients of each interface in the
+        stack (with the first element corresponding to the top interface).
+    t_stack :
+        Thicknesses of each finite-thickness layer sandwiched between the
+        interfaces in the stack.
+    multilayer:
+        True if sample has one or more finite-thickness layer sandwiched
+        between the interfaces in the stack, False for bulk samples.
+
+    """
+
     def __init__(self, eps_stack=None, beta_stack=None, t_stack=None):
         # Check input validity
         if (eps_stack is None) == (beta_stack is None):
@@ -81,13 +124,28 @@ class Sample:
         return self._t_stack.shape[0] > 0
 
     def refl_coef_qs(self, q=0):
-        beta_effective = self.beta_stack[0] * np.ones_like(q)
+        """Return the momentum-dependent quasistatic reflection coefficient
+        for the sample.
+
+        Parameters
+        ----------
+        q : float or array_like
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `beta_stack[i, ...]` and
+            `t_stack[i, ...]`.
+
+        Returns
+        -------
+        beta_total : complex
+            Quasistatic  reflection coefficient of the sample.
+        """
+        beta_total = self.beta_stack[0] * np.ones_like(q)
         for i in range(self.t_stack.shape[0]):
             layer_decay = np.exp(-2 * q * self.t_stack[i])
-            beta_effective = (beta_effective + self.beta_stack[i + 1] * layer_decay) / (
-                1 + beta_effective * self.beta_stack[i + 1] * layer_decay
+            beta_total = (beta_total + self.beta_stack[i + 1] * layer_decay) / (
+                1 + beta_total * self.beta_stack[i + 1] * layer_decay
             )
-        return beta_effective
+        return beta_total
 
     def _check_layers_valid(self):
         if (self.t_stack is not None) and (self.eps_stack is not None):
