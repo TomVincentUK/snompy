@@ -4,39 +4,44 @@ import pytest
 import pysnom
 
 eps_env = 1
-eps_middle = 2 + 1j
-eps_substrate = 11.7
-t_middle = 50e-9
+eps_mid = 2 + 1j
+eps_sub = 11.7
+t_mid = 50e-9
 
-beta = pysnom.reflection.refl_coef_qs(eps_env, eps_substrate)
-beta_stack, t_stack = pysnom.reflection.interface_stack(
-    eps_stack=(eps_env, eps_middle, eps_substrate), t_stack=(t_middle,)
+bulk_sample = pysnom.sample.Sample(eps_stack=(eps_env, eps_sub))
+multi_sample = pysnom.sample.Sample(
+    eps_stack=(eps_env, eps_mid, eps_sub), t_stack=(t_mid,)
 )
 
-bulk_kwargs = dict(beta=beta)
-ML_kwargs = dict(beta_stack=beta_stack, t_stack=t_stack)
 demod_kwargs = dict(A_tip=50e-9, n=np.arange(2, 10))
-funcs_0_kwargs = [
-    (pysnom.pdm.eff_pol, bulk_kwargs),
-    (pysnom.fdm.bulk.eff_pol, bulk_kwargs),
-    (pysnom.fdm.multi.eff_pol, ML_kwargs),
-]
-funcs_demod_kwargs = [
-    (pysnom.pdm.eff_pol_n, bulk_kwargs | demod_kwargs),
-    (pysnom.fdm.bulk.eff_pol_n, bulk_kwargs | demod_kwargs),
-    (pysnom.fdm.multi.eff_pol_n, ML_kwargs | demod_kwargs),
-]
 
 
-@pytest.mark.parametrize("eff_pol_func, kwargs", funcs_0_kwargs + funcs_demod_kwargs)
-def test_approach_curve_decays(eff_pol_func, kwargs):
+@pytest.mark.parametrize(
+    "eff_pol_func, sample, kwargs",
+    [
+        (pysnom.pdm.eff_pol, bulk_sample, {}),
+        (pysnom.pdm.eff_pol_n, bulk_sample, demod_kwargs),
+        (pysnom.fdm.bulk.eff_pol, bulk_sample, {}),
+        (pysnom.fdm.bulk.eff_pol_n, bulk_sample, demod_kwargs),
+        (pysnom.fdm.multi.eff_pol, multi_sample, {}),
+        (pysnom.fdm.multi.eff_pol_n, multi_sample, demod_kwargs),
+    ],
+)
+def test_approach_curve_decays(eff_pol_func, sample, kwargs):
     alpha_eff = eff_pol_func(
-        z_tip=np.linspace(0, 100, 128)[:, np.newaxis] * 1e-9, **kwargs
+        z_tip=np.linspace(0, 100, 128)[:, np.newaxis] * 1e-9, sample=sample, **kwargs
     )
     assert (np.diff(np.abs(alpha_eff), axis=0) < 0).all()
 
 
-@pytest.mark.parametrize("eff_pol_func, kwargs", funcs_demod_kwargs)
-def test_harmonics_decay(eff_pol_func, kwargs):
-    alpha_eff = eff_pol_func(z_tip=10e-9, **kwargs)
+@pytest.mark.parametrize(
+    "eff_pol_func, sample",
+    [
+        (pysnom.pdm.eff_pol_n, bulk_sample),
+        (pysnom.fdm.bulk.eff_pol_n, bulk_sample),
+        (pysnom.fdm.multi.eff_pol_n, multi_sample),
+    ],
+)
+def test_harmonics_decay(eff_pol_func, sample):
+    alpha_eff = eff_pol_func(z_tip=10e-9, sample=sample, **demod_kwargs)
     assert (np.diff(np.abs(alpha_eff), axis=-1) < 0).all()

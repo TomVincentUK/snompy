@@ -18,7 +18,7 @@ refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 t = np.linspace(-periods * np.pi / tapping_freq, periods * np.pi / tapping_freq, 512)
 z_tip = z_bottom + A_tip * (1 + np.cos(tapping_freq * t))
 
-# Calculate the effective polarisability
+# Calculate the effective polarizability
 alpha_eff = pysnom.fdm.bulk.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
 
 # Plot output

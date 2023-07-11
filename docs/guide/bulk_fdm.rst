@@ -4,7 +4,7 @@ Bulk finite dipole model
 ========================
 
 The finite dipole model (FDM) is one method for estimating the effective
-polarisability of an atomic force microscope (AFM) tip and a sample.
+polarizability of an atomic force microscope (AFM) tip and a sample.
 This can be used to predict scattering in scanning near-field optical
 microscopy (SNOM) measurements, as described on the page :ref:`scattering`.
 
@@ -43,7 +43,7 @@ This dipole, which we call :math:`p_0`, is what gives the finite dipole
 model its name.
 The word finite here refers to the fact that the dipole has a finite
 length, and is used to contrast with the *point* dipole model
-(:ref:`PDM <bulk_pdm>`), an earlier model for the effective polarisability.
+(:ref:`PDM <bulk_pdm>`), an earlier model for the effective polarizability.
 The position of the two charges are found at distances
 
 .. math::
@@ -169,7 +169,7 @@ The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 
    p_1 = (L_{tip} - d_{Q1}) Q_1 \quad (\approx L_{tip} Q_1, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
-The effective polarisability of the tip and sample can then be found from
+The effective polarizability of the tip and sample can then be found from
 the total induced dipole, as
 
 .. math::
@@ -187,8 +187,8 @@ In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
 Demodulating the FDM
 --------------------
 
-Typically we're not interested in the raw effective polarisability, but in
-the :math:`n_{th}`-harmonic-demodulated effective polarisability
+Typically we're not interested in the raw effective polarizability, but in
+the :math:`n_{th}`-harmonic-demodulated effective polarizability
 :math:`\alpha_{eff, n}`.
 That's because the signals measured in real SNOM experiments are determined
 by the demodulated near-field scattering coefficient
@@ -270,7 +270,7 @@ Using dielectric function
 
 Now let's create an approach curve to display in these axes.
 We'll use :func:`pysnom.fdm.bulk.eff_pol_n` to calculate the effective
-polarisability.
+polarizability.
 
 We need to tell the function our tip height :math:`z_{tip}`, the tapping
 amplitude :math:`A_{tip}` (see :ref:`demodulation` for details on this
@@ -312,7 +312,7 @@ calculate our first approach curve.
    )
    ax.legend()
 
-This shows the expected response, that the effective polarisability decays
+This shows the expected response, that the effective polarizability decays
 with distance from the sample.
 
 Using reflection coefficient

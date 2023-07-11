@@ -66,7 +66,7 @@ switched between the two models using the tabs on this page.
    :func:`pysnom.fdm.eff_pol_n`, and
    :func:`pysnom.pdm.eff_pol_n`.
 
-The undemodulated effective polarisability
+The undemodulated effective polarizability
 ------------------------------------------
 
 As an example, lets take a look at the :math:`z_{tip}`-dependence of
@@ -91,14 +91,14 @@ This is the parameter we want to model, but we can't measure this directly
 using SNOM.
 We'll need to simulate a lock-in measurement if we want to compare our
 models to experimental results.
-Note that the decay of the effective polarisability is non-linear, which
+Note that the decay of the effective polarizability is non-linear, which
 will become important later.
 
 .. hint::
    :class: dropdown
 
    In this section we show the real and imaginary parts of the effective
-   polarisability, :math:`\Re(\alpha_{eff})` and :math:`\Im(\alpha_{eff})`,
+   polarizability, :math:`\Re(\alpha_{eff})` and :math:`\Im(\alpha_{eff})`,
    which makes it easier to visualise complex demodulation.
    However, in practice it's more common to study the amplitude and phase,
    (:math:`|\alpha_{eff}|`) and (:math:`\arg(\alpha_{eff})`).
@@ -117,7 +117,7 @@ signal will be to modulate the height of the AFM probe according to
 where :math:`z_0` is the bottom of the height oscillation, :math:`A_{tip}`
 is the oscillation amplitude, and :math:`t` is time.
 
-The following script shows how the effective polarisability responds to a
+The following script shows how the effective polarizability responds to a
 sinusoidal modulation of the tip height as described above:
 
 .. tab-set::
@@ -207,7 +207,7 @@ sinusoidal :math:`z_{tip}` modulation would create a purely sinusoidal
 Extracting Fourier coefficients
 -------------------------------
 
-Once we've modulated the effective polarisability by changing the
+Once we've modulated the effective polarizability by changing the
 tip height, the next step is to demodulate the resulting signal to extract
 the desired Fourier coeficients, :math:`\alpha_{eff, n}`.
 

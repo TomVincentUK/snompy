@@ -4,7 +4,7 @@ Modelling SNOM scattering
 =========================
 
 In both the finite dipole model (FDM) and the point dipole model (PDM), the
-SNOM contrast is modelled by calculating the effective polarisability,
+SNOM contrast is modelled by calculating the effective polarizability,
 :math:`\alpha_{eff}`, of an atomic force microscope (AFM) tip and sample.
 On this page we'll explain why that works.
 
@@ -16,7 +16,7 @@ On this page we'll explain why that works.
    The :ref:`demodulation` page of this guide explains why that's
    necessary, and how it's implemented in ``pysnom``.
 
-Scattering and effective polarisability
+Scattering and effective polarizability
 ---------------------------------------
 
 The image below shows a typical scattering SNOM experiment, in which we
@@ -45,7 +45,7 @@ The electric fields induced in the tip and sample interact, so the tip and
 sample couple together to produce a combined response to the external
 field.
 The strength of their dipole moment, relative to the incident field, is
-given by the effective polarisability of the tip and sample,
+given by the effective polarizability of the tip and sample,
 :math:`\alpha_{eff}`.
 
 It's this dipole which radiates near-field light back into the far field,
@@ -63,7 +63,7 @@ The :math:`(1 + c r)^2` term is included because the AFM tip is illuminated
 both directly, and also by reflections from the sample surface, as shown in
 the diagram above.
 
-In ``pysnom``, the undemodulated effective polarisability is provided by
+In ``pysnom``, the undemodulated effective polarizability is provided by
 the functions :func:`pysnom.fdm.eff_pol`,
 :func:`pysnom.fdm.eff_pol`, and :func:`pysnom.pdm.eff_pol`.
 

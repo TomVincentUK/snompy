@@ -11,7 +11,7 @@ eps_Si = 11.7  # Si dielectric function in the mid-infrared
 eps_env = 1  # Vacuum/air dielectric function
 refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
-# Calculate the effective polarisability
+# Calculate the effective polarizability
 alpha_eff = pysnom.pdm.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
 
 # Plot output

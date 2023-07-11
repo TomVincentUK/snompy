@@ -17,7 +17,7 @@ refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 theta = np.linspace(-np.pi, np.pi, 512)
 z_tip = z_bottom + A_tip * (1 + np.cos(theta))
 
-# Calculate the effective polarisability
+# Calculate the effective polarizability
 alpha_eff = pysnom.fdm.bulk.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
 
 # Generate a complex sinusoidal envelope

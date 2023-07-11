@@ -4,7 +4,7 @@ Introduction
 ============
 
 The main purpose of ``pysnom`` is to provide functions to calculate the
-effective polarisability, :math:`\alpha_{eff}`, of a SNOM tip and a sample,
+effective polarizability, :math:`\alpha_{eff}`, of a SNOM tip and a sample,
 which can be used to predict contrast in SNOM measurements.
 
 Below on this page are some example scripts, showing idiomatic usage of

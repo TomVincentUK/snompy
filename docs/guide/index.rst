@@ -55,7 +55,7 @@ Start here for a general introduction to modelling with ``pysnom``.
       Modelling SNOM scattering
       ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-      Here we introduce the concept of effective polarisability, and how
+      Here we introduce the concept of effective polarizability, and how
       it's used to model SNOM scattering.
 
     .. grid-item-card::
