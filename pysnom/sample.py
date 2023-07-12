@@ -171,6 +171,31 @@ class Sample:
             )
         return beta_total
 
+    def transfer_matrix(self, k_vac, q=0, polarization="p"):
+        k_z_medium = np.sqrt(self.eps_stack * k_vac**2 - q**2)
+        if polarization == "p":
+            eta = np.stack(
+                [
+                    self.eps_stack[i]
+                    * k_z_medium[i + 1]
+                    / (self.eps_stack[i + 1] * k_z_medium[i])
+                    for i in range(len(self.beta_stack))
+                ]
+            )
+        elif polarization == "s":
+            eta = np.stack(
+                [k_z_medium[i + 1] / k_z_medium[i] for i in range(len(self.beta_stack))]
+            )
+        else:
+            raise ValueError("`polarization` must be 's' or 'p'")
+
+        M = np.array([[1 + eta[0], 1 - eta[0]], [1 - eta[0], 1 + eta[0]]])
+        for eta_i, k_z_i in zip(eta[1:], k_z_medium[1:-1]):
+            pass
+            # M = M @ propogation @ transmision
+
+        return M
+
     def _check_layers_valid(self):
         if (self.t_stack is not None) and (self.eps_stack is not None):
             if self.eps_stack.shape[0] != self.t_stack.shape[0] + 2:
