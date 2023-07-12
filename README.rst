@@ -7,8 +7,6 @@ microscopy measurements.
 Tasks / issues
 --------------
 * Sample object:
-  * Add a way to specify the environment permittivity for beta calculation
-  * Add a shorthand way to create a bulk Sample object `.sample.bulk_sample(eps_sub, eps_env=1)`
   * Add tests for reciprocity of single interface eps and beta functions
   * Add far-field Fresnel reflection coefficient calculation
 * FDM:

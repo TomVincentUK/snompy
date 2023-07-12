@@ -14,7 +14,7 @@ and permitivitties.
 
     Sample
     refl_coef_qs_single
-    dielec_fn
+    permitivitty
 """
 import warnings
 
@@ -65,7 +65,7 @@ class Sample:
 
     """
 
-    def __init__(self, eps_stack=None, beta_stack=None, t_stack=None):
+    def __init__(self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=1 + 0j):
         # Check input validity
         if (eps_stack is None) == (beta_stack is None):
             raise ValueError(
@@ -80,6 +80,7 @@ class Sample:
         # Initialise internal variables
         self._t_stack = None
         self._eps_stack = None
+        self._eps_env = eps_env
 
         # Initialise public variables
         self.t_stack = t_stack
@@ -134,7 +135,12 @@ class Sample:
         beta = np.asarray(np.broadcast_arrays(*val))
         eps_stack = np.ones([beta.shape[0] + 1, *beta.shape[1:]], dtype=complex)
         eps_stack[1:] = np.cumprod(permitivitty(beta), axis=0)
+        eps_stack *= self.eps_env
         self.eps_stack = eps_stack
+
+    @property
+    def eps_env(self):
+        return self._eps_env if self.eps_stack is None else self.eps_stack[0]
 
     @property
     def multilayer(self):
@@ -180,8 +186,10 @@ class Sample:
                 )
 
 
-def bulk_sample(eps_sub, eps_env=1 + 0j):
-    return Sample(eps_stack=(eps_env, eps_sub))
+def bulk_sample(eps_sub=None, beta=None, eps_env=1 + 0j):
+    eps_stack = None if eps_sub is None else (eps_env, eps_sub)
+    beta_stack = None if beta is None else (beta,)
+    return Sample(eps_stack=eps_stack, beta_stack=beta_stack, eps_env=eps_env)
 
 
 def refl_coef_qs_single(eps_i, eps_j):
