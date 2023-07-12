@@ -180,6 +180,10 @@ class Sample:
                 )
 
 
+def bulk_sample(eps_sub, eps_env=1 + 0j):
+    return Sample(eps_stack=(eps_env, eps_sub))
+
+
 def refl_coef_qs_single(eps_i, eps_j):
     """Return the quasistatic  reflection coefficient for an interface
     between two materials.
