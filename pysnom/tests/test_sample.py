@@ -91,6 +91,25 @@ class TestSample:
             from_eps = pysnom.sample.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_eps.eps_stack)
 
+    @pytest.mark.parametrize("eps_i", np.linspace(0.9, 1.1, 3))
+    def test_eps_beta_single_conversion_reversible(self, eps_i):
+        eps_in = 2 + 1j
+        eps_out = pysnom.sample.permitivitty(
+            beta=pysnom.sample.refl_coef_qs_single(eps_i=eps_i, eps_j=eps_in),
+            eps_i=eps_i,
+        )
+        np.testing.assert_allclose(eps_in, eps_out)
+
+        beta_in = 0.5 + 0.5j
+        beta_out = pysnom.sample.refl_coef_qs_single(
+            eps_j=pysnom.sample.permitivitty(
+                beta_in,
+                eps_i=eps_i,
+            ),
+            eps_i=eps_i,
+        )
+        np.testing.assert_allclose(beta_in, beta_out)
+
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_outputs_correct_shape(self, eps_stack, beta_stack, t_stack):
         sample = pysnom.sample.Sample(

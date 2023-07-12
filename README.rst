@@ -7,7 +7,6 @@ microscopy measurements.
 Tasks / issues
 --------------
 * Sample object:
-  * Add tests for reciprocity of single interface eps and beta functions
   * Add far-field Fresnel reflection coefficient calculation
 * FDM:
   * Reorganise functions
