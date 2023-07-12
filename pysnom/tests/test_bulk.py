@@ -9,7 +9,7 @@ import pysnom
     (
         pysnom.fdm.bulk.eff_pol_n,
         pysnom.fdm.bulk.eff_pol_n_taylor,
-        # pysnom.pdm.eff_pol_n,
+        pysnom.pdm.eff_pol_n,
     ),
 )
 def test_eff_pol_n_broadcasting(eff_pol_n):
