@@ -11,9 +11,6 @@ Tasks / issues
   * Add a shorthand way to create a bulk Sample object `.sample.bulk_sample(eps_sub, eps_env=1)`
   * Add tests for reciprocity of single interface eps and beta functions
   * Add far-field Fresnel reflection coefficient calculation
-* Tests:
-  * Delete obvious tests (e.g. you don't need to test that missing arguments causes an error)
-  * Reorganise existing tests to a structure that makes more sense.
 * FDM:
   * Reorganise functions
   * Bulk:

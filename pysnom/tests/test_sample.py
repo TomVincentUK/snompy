@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from pysnom.sample import Sample
+import pysnom
 
 
 class TestSample:
@@ -42,19 +42,19 @@ class TestSample:
     # Input tests
     def test_error_when_no_eps_or_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            Sample()
+            pysnom.sample.Sample()
 
     def test_error_when_both_eps_and_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            Sample(eps_stack=(1, 10), beta_stack=(0.5,))
+            pysnom.sample.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
 
     def test_error_when_eps_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
+            pysnom.sample.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
 
     def test_error_when_beta_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
+            pysnom.sample.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
 
     def test_warn_when_zero_thickness(self):
         with pytest.warns(
@@ -67,37 +67,43 @@ class TestSample:
                 ]
             ),
         ):
-            Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
+            pysnom.sample.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
 
     # Behaviour tests
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
-        sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
+        sample = pysnom.sample.Sample(
+            eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
+        )
         assert sample.multilayer == (np.shape(sample.t_stack)[0] > 0)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_eps_beta_conversion_reversible(self, eps_stack, beta_stack, t_stack):
-        sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
+        sample = pysnom.sample.Sample(
+            eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
+        )
         if eps_stack is not None:
-            from_beta = Sample(beta_stack=sample.beta_stack, t_stack=t_stack)
-            np.testing.assert_almost_equal(sample.eps_stack, from_beta.eps_stack)
+            from_beta = pysnom.sample.Sample(
+                beta_stack=sample.beta_stack, t_stack=t_stack
+            )
+            np.testing.assert_array_almost_equal(sample.eps_stack, from_beta.eps_stack)
         if beta_stack is not None:
-            from_eps = Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
-            np.testing.assert_almost_equal(sample.eps_stack, from_eps.eps_stack)
+            from_eps = pysnom.sample.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
+            np.testing.assert_array_almost_equal(sample.eps_stack, from_eps.eps_stack)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_outputs_correct_shape(self, eps_stack, beta_stack, t_stack):
-        sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
+        sample = pysnom.sample.Sample(
+            eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
+        )
         assert (
             np.shape(sample.refl_coef_qs())
             == np.shape(sample.eps_stack[0])
             == np.shape(sample.beta_stack[0])
         )
 
-    def test_refl_coeff_qs_flat_for_bulk(self):
-        sample = Sample(eps_stack=(1, 10))
+    def test_refl_coeff_qs_flat_for_bulk(self, scalar_sample_bulk):
         q = np.linspace(0, 10, 64)
-        assert (
-            sample.refl_coef_qs(q).real.std() + 1j * sample.refl_coef_qs(q).real.std()
-            == 0 + 0j
-        )
+        beta = scalar_sample_bulk.refl_coef_qs(q)
+        print(beta - beta.mean())
+        np.testing.assert_array_almost_equal(beta - beta.mean(), 0)

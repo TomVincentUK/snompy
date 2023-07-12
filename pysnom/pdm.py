@@ -19,20 +19,13 @@ Bulk point dipole model
     eff_pol
 
 """
-import warnings
-
 import numpy as np
 
 from ._utils import defaults
 from .demodulate import demod
 
 
-def eff_pol(
-    z_tip,
-    sample,
-    r_tip=defaults["r_tip"],
-    alpha_sphere=4 * np.pi * defaults["r_tip"] ** 3,
-):
+def eff_pol(z_tip, sample, r_tip=defaults["r_tip"], eps_sphere=None, alpha_sphere=None):
     r"""Return the effective probe-sample polarizability using the bulk
     point dipole model.
 
@@ -46,6 +39,11 @@ def eff_pol(
         methods.
     r_tip : float
         Radius of curvature of the AFM tip.
+    eps_sphere : complex
+        Dielectric function of the sample. Used to calculate
+        `alpha_sphere`, and ignored if `alpha_sphere` is specified. If both
+        `eps_sphere` and `alpha_sphere` are None, the sphere is assumed to
+        be perfectly conducting.
     alpha_sphere : complex
         Polarizability of the conducting sphere used as a model for the AFM
         tip.
@@ -81,6 +79,16 @@ def eff_pol(
        p. 8550, 2007, doi: 10.1364/oe.15.008550.
 
     """
+    # alpha_sphere calculated from eps_sphere if not specified
+    if eps_sphere is None:
+        if alpha_sphere is None:
+            alpha_sphere = 4 * np.pi * r_tip**3
+    else:
+        if alpha_sphere is None:
+            alpha_sphere = 4 * np.pi * r_tip**3 * (eps_sphere - 1) / (eps_sphere + 2)
+        else:
+            raise ValueError("Either `alpha_sphere` or `eps_sphere` must be None.")
+
     beta = sample.refl_coef_qs()
     return alpha_sphere / (
         1 - (alpha_sphere * beta / (16 * np.pi * (r_tip + z_tip) ** 3))
@@ -173,18 +181,6 @@ def eff_pol_n(
        2004, doi: 10.1098/rsta.2003.1347.
 
     """
-    # alpha_sphere calculated from eps_sphere if not specified
-    if eps_sphere is None:
-        if alpha_sphere is None:
-            alpha_sphere = 4 * np.pi * r_tip**3
-    else:
-        if alpha_sphere is None:
-            alpha_sphere = 4 * np.pi * r_tip**3 * (eps_sphere - 1) / (eps_sphere + 2)
-        else:
-            warnings.warn(
-                "`alpha_sphere` overrides `eps_sphere` when both are specified."
-            )
-
     # Set oscillation centre  so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
@@ -193,7 +189,7 @@ def eff_pol_n(
         z_0,
         A_tip,
         n,
-        f_args=(sample, r_tip, alpha_sphere),
+        f_args=(sample, r_tip, eps_sphere, alpha_sphere),
         n_trapz=n_trapz,
     )
 

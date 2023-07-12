@@ -1,7 +1,5 @@
 import numpy as np
 
-from .sample import Sample
-
 
 def _pad_for_broadcasting(array, broadcast_with):
     """Pads `array` with singleton dimensions so that it broadcasts with
@@ -9,21 +7,6 @@ def _pad_for_broadcasting(array, broadcast_with):
     """
     index_pad_dims = np.max([np.ndim(a) for a in broadcast_with])
     return np.asarray(array).reshape(-1, *(1,) * index_pad_dims)
-
-
-def _prepare_sample(sample=None, eps_stack=None, beta_stack=None, t_stack=None):
-    if sample is None:
-        sample = Sample(eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack)
-    elif any([stack is not None for stack in (eps_stack, beta_stack, t_stack)]):
-        raise ValueError(
-            " ".join(
-                [
-                    "`sample` must be set to None if any of `eps_Stack`,"
-                    "`beta_stack` or `t_stack` are not None."
-                ]
-            )
-        )
-    return sample
 
 
 defaults = dict(
