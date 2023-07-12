@@ -7,8 +7,8 @@ import pysnom
 z_tip = np.linspace(0, 60e-9, 512)  # Define an approach curve
 A_tip = 20e-9  # AFM tip tapping amplitude
 harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
-eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_air = 1.0  # Dielectric function of environment
+eps_Si = 11.7  # Si permitivitty in the mid-infrared
+eps_air = 1.0  # Permitivitty of environment
 sample = pysnom.sample.Sample(eps_stack=(eps_air, eps_Si))  # Sample object
 
 # Calculate the effective polarizability using FDM and PDM

@@ -29,7 +29,7 @@ wavenumber = np.linspace(1680, 1780, 128) * 1e2
 
 # Semi-infinite superstrate and substrate
 eps_air = 1
-eps_Si = 11.7  # Si dielectric function in the mid-infrared
+eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
 eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-3, 20e2)

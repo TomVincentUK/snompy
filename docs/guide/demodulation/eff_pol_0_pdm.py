@@ -7,8 +7,8 @@ import pysnom
 z_tip = np.linspace(0, 200e-9, 512)
 
 # Material parameters
-eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_env = 1  # Vacuum/air dielectric function
+eps_Si = 11.7  # Si permitivitty in the mid-infrared
+eps_env = 1  # Vacuum/air permitivitty
 refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Calculate the effective polarizability

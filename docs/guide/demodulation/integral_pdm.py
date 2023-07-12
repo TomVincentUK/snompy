@@ -9,8 +9,8 @@ A_tip = 25e-9  # 25 nm oscillation amplitude
 z_bottom = 10e-9  # 10 nm from sample at bottom of oscillation
 
 # Material parameters
-eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_env = 1  # Vacuum/air dielectric function
+eps_Si = 11.7  # Si permitivitty in the mid-infrared
+eps_env = 1  # Vacuum/air permitivitty
 refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Find z_tip as a function of theta

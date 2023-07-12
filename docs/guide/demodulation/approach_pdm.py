@@ -9,8 +9,8 @@ A_tip = 20e-9  # AFM tip tapping amplitude
 harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
 
 # Material parameters
-eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_env = 1  # Vacuum/air dielectric function
+eps_Si = 11.7  # Si permitivitty in the mid-infrared
+eps_env = 1  # Vacuum/air permitivitty
 refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Calculate the effective polarizability using demod

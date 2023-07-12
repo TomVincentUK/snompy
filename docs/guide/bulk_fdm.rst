@@ -102,10 +102,10 @@ surface, given by
    \frac{\varepsilon_{sub} - \varepsilon_{env}}
    {\varepsilon_{sub} + \varepsilon_{env}},
 
-where :math:`\varepsilon_{env}` is the dielectric function of the
-environment (:math:`\varepsilon_{env} = 1` for air or vacuum), and
-:math:`\varepsilon_{sub}` is the dielectric function of the sample (the
-subscript "sub" here is short for substrate).
+where :math:`\varepsilon_{env}` is the permitivitty of thee nvironment
+(:math:`\varepsilon_{env} = 1` for air or vacuum), and
+:math:`\varepsilon_{sub}` is the permitivitty of the sample (the subscript
+"sub" here is short for substrate).
 In ``pysnom``, equation :eq:`beta` is provided by the function
 :func:`pysnom.sample.Sample.refl_coef_qs`.
 

@@ -6,7 +6,7 @@ Sample properties (:mod:`pysnom.sample`)
 
 This module provides a class to represent layered and bulk samples within
 ``pysnom``, and functions for converting between reflection coefficients
-and dielectric functions.
+and permitivitties.
 
 .. autosummary::
     :nosignatures:
@@ -133,7 +133,7 @@ class Sample:
         # Calculate eps_stack from beta assuming first eps is 1
         beta = np.asarray(np.broadcast_arrays(*val))
         eps_stack = np.ones([beta.shape[0] + 1, *beta.shape[1:]], dtype=complex)
-        eps_stack[1:] = np.cumprod(dielec_fn(beta), axis=0)
+        eps_stack[1:] = np.cumprod(permitivitty(beta), axis=0)
         self.eps_stack = eps_stack
 
     @property
@@ -185,7 +185,7 @@ def refl_coef_qs_single(eps_i, eps_j):
     between two materials.
 
     Calculated using ``(eps_j - eps_i) / (eps_j + eps_i)``, where `eps_i`
-    and `eps_j` are the dielectric functions of two materials `i` and `j`.
+    and `eps_j` are the permitivitties of two materials `i` and `j`.
 
     Parameters
     ----------
@@ -231,13 +231,13 @@ def refl_coef_qs_single(eps_i, eps_j):
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
-def dielec_fn(beta, eps_i=1 + 0j):
-    """Return the dielectric function of a material based on its
-    quasistatic reflection coefficient.
+def permitivitty(beta, eps_i=1 + 0j):
+    """Return the permittivity of a material based on its quasistatic
+    reflection coefficient.
 
     Calculated using ``eps_i * (1 + beta) / (1 - beta)``, where `eps_i` is
-    the dielectric functions of the preceeding material, and `beta` is the
-    quasistatic  reflection coefficient of the sample.
+    the permitivitty of the preceeding material, and `beta` is the
+    quasistatic reflection coefficient of the sample.
 
     Parameters
     ----------

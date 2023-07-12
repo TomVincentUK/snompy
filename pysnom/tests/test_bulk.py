@@ -22,7 +22,7 @@ def test_eff_pol_n_broadcasting(eff_pol_n):
     # Eventual output shape should match broadcast arrays
     target_shape = (wavenumber + z_tip + A_tip + n).shape
 
-    # Dispersive semi-infinite layer dielectric function
+    # Dispersive semi-infinite layer permitivitty
     eps_inf = 2
     osc_freq = 1740e2
     osc_width = 20e2
