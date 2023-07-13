@@ -9,11 +9,11 @@ A_tip = 20e-9  # AFM tip tapping amplitude
 harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
 
 # Material parameters
-eps_Si = 11.7  # Si dielectric function in the mid-infrared
-eps_env = 1  # Vacuum/air dielectric function
+eps_Si = 11.7  # Si permitivitty in the mid-infrared
+eps_env = 1  # Vacuum/air permitivitty
 refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
 
-# Calculate the effective polarisability using demod
+# Calculate the effective polarizability using demod
 # offset by tapping amplitude so oscillation doesn't intersect with sample
 z_shift = z_tip + A_tip
 alpha_eff_demod = pysnom.demodulate.demod(
@@ -24,7 +24,7 @@ alpha_eff_demod = pysnom.demodulate.demod(
     f_args=(refl_coef_qs,),
 )
 
-# Calculate the effective polarisability directly
+# Calculate the effective polarizability directly
 alpha_eff_direct = pysnom.fdm.bulk.eff_pol_n(
     z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,

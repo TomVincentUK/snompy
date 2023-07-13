@@ -1,12 +1,11 @@
 import numpy as np
-from numpy.polynomial import laguerre
+from numpy.polynomial.laguerre import laggauss
 
-from .._defaults import defaults
+from .._utils import _pad_for_broadcasting, defaults
 from ..demodulate import demod
-from ..reflection import interface_stack, refl_coef_qs_ml
 
 
-def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
+def phi_E_0(z_Q, sample, n_lag=defaults["n_lag"]):
     r"""Return the electric potential and field at the sample surface,
     induced by a charge above a stack of interfaces.
 
@@ -17,15 +16,9 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     ----------
     z_Q : float
         Height of the charge above the sample.
-    beta_stack : array_like
-        Quasistatic  reflection coefficients of each interface in the
-        stack (with the first element corresponding to the top interface).
-        Used instead of `eps_stack`, if both are specified.
-    t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-infinite
-        superstrate and substrate. Must have length one fewer than
-        `beta_stack` or two fewer than `eps_stack`. An empty list can be
-        used for the case of a single interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
     n_lag : int
         The order of the Laguerre polynomial used to evaluate the integrals
         over all `q`.
@@ -114,7 +107,7 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     In this function the Laguerre weights and roots are found using
     :func:`numpy.polynomial.laguerre.laggauss` and the momentum-dependent
     reflection coefficient is found using
-    :func:`pysnom.reflection.refl_coef_qs_ml`.
+    :func:`pysnom.sample.Sample.refl_coef_qs`.
 
     References
     ----------
@@ -128,18 +121,21 @@ def phi_E_0(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
        doi: 10.1016/S0377-0427(01)00407-1.
     """
     # Evaluate integral in terms of x = q * 2 * z_Q
-    x_lag, w_lag = laguerre.laggauss(n_lag)
-    q = x_lag / np.asarray(2 * z_Q)[..., np.newaxis]
+    x_lag, w_lag = [
+        _pad_for_broadcasting(a, (sample.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
+    ]
 
-    beta_q = refl_coef_qs_ml(q, beta_stack[..., np.newaxis], t_stack[..., np.newaxis])
+    q = x_lag / np.asarray(2 * z_Q)
 
-    phi = np.sum(w_lag * beta_q, axis=-1) / (2 * z_Q)
-    E = np.sum(w_lag * x_lag * beta_q, axis=-1) / (4 * z_Q**2)
+    beta_q = sample.refl_coef_qs(q)
+
+    phi = np.sum(w_lag * beta_q, axis=0) / (2 * z_Q)
+    E = np.sum(w_lag * x_lag * beta_q, axis=0) / (4 * z_Q**2)
 
     return phi, E
 
 
-def eff_pos_and_charge(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
+def eff_pos_and_charge(z_Q, sample, n_lag=defaults["n_lag"]):
     r"""Calculate the depth and relative charge of an image charge induced
     below the top surface of a stack of interfaces.
 
@@ -150,15 +146,9 @@ def eff_pos_and_charge(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
     ----------
     z_Q : float
         Height of the charge above the sample.
-    beta_stack : array_like
-        Quasistatic  reflection coefficients of each interface in the
-        stack (with the first element corresponding to the top interface).
-        Used instead of `eps_stack`, if both are specified.
-    t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-infinite
-        superstrate and substrate. Must have length one fewer than
-        `beta_stack` or two fewer than `eps_stack`. An empty list can be
-        used for the case of a single interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
     n_lag : int
         The order of the Laguerre polynomial used by :func:`phi_E_0`.
 
@@ -213,7 +203,7 @@ def eff_pos_and_charge(z_Q, beta_stack, t_stack, n_lag=defaults["n_lag"]):
        suspended topological insulator nanostructures,” pp. 1–23, Dec.
        2021, [Online]. Available: http://arxiv.org/abs/2112.10104
     """
-    phi, E = phi_E_0(z_Q, beta_stack, t_stack, n_lag)
+    phi, E = phi_E_0(z_Q, sample, n_lag)
     z_image = np.abs(phi / E) - z_Q
     beta_image = phi**2 / E
     return z_image, beta_image
@@ -292,12 +282,11 @@ def geom_func(
 
 def eff_pol(
     z_tip,
-    beta_stack=None,
-    t_stack=None,
+    sample,
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    d_Q0=defaults["d_Q0"],
+    d_Q0=None,
     d_Q1=defaults["d_Q1"],
     n_lag=defaults["n_lag"],
 ):
@@ -308,15 +297,9 @@ def eff_pol(
     ----------
     z_tip : float
         Height of the tip above the sample.
-    beta_stack : array_like
-        Quasistatic  reflection coefficients of each interface in the
-        stack (with the first element corresponding to the top interface).
-        Used instead of `eps_stack`, if both are specified.
-    t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-infinite
-        superstrate and substrate. Must have length one fewer than
-        `beta_stack` or two fewer than `eps_stack`. An empty list can be
-        used for the case of a single interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
     d_Q0 : float
         Depth of an induced charge 0 within the tip. Specified in units of
         the tip radius.
@@ -378,12 +361,15 @@ def eff_pol(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
+
     z_q_0 = z_tip + r_tip * d_Q0
-    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, beta_stack, t_stack, n_lag)
+    z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, sample, n_lag)
     f_0 = geom_func(z_tip, z_im_0, r_tip, L_tip, g_factor)
 
     z_q_1 = z_tip + r_tip * d_Q1
-    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, beta_stack, t_stack, n_lag)
+    z_im_1, beta_im_1 = eff_pos_and_charge(z_q_1, sample, n_lag)
     f_1 = geom_func(z_tip, z_im_1, r_tip, L_tip, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
@@ -393,9 +379,7 @@ def eff_pol_n(
     z_tip,
     A_tip,
     n,
-    eps_stack=None,
-    beta_stack=None,
-    t_stack=None,
+    sample,
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
@@ -416,20 +400,9 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    eps_stack : array_like
-        Dielectric functions of each layer in the stack. Layers should be
-        arranged from the top down, starting with the semi-infinite
-        superstrate and ending with the semi-infinite substrate. Ignored
-        if `beta_stack` is specified.
-    beta_stack : array_like
-        Quasistatic  reflection coefficients of each interface in the
-        stack (with the first element corresponding to the top interface).
-        Used instead of `eps_stack`, if both are specified.
-    t_stack : array_like
-        Thicknesses of each sandwiched layer between the semi-infinite
-        superstrate and substrate. Must have length one fewer than
-        `beta_stack` or two fewer than `eps_stack`. An empty list can be
-        used for the case of a single interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -482,11 +455,6 @@ def eff_pol_n(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-
-    beta_stack, t_stack = interface_stack(eps_stack, beta_stack, t_stack)
-
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
@@ -495,16 +463,7 @@ def eff_pol_n(
         z_0,
         A_tip,
         n,
-        f_args=(
-            beta_stack,
-            t_stack,
-            r_tip,
-            L_tip,
-            g_factor,
-            d_Q0,
-            d_Q1,
-            n_lag,
-        ),
+        f_args=(sample, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_lag),
         n_trapz=n_trapz,
     )
 

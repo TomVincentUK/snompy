@@ -1,11 +1,8 @@
-import warnings
-
 import numpy as np
 from numpy.polynomial import Polynomial
 
-from .._defaults import defaults
+from .._utils import _pad_for_broadcasting, defaults
 from ..demodulate import demod
-from ..reflection import refl_coef_qs
 
 
 def geom_func(
@@ -81,11 +78,11 @@ def geom_func(
 
 def eff_pol(
     z_tip,
-    beta,
+    sample,
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    d_Q0=defaults["d_Q0"],
+    d_Q0=None,
     d_Q1=defaults["d_Q1"],
 ):
     r"""Return the effective probe-sample polarizability using the bulk
@@ -95,8 +92,10 @@ def eff_pol(
     ----------
     z_tip : float
         Height of the tip above the sample.
-    beta : complex
-        Quasistatic  reflection coefficient of the interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate. Sample must have only one interface for bulk
+        methods.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -153,8 +152,14 @@ def eff_pol(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
+    beta = sample.refl_coef_qs()
+
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
+
     f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
     f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
+
     return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
 
 
@@ -162,9 +167,7 @@ def eff_pol_n(
     z_tip,
     A_tip,
     n,
-    eps_samp=None,
-    eps_env=defaults["eps_env"],
-    beta=None,
+    sample,
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
@@ -184,14 +187,10 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    eps_samp : complex
-        Dielectric function of the sample. Used to calculate `beta_0`, and
-        ignored if `beta_0` is specified.
-    eps_env : complex
-        Dielectric function of the environment (superstrate). Used to
-        calculate `beta_0`, and ignored if `beta_0` is specified.
-    beta : complex
-        Quasistatic  reflection coefficient of the interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate. Sample must have only one interface for bulk
+        methods.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -243,19 +242,6 @@ def eff_pol_n(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    # beta calculated from eps_samp if not specified
-    if eps_samp is None:
-        if beta is None:
-            raise ValueError("Either `eps_samp` or `beta` must be specified.")
-    else:
-        if beta is None:
-            beta = refl_coef_qs(eps_env, eps_samp)
-        else:
-            warnings.warn("`beta` overrides `eps_samp` when both are specified.")
-
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
@@ -264,7 +250,7 @@ def eff_pol_n(
         z_0,
         A_tip,
         n,
-        f_args=(beta, r_tip, L_tip, g_factor, d_Q0, d_Q1),
+        f_args=(sample, r_tip, L_tip, g_factor, d_Q0, d_Q1),
         n_trapz=n_trapz,
     )
 
@@ -277,7 +263,7 @@ def geom_func_taylor(
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    d_Q0=defaults["d_Q0"],
+    d_Q0=None,
     d_Q1=defaults["d_Q1"],
 ):
     r"""The height-dependent part of the separable Taylor series expression
@@ -343,6 +329,9 @@ def geom_func_taylor(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
+
     f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
     f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
     return f_0 * f_1 ** (j_taylor - 1)
@@ -356,7 +345,7 @@ def taylor_coef(
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
-    d_Q0=defaults["d_Q0"],
+    d_Q0=None,
     d_Q1=defaults["d_Q1"],
     n_trapz=defaults["n_trapz"],
 ):
@@ -441,9 +430,7 @@ def eff_pol_n_taylor(
     z_tip,
     A_tip,
     n,
-    eps_samp=None,
-    eps_env=defaults["eps_env"],
-    beta=None,
+    sample,
     r_tip=defaults["r_tip"],
     L_tip=defaults["L_tip"],
     g_factor=defaults["g_factor"],
@@ -464,14 +451,10 @@ def eff_pol_n_taylor(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    eps_samp : complex
-        Dielectric function of the sample. Used to calculate `beta_0`, and
-        ignored if `beta_0` is specified.
-    eps_env : complex
-        Dielectric function of the environment (superstrate). Used to
-        calculate `beta_0`, and ignored if `beta_0` is specified.
-    beta : complex
-        Quasistatic  reflection coefficient of the interface.
+    sample : `~pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate. Sample must have only one interface for bulk
+        methods.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -523,38 +506,13 @@ def eff_pol_n_taylor(
     `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
     here as :func:`taylor_coef`.
     """
-    # beta calculated from eps_samp if not specified
-    if eps_samp is None:
-        if beta is None:
-            raise ValueError("Either `eps_samp` or `beta` must be specified.")
-    else:
-        if beta is None:
-            beta = refl_coef_qs(eps_env, eps_samp)
-        else:
-            warnings.warn("`beta` overrides `eps_samp` when both are specified.")
+    beta = sample.refl_coef_qs()
 
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-
-    index_pad_dims = np.max(
-        [
-            np.ndim(a)
-            for a in (
-                z_tip,
-                A_tip,
-                n,
-                beta,
-                r_tip,
-                L_tip,
-                g_factor,
-                d_Q0,
-                d_Q1,
-            )
-        ]
+    j_taylor = _pad_for_broadcasting(
+        np.arange(n_tayl), (z_tip, A_tip, n, beta, r_tip, L_tip, g_factor, d_Q0, d_Q1)
     )
-    j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
 
-    coeffs = taylor_coef(
+    coefs = taylor_coef(
         z_tip,
         j_taylor,
         A_tip,
@@ -567,7 +525,7 @@ def eff_pol_n_taylor(
         n_trapz,
     )
     delta = np.where(n == 0, 1, 0)
-    alpha_eff = np.sum(coeffs * beta**j_taylor, axis=0) + delta
+    alpha_eff = np.sum(coefs * beta**j_taylor, axis=0) + delta
     return alpha_eff
 
 
@@ -659,38 +617,16 @@ def refl_coef_qs_from_eff_pol_n(
     if d_Q0 is None:
         d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
 
-    index_pad_dims = np.max(
-        [
-            np.ndim(a)
-            for a in (
-                z_tip,
-                A_tip,
-                n,
-                alpha_eff_n,
-                r_tip,
-                L_tip,
-                g_factor,
-                d_Q0,
-                d_Q1,
-            )
-        ]
+    j_taylor = _pad_for_broadcasting(
+        np.arange(n_tayl),
+        (z_tip, A_tip, n, alpha_eff_n, r_tip, L_tip, g_factor, d_Q0, d_Q1),
     )
-    j_taylor = np.arange(n_tayl).reshape(-1, *(1,) * index_pad_dims)
-    coeffs = taylor_coef(
-        z_tip,
-        j_taylor,
-        A_tip,
-        n,
-        r_tip,
-        L_tip,
-        g_factor,
-        d_Q0,
-        d_Q1,
-        n_trapz,
+    coefs = taylor_coef(
+        z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_trapz
     )
 
     delta = np.where(n == 0, 1, 0)
-    offset_coefs = np.where(j_taylor == 0, delta - alpha_eff_n, coeffs)
+    offset_coefs = np.where(j_taylor == 0, delta - alpha_eff_n, coefs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coefs)
 
     # Sort roots by abs value
