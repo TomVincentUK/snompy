@@ -228,7 +228,3 @@ References
    for scattering infrared near-field microscopy on layered systems,” Opt.
    Express, vol. 20, no. 12, p. 13173, Jun. 2012,
    doi: 10.1364/OE.20.013173.
-.. [3] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and R.
-   Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR
-   spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020, doi:
-   10.1038/s41467-020-17034-6.

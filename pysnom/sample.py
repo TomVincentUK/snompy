@@ -46,6 +46,14 @@ class Sample:
         Thicknesses of each finite-thickness layer sandwiched between the
         interfaces in the stack. A zero-size array can be used for the case
         of a bulk sample with a single interface.
+    eps_env : array_like
+        Dielectric function of the enviroment (equivalent to
+        `eps_stack[0]`). This is used to calculate `eps_stack` from
+        `beta_stack` if needed.
+    k_vac : array_like
+        Vacuuum wavenumber of incident light in inverse meters. Used to
+        calculate far-field reflection coefficients via the transfer matrix
+        method. Should be broadcastable with all `eps_stack[i, ...]`.
 
     Attributes
     ----------
@@ -62,10 +70,14 @@ class Sample:
     multilayer:
         True if sample has one or more finite-thickness layer sandwiched
         between the interfaces in the stack, False for bulk samples.
-
+    eps_env : array_like
+        Dielectric function of the enviroment (equivalent to
+        `eps_stack[0]`).
     """
 
-    def __init__(self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=1 + 0j):
+    def __init__(
+        self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=1 + 0j, k_vac=None
+    ):
         # Check input validity
         if (eps_stack is None) == (beta_stack is None):
             raise ValueError(
@@ -88,6 +100,7 @@ class Sample:
             self.eps_stack = eps_stack
         elif beta_stack is not None:
             self.beta_stack = beta_stack
+        self.k_vac = np.asarray(k_vac)
 
     @property
     def t_stack(self):
@@ -171,10 +184,34 @@ class Sample:
             )
         return beta_total
 
-    def transfer_matrix(self, k_vac, q=0, polarization="p"):
+    def transfer_matrix(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+        # Default to self.k_vac if k_vac is None.
+        if k_vac is None:
+            if self.k_vac is None:
+                raise ValueError("`k_vac` must not be None.")
+            else:
+                k_vac = self.k_vac
+        else:
+            k_vac = np.asarray(k_vac)
+
+        # Get q from theta in if needed
+        if theta_in is None:
+            if q is None:
+                q = 0
+            else:
+                q = np.asarray(q)
+        else:
+            if q is None:
+                q = k_vac * np.sin(np.abs(theta_in))
+            else:
+                raise ValueError("Either `theta_in` or `q` must be None.")
+
+        # Wavevector in each layer
         k_z_medium = np.sqrt(self.eps_stack * k_vac**2 - q**2)
+
+        # Transmission matrix depends on polarisation
         if polarization == "p":
-            eta = np.stack(
+            trans_factor = np.stack(
                 [
                     self.eps_stack[i]
                     * k_z_medium[i + 1]
@@ -183,18 +220,57 @@ class Sample:
                 ]
             )
         elif polarization == "s":
-            eta = np.stack(
+            trans_factor = np.stack(
                 [k_z_medium[i + 1] / k_z_medium[i] for i in range(len(self.beta_stack))]
             )
         else:
             raise ValueError("`polarization` must be 's' or 'p'")
 
-        M = np.array([[1 + eta[0], 1 - eta[0]], [1 - eta[0], 1 + eta[0]]])
-        for eta_i, k_z_i in zip(eta[1:], k_z_medium[1:-1]):
-            pass
-            # M = M @ propogation @ transmision
+        # Optical path length of internal layers
+        path_length = np.array(
+            [k_z * t for k_z, t in zip(k_z_medium[1:-1], self.t_stack)]
+        )
+
+        # Transition and propagation matrices
+        trans_stack = np.moveaxis(
+            np.array(
+                [
+                    [1 + trans_factor, 1 - trans_factor],
+                    [1 - trans_factor, 1 + trans_factor],
+                ]
+            )
+            / 2,
+            (0, 1),
+            (-2, -1),
+        )
+        prop_stack = np.moveaxis(
+            np.array(
+                [
+                    [np.exp(-1j * path_length), np.zeros_like(path_length)],
+                    [np.zeros_like(path_length), np.exp(1j * path_length)],
+                ]
+            ),
+            (0, 1),
+            (-2, -1),
+        )
+
+        M = trans_stack[0]
+        for T, P in zip(trans_stack[1:], prop_stack):
+            M = M @ P @ T
 
         return M
+
+    def refl_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+        M = self.transfer_matrix(
+            theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
+        )
+        return M[..., 1, 0] / M[..., 0, 0]
+
+    def trans_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+        M = self.transfer_matrix(
+            theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
+        )
+        return 1 / M[..., 0, 0]
 
     def _check_layers_valid(self):
         if (self.t_stack is not None) and (self.eps_stack is not None):
@@ -211,10 +287,10 @@ class Sample:
                 )
 
 
-def bulk_sample(eps_sub=None, beta=None, eps_env=1 + 0j):
+def bulk_sample(eps_sub=None, beta=None, eps_env=1 + 0j, **kwargs):
     eps_stack = None if eps_sub is None else (eps_env, eps_sub)
     beta_stack = None if beta is None else (beta,)
-    return Sample(eps_stack=eps_stack, beta_stack=beta_stack, eps_env=eps_env)
+    return Sample(eps_stack=eps_stack, beta_stack=beta_stack, eps_env=eps_env, **kwargs)
 
 
 def refl_coef_qs_single(eps_i, eps_j):
@@ -240,7 +316,7 @@ def refl_coef_qs_single(eps_i, eps_j):
     --------
     refl_coef_qs_ml :
         Momentum-dependent reflection coefficient for multilayer samples.
-    dielec_fn :
+    permitivitty :
         The inverse of this function.
 
     Examples

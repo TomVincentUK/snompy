@@ -56,9 +56,9 @@ switched between the two models using the tabs on this page.
    :class: dropdown
 
    It might seem like there are lots of steps, but don't worry!
-   The final section of this page, `Putting it all together`_, will
-   introduce the function :func:`pysnom.demodulate.demod`, which
-   automatically takes care of all the tricky details for you.
+   The final section of this page will introduce the function
+   :func:`pysnom.demodulate.demod`, which automatically takes care of all
+   the tricky details for you.
 
    In fact, as it's such in integral part of simulating SNOM experiments,
    ``pysnom`` provides functions with built-in demodulation for directly

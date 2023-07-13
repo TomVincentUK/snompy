@@ -97,3 +97,4 @@ intersphinx_mapping = {
 plot_html_show_formats = False
 plot_html_show_source_link = False
 numpydoc_use_plots = True
+numpydoc_class_members_toctree = False

@@ -6,8 +6,6 @@ microscopy measurements.
 
 Tasks / issues
 --------------
-* Sample object:
-  * Add far-field Fresnel reflection coefficient calculation
 * FDM:
   * Reorganise functions
   * Bulk:
@@ -28,7 +26,6 @@ Tasks / issues
 * Finish/rewrite narrative documentation:
   * Go through all examples and update them to use the new API
   * Go through all symbols and make sure they match API (including in diagrams)
-  * Add far-field factor into PMMA example
   * Add captions and alt text to all docs figures
   * Remove pointless PDM/FDM switch
   * Check where you can remove your working (leave details in API rather than guide)
