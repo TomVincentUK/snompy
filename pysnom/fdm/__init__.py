@@ -26,7 +26,7 @@ Taylor series representation
     :nosignatures:
     :toctree: generated/
 
-    bulk.refl_coef_qs_from_eff_pol_n
+    bulk.refl_coef_qs
     bulk.eff_pol_n_taylor
     bulk.taylor_coef
     bulk.geom_func_taylor

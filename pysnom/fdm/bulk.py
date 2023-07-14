@@ -1,17 +1,12 @@
 import numpy as np
 from numpy.polynomial import Polynomial
 
-from .._utils import _pad_for_broadcasting, defaults
+from .. import defaults
+from .._utils import _pad_for_broadcasting
 from ..demodulate import demod
 
 
-def geom_func(
-    z_tip,
-    d_Q,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
-):
+def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
     r"""Return a complex number that encapsulates various geometric
     properties of the tip-sample system for bulk finite dipole model.
 
@@ -76,15 +71,7 @@ def geom_func(
     )
 
 
-def eff_pol(
-    z_tip,
-    sample,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
-    d_Q0=None,
-    d_Q1=defaults["d_Q1"],
-):
+def eff_pol(z_tip, sample, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q1=None):
     r"""Return the effective probe-sample polarizability using the bulk
     finite dipole model.
 
@@ -152,10 +139,15 @@ def eff_pol(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    beta = sample.refl_coef_qs()
-
+    # Set defaults
+    r_tip = defaults.r_tip if r_tip is None else r_tip
+    L_tip = defaults.L_tip if L_tip is None else L_tip
+    g_factor = defaults.g_factor if g_factor is None else g_factor
     if d_Q0 is None:
         d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
+    d_Q1 = defaults.d_Q1 if d_Q1 is None else d_Q1
+
+    beta = sample.refl_coef_qs()
 
     f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
     f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
@@ -168,12 +160,12 @@ def eff_pol_n(
     A_tip,
     n,
     sample,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
     d_Q0=None,
-    d_Q1=defaults["d_Q1"],
-    n_trapz=defaults["n_trapz"],
+    d_Q1=None,
+    n_trapz=None,
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk finite dipole model.
@@ -257,15 +249,7 @@ def eff_pol_n(
     return alpha_eff
 
 
-def geom_func_taylor(
-    z_tip,
-    j_taylor,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
-    d_Q0=None,
-    d_Q1=defaults["d_Q1"],
-):
+def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
     r"""The height-dependent part of the separable Taylor series expression
     for the bulk FDM.
 
@@ -329,9 +313,6 @@ def geom_func_taylor(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-
     f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
     f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
     return f_0 * f_1 ** (j_taylor - 1)
@@ -342,12 +323,12 @@ def taylor_coef(
     j_taylor,
     A_tip,
     n,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
     d_Q0=None,
-    d_Q1=defaults["d_Q1"],
-    n_trapz=defaults["n_trapz"],
+    d_Q1=None,
+    n_trapz=None,
 ):
     r"""Return the coefficient for the power of reflection coefficient used
     by the Taylor series representation of the bulk FDM.
@@ -409,6 +390,14 @@ def taylor_coef(
     :class:`numpy.polynomial.polynomial.Polynomial` requires the first index
     to be zero.
     """
+    # Set defaults
+    r_tip = defaults.r_tip if r_tip is None else r_tip
+    L_tip = defaults.L_tip if L_tip is None else L_tip
+    g_factor = defaults.g_factor if g_factor is None else g_factor
+    if d_Q0 is None:
+        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
+    d_Q1 = defaults.d_Q1 if d_Q1 is None else d_Q1
+
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
@@ -431,13 +420,13 @@ def eff_pol_n_taylor(
     A_tip,
     n,
     sample,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
     d_Q0=None,
-    d_Q1=defaults["d_Q1"],
-    n_trapz=defaults["n_trapz"],
-    n_tayl=defaults["n_tayl"],
+    d_Q1=None,
+    n_trapz=None,
+    n_tayl=None,
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using a Taylor series representation of the bulk FDM.
@@ -506,6 +495,9 @@ def eff_pol_n_taylor(
     `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
     here as :func:`taylor_coef`.
     """
+    # Set defaults
+    n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
+
     beta = sample.refl_coef_qs()
 
     j_taylor = _pad_for_broadcasting(
@@ -529,19 +521,19 @@ def eff_pol_n_taylor(
     return alpha_eff
 
 
-def refl_coef_qs_from_eff_pol_n(
+def refl_coef_qs(
     z_tip,
     A_tip,
     n,
     alpha_eff_n,
-    r_tip=defaults["r_tip"],
-    L_tip=defaults["L_tip"],
-    g_factor=defaults["g_factor"],
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
     d_Q0=None,
-    d_Q1=defaults["d_Q1"],
-    n_trapz=defaults["n_trapz"],
-    n_tayl=defaults["n_tayl"],
-    beta_threshold=defaults["beta_threshold"],
+    d_Q1=None,
+    n_trapz=None,
+    n_tayl=None,
+    beta_threshold=None,
 ):
     r"""Return the reflection coefficient corresponding to a particular
     effective polarizability, demodulated at higher harmonics, using a
@@ -614,8 +606,11 @@ def refl_coef_qs_from_eff_pol_n(
     whose length is the maximum number of solutions returned for all input
     values. Values which are invalid are masked.
     """
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
+    # Set defaults
+    n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
+    beta_threshold = (
+        defaults.beta_threshold if beta_threshold is None else beta_threshold
+    )
 
     j_taylor = _pad_for_broadcasting(
         np.arange(n_tayl),

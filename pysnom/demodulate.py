@@ -16,17 +16,11 @@ of arbitrary functions.
 
 import numpy as np
 
-from ._utils import _pad_for_broadcasting, defaults
+from . import defaults
+from ._utils import _pad_for_broadcasting
 
 
-def demod(
-    f_x,
-    x_0,
-    x_amplitude,
-    n,
-    f_args=(),
-    n_trapz=defaults["n_trapz"],
-):
+def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None):
     r"""Simulate a lock-in amplifier measurement by modulating the input of
     an arbitrary function then demodulating the output.
 
@@ -93,6 +87,8 @@ def demod(
     >>> demod(lambda x, y: x * y, x_0, x_amplitude, n, (y,)).shape
     (4, 3, 2, 1)
     """
+    n_trapz = defaults.n_trapz if n_trapz is None else n_trapz
+
     theta = _pad_for_broadcasting(
         np.linspace(-np.pi, np.pi, n_trapz + 1),
         (f_x(x_0 + 0 * x_amplitude, *f_args), n),

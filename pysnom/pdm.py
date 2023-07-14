@@ -21,11 +21,11 @@ Bulk point dipole model
 """
 import numpy as np
 
-from ._utils import defaults
+from . import defaults
 from .demodulate import demod
 
 
-def eff_pol(z_tip, sample, r_tip=defaults["r_tip"], eps_sphere=None, alpha_sphere=None):
+def eff_pol(z_tip, sample, r_tip=None, eps_sphere=None, alpha_sphere=None):
     r"""Return the effective probe-sample polarizability using the bulk
     point dipole model.
 
@@ -79,6 +79,8 @@ def eff_pol(z_tip, sample, r_tip=defaults["r_tip"], eps_sphere=None, alpha_spher
        p. 8550, 2007, doi: 10.1364/oe.15.008550.
 
     """
+    # Set defaults
+    r_tip = defaults.r_tip if r_tip is None else r_tip
     # alpha_sphere calculated from eps_sphere if not specified
     if eps_sphere is None:
         if alpha_sphere is None:
@@ -100,10 +102,10 @@ def eff_pol_n(
     A_tip,
     n,
     sample,
-    r_tip=defaults["r_tip"],
+    r_tip=None,
     eps_sphere=None,
     alpha_sphere=None,
-    n_trapz=defaults["n_trapz"],
+    n_trapz=None,
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk point dipole model.

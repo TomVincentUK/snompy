@@ -12,10 +12,10 @@ Tasks / issues
   * Multilayer:
     * Add Lars's version of the effective polarisability (perhaps via a flag in the existing function)
     * Add a Taylor series representation of Lars's version of effective polarisability
-    * Add in `refl_coef_qs_from_eff_pol` and `refl_coef_qs_from_eff_pol_n` functions
+    * Add in `refl_coef_qs_from_eff_pol` and `refl_coef_qs` functions
 * PDM:
   * Add a Taylor series representation of effective polarisability
-  * Add in `refl_coef_qs_from_eff_pol` and `refl_coef_qs_from_eff_pol_n` functions
+  * Add in `refl_coef_qs_from_eff_pol` and `refl_coef_qs` functions
 * Main documentation:
   * Finish rules for coding and docs style to development.
   * Add a wishlist to development (e.g. Lightning-rod model).

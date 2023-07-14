@@ -123,7 +123,7 @@ class TestEffPol:
         alpha_eff_n = model.eff_pol_n_taylor(
             sample=sample, **vector_AFM_params | vector_tapping_params
         )
-        beta_out = model.refl_coef_qs_from_eff_pol_n(
+        beta_out = model.refl_coef_qs(
             alpha_eff_n=alpha_eff_n, **vector_AFM_params | vector_tapping_params
         )
 
