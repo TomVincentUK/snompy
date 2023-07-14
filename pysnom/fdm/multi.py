@@ -1,8 +1,8 @@
 import numpy as np
 from numpy.polynomial.laguerre import laggauss
 
-from .. import defaults
-from .._utils import _fdm_defaults, _pad_for_broadcasting
+from .._defaults import defaults
+from .._utils import _pad_for_broadcasting
 from ..demodulate import demod
 
 
@@ -360,7 +360,7 @@ def eff_pol(
        doi: 10.1364/OE.20.013173.
     """
     # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1 = _fdm_defaults(
+    r_tip, L_tip, g_factor, d_Q0, d_Q1 = defaults._fdm_defaults(
         r_tip, L_tip, g_factor, d_Q0, d_Q1
     )
 

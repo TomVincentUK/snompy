@@ -16,7 +16,7 @@ of arbitrary functions.
 
 import numpy as np
 
-from . import defaults
+from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
 
 

@@ -21,7 +21,7 @@ Bulk point dipole model
 """
 import numpy as np
 
-from . import defaults
+from ._defaults import defaults
 from .demodulate import demod
 
 

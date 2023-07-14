@@ -20,7 +20,7 @@ import warnings
 
 import numpy as np
 
-from . import defaults
+from ._defaults import defaults
 
 
 class Sample:
