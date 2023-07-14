@@ -1,7 +1,6 @@
 pysnom
 ======
-A Python package for modelling contrast in scanning near-field optical
-microscopy measurements.
+A Python package for modelling contrast in scanning near-field optical microscopy measurements.
 
 .. toctree::
    :maxdepth: 1
@@ -23,9 +22,7 @@ microscopy measurements.
       User guide
       ^^^^^^^^^^
 
-      Start here for a friendly introduction to ``pysnom``, including
-      explanations of how the models work, and examples showing how to
-      use them.
+      Start here for a friendly introduction to ``pysnom``, including explanations of how the models work, and examples showing how to use them.
 
     .. grid-item-card::
       :img-top: _static/api_image.svg
@@ -48,8 +45,7 @@ microscopy measurements.
 
       Is something missing?
       Have you spotted a bug?
-      Click here for details on how to raise feature requests, or
-      contribute to ``pysnom``.
+      Click here for details on how to raise feature requests, or contribute to ``pysnom``.
 
 
     .. grid-item-card::
@@ -66,10 +62,8 @@ microscopy measurements.
 
 Cite us
 -------
-When we release this package, we'll accompany it with a paper showcasing
-its use.
-I'll add a reference to that paper here and ask people to cite it if they
-use the code.
+When we release this package, we'll accompany it with a paper showcasing its use.
+I'll add a reference to that paper here and ask people to cite it if they use the code.
 
 Acknowledgements
 ----------------
