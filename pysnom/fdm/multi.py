@@ -1,3 +1,24 @@
+"""
+Multilayer finite dipole model (:mod:`pysnom.fdm.multi`)
+========================================================
+
+.. currentmodule:: pysnom.fdm.multi
+
+This module provides functions for simulating the results of scanning
+near-field optical microscopy experiments (SNOM) using the multilayer
+finite dipole model (FDM).
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    eff_pol_n
+    eff_pol
+    geom_func
+    eff_pos_and_charge
+    phi_E_0
+
+"""
 import numpy as np
 from numpy.polynomial.laguerre import laggauss
 
@@ -82,7 +103,7 @@ def phi_E_0(z_Q, sample, n_lag=None):
     ----------
     z_Q : float
         Height of the charge above the sample.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     n_lag : int
@@ -215,7 +236,7 @@ def eff_pos_and_charge(z_Q, sample, n_lag=None):
     ----------
     z_Q : float
         Height of the charge above the sample.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     n_lag : int
@@ -295,7 +316,7 @@ def eff_pol(
     ----------
     z_tip : float
         Height of the tip above the sample.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     d_Q0 : float
@@ -400,7 +421,7 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     r_tip : float

@@ -110,7 +110,7 @@ In ``pysnom``, equation :eq:`beta` is provided by the function
 :func:`pysnom.sample.Sample.refl_coef_qs`.
 
 The charge :math:`Q'_0` acts back on the tip and induces a further
-polarisation, which we can model as another point charge :math:`Q_1`, at a
+polarization, which we can model as another point charge :math:`Q_1`, at a
 distance :math:`d_{Q1} \approx r_{tip} / 2` away from the end of the tip.
 
 .. hint::
@@ -118,7 +118,7 @@ distance :math:`d_{Q1} \approx r_{tip} / 2` away from the end of the tip.
 
    Modelling the response of the tip to :math:`Q'_0` as a single point
    charge is just an approximation.
-   In reality, the polarisation induced in the tip has a complicated charge
+   In reality, the polarization induced in the tip has a complicated charge
    distribution which is quite tricky to calculate [1]_.
    But replacing that distribution with a single, representative point
    charge allows us to solve the electrostatic equations, and gives a model
@@ -134,7 +134,7 @@ counter charge :math:`-Q_1`, which is situated in the centre of the
 ellipsoid.
 
 The value of :math:`Q_1` can be solved for by accounting for contributions
-to the overall polarisation from :math:`Q_0` and also from :math:`Q_1`
+to the overall polarization from :math:`Q_0` and also from :math:`Q_1`
 itself [2]_, as
 
 .. math::

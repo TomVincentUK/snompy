@@ -27,12 +27,16 @@ html_theme_options = {
     "github_url": "https://github.com/TomVincentUK/pysnom",
     "secondary_sidebar_items": ["page-toc"],
     "navbar_end": ["navbar-icon-links"],
-    "footer_items": ["copyright"],
+    "footer_start": ["copyright"],
+    "footer_end": [],
     "logo": {
         "image_light": "pysnom_logo.svg",
         "image_dark": "pysnom_logo.svg",
     },  # Not sure why this is needed, but it errors without
 }
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ["_templates"]
 
 html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
@@ -42,7 +46,12 @@ html_context = {"default_mode": "light"}
 html_sidebars = {"guide/index": []}
 
 autosummary_generate = True
+autosummary_imported_members = True
+# numpydoc_show_class_members = False
+# numpydoc_class_members_toctree = False
+
 add_function_parentheses = True
+numpydoc_use_plots = True
 
 plot_pre_code = """
 import numpy as np
@@ -96,5 +105,3 @@ intersphinx_mapping = {
 
 plot_html_show_formats = False
 plot_html_show_source_link = False
-numpydoc_use_plots = True
-numpydoc_class_members_toctree = False

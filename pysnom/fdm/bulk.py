@@ -1,3 +1,37 @@
+"""
+Bulk finite dipole model (:mod:`pysnom.fdm.bulk`)
+=================================================
+
+.. currentmodule:: pysnom.fdm.bulk
+
+This module provides functions for simulating the results of scanning
+near-field optical microscopy experiments (SNOM) using the bulk finite
+dipole model (FDM).
+
+Standard functions
+^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    eff_pol_n
+    eff_pol
+    geom_func
+
+Taylor series representation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    refl_coef_qs
+    eff_pol_n_taylor
+    taylor_coef
+    geom_func_taylor
+
+"""
 import numpy as np
 from numpy.polynomial import Polynomial
 
@@ -79,7 +113,7 @@ def eff_pol(z_tip, sample, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q
     ----------
     z_tip : float
         Height of the tip above the sample.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.
@@ -176,7 +210,7 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.
@@ -409,6 +443,11 @@ def eff_pol_n_taylor(
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using a Taylor series representation of the bulk FDM.
 
+    .. note::
+        This function primarily exists to check the validity of the Taylor
+        approximation to `eff_pol_n` which is used by other functions. For
+        best performance it is recommended to use `eff_pol_n`.
+
     Parameters
     ----------
     z_tip : float
@@ -418,7 +457,7 @@ def eff_pol_n_taylor(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.

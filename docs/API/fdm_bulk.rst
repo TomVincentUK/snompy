@@ -1,0 +1,1 @@
+.. automodule:: pysnom.fdm.bulk

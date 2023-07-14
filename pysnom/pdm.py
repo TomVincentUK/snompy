@@ -5,11 +5,8 @@ Point dipole model (:mod:`pysnom.pdm`)
 .. currentmodule:: pysnom.pdm
 
 This module provides functions for simulating the results of scanning
-near-field optical microscopy experiments (SNOM) using the point dipole
-model (PDM).
-
-Bulk point dipole model
-------------------------
+near-field optical microscopy experiments (SNOM) using the bulk point
+dipole model (PDM).
 
 .. autosummary::
     :nosignatures:
@@ -33,7 +30,7 @@ def eff_pol(z_tip, sample, r_tip=None, eps_sphere=None, alpha_sphere=None):
     ----------
     z_tip : float
         Height of the tip above the sample.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.
@@ -119,7 +116,7 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : `~pysnom.sample.Sample`
+    sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.

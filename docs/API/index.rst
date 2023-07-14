@@ -10,3 +10,4 @@ API reference
    pdm
    demodulate
    sample
+   defaults

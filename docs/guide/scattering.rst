@@ -39,7 +39,7 @@ light to the incident light as
    \sigma_{scat} = \frac{E_{scat}}{E_{in}}.
 
 When the incident light falls on the tip and sample, the electric field
-induces a polarisation of the charges inside them, and a consequent dipole
+induces a polarization of the charges inside them, and a consequent dipole
 moment.
 The electric fields induced in the tip and sample interact, so the tip and
 sample couple together to produce a combined response to the external

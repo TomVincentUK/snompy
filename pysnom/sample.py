@@ -8,11 +8,19 @@ This module provides a class to represent layered and bulk samples within
 ``pysnom``, and functions for converting between reflection coefficients
 and permitivitties.
 
+Classes
+-------
+.. autosummary::
+    :toctree: generated/
+
+    Sample
+
+Functions
+---------
 .. autosummary::
     :nosignatures:
     :toctree: generated/
 
-    Sample
     refl_coef_qs_single
     permitivitty
 """
@@ -49,10 +57,10 @@ class Sample:
         interfaces in the stack. A zero-size array can be used for the case
         of a bulk sample with a single interface.
     eps_env : array_like
-        Dielectric function of the enviroment (equivalent to
+        Dielectric function of the environment (equivalent to
         `eps_stack[0]`). This is used to calculate `eps_stack` from
         `beta_stack` if needed.
-    k_vac : array_like
+    k_vac : float
         Vacuuum wavenumber of incident light in inverse meters. Used to
         calculate far-field reflection coefficients via the transfer matrix
         method. Should be broadcastable with all `eps_stack[i, ...]`.
@@ -69,12 +77,13 @@ class Sample:
     t_stack :
         Thicknesses of each finite-thickness layer sandwiched between the
         interfaces in the stack.
-    multilayer:
+    multilayer :
         True if sample has one or more finite-thickness layer sandwiched
         between the interfaces in the stack, False for bulk samples.
     eps_env : array_like
         Dielectric function of the enviroment (equivalent to
         `eps_stack[0]`).
+
     """
 
     def __init__(
@@ -176,7 +185,7 @@ class Sample:
         Returns
         -------
         beta_total : complex
-            Quasistatic  reflection coefficient of the sample.
+            Quasistatic reflection coefficient of the sample.
         """
         beta_total = self.beta_stack[0] * np.ones_like(q)
         for i in range(self.t_stack.shape[0]):
@@ -187,7 +196,35 @@ class Sample:
         return beta_total
 
     def transfer_matrix(self, theta_in=None, q=None, k_vac=None, polarization="p"):
-        # Default to self.k_vac if k_vac is None.
+        """Return the transfer matrix for the sample for incident light
+        with a given wavenumber, in-plane momentum and polarization.
+
+        Parameters
+        ----------
+        theta_in : float
+            Angle of the incident light to the surface normal in radians.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
+            `theta_in` must be None.
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+        k_vac : float
+            Vacuuum wavenumber of incident light in inverse meters. Used to
+            calculate far-field reflection coefficients via the transfer
+            matrix method. Should be broadcastable with all
+            `eps_stack[i, ...]`.
+        polarization: {"p", "s"}
+            The polarisation of the incident light. "p" for parallel to the
+            plane of incidence, and "s" for perpendicular (from the German
+            word *senkrecht*).
+
+        Returns
+        -------
+        M : complex
+            The transfer matrix of the sample.
+        """
         if k_vac is None:
             if self.k_vac is None:
                 raise ValueError("`k_vac` must not be None.")
@@ -211,7 +248,7 @@ class Sample:
         # Wavevector in each layer
         k_z_medium = np.sqrt(self.eps_stack * k_vac**2 - q**2)
 
-        # Transmission matrix depends on polarisation
+        # Transmission matrix depends on polarization
         if polarization == "p":
             trans_factor = np.stack(
                 [
@@ -263,12 +300,70 @@ class Sample:
         return M
 
     def refl_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+        """Return the momentum-dependent Fresnel reflection coefficient
+        for the sample, using the transfer matrix method.
+
+        Parameters
+        ----------
+        theta_in : float
+            Angle of the incident light to the surface normal in radians.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
+            `theta_in` must be None.
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+        k_vac : float
+            Vacuuum wavenumber of incident light in inverse meters. Used to
+            calculate far-field reflection coefficients via the transfer
+            matrix method. Should be broadcastable with all
+            `eps_stack[i, ...]`.
+        polarization: {"p", "s"}
+            The polarisation of the incident light. "p" for parallel to the
+            plane of incidence, and "s" for perpendicular (from the German
+            word *senkrecht*).
+
+        Returns
+        -------
+        r : complex
+            Fresnel reflection coefficient of the sample.
+        """
         M = self.transfer_matrix(
             theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
         )
         return M[..., 1, 0] / M[..., 0, 0]
 
     def trans_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+        """Return the momentum-dependent Fresnel transmission coefficient
+        for the sample, using the transfer matrix method.
+
+        Parameters
+        ----------
+        theta_in : float
+            Angle of the incident light to the surface normal in radians.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
+            `theta_in` must be None.
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+        k_vac : float
+            Vacuuum wavenumber of incident light in inverse meters. Used to
+            calculate far-field reflection coefficients via the transfer
+            matrix method. Should be broadcastable with all
+            `eps_stack[i, ...]`.
+        polarization: {"p", "s"}
+            The polarisation of the incident light. "p" for parallel to the
+            plane of incidence, and "s" for perpendicular (from the German
+            word *senkrecht*).
+
+        Returns
+        -------
+        t : complex
+            Fresnel transmission coefficient of the sample.
+        """
         M = self.transfer_matrix(
             theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
         )
@@ -360,7 +455,7 @@ def permitivitty(beta, eps_i=1 + 0j):
     beta : complex
         Quasistatic  reflection coefficient of the sample.
     eps_i : complex, default 1.0
-        Dielectric function of material i.
+        Dielectric function of material i (the preceeding material).
 
     Returns
     -------
