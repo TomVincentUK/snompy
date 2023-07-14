@@ -2,7 +2,7 @@ import numpy as np
 from numpy.polynomial.laguerre import laggauss
 
 from .. import defaults
-from .._utils import _pad_for_broadcasting
+from .._utils import _fdm_defaults, _pad_for_broadcasting
 from ..demodulate import demod
 
 
@@ -360,12 +360,9 @@ def eff_pol(
        doi: 10.1364/OE.20.013173.
     """
     # Set defaults
-    r_tip = defaults.r_tip if r_tip is None else r_tip
-    L_tip = defaults.L_tip if L_tip is None else L_tip
-    g_factor = defaults.g_factor if g_factor is None else g_factor
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-    d_Q1 = defaults.d_Q1 if d_Q1 is None else d_Q1
+    r_tip, L_tip, g_factor, d_Q0, d_Q1 = _fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    )
 
     z_q_0 = z_tip + r_tip * d_Q0
     z_im_0, beta_im_0 = eff_pos_and_charge(z_q_0, sample, n_lag)

@@ -32,18 +32,12 @@ fig, axes = plt.subplots(nrows=2, sharex=True)
 for ax, component in zip(axes, (np.real, np.imag)):
     ax.plot(theta, component(alpha_eff), label=r"$\alpha_{eff}(\theta)$")
     ax.plot(
-        theta,
-        component(envelope),
-        c="k",
-        ls="--",
-        label=r"$e^{" f"{n}" r"i \theta}$",
+        theta, component(envelope), c="k", ls="--", label=r"$e^{" f"{n}" r"i \theta}$"
     )
     ax.fill_between(theta, 0, component(integrand), alpha=0.3, label="integrand")
 axes[0].set(ylabel=r"$\Re(\alpha_{eff})$")
 axes[-1].set(
-    xlabel=r"$\theta$",
-    ylabel=r"$\Im(\alpha_{eff})$",
-    xlim=(theta.min(), theta.max()),
+    xlabel=r"$\theta$", ylabel=r"$\Im(\alpha_{eff})$", xlim=(theta.min(), theta.max())
 )
 axes[0].legend()
 axes[0].set_title(  # Print integration result as title

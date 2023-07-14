@@ -20,6 +20,8 @@ import warnings
 
 import numpy as np
 
+from . import defaults
+
 
 class Sample:
     r"""A class representing a layered sample with a semi-infinite
@@ -76,7 +78,7 @@ class Sample:
     """
 
     def __init__(
-        self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=1 + 0j, k_vac=None
+        self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=None, k_vac=None
     ):
         # Check input validity
         if (eps_stack is None) == (beta_stack is None):
@@ -92,7 +94,7 @@ class Sample:
         # Initialise internal variables
         self._t_stack = None
         self._eps_stack = None
-        self._eps_env = eps_env
+        self._eps_env = defaults.eps_env if eps_env is None else eps_env
 
         # Initialise public variables
         self.t_stack = t_stack
@@ -287,7 +289,8 @@ class Sample:
                 )
 
 
-def bulk_sample(eps_sub=None, beta=None, eps_env=1 + 0j, **kwargs):
+def bulk_sample(eps_sub=None, beta=None, eps_env=None, **kwargs):
+    eps_env = defaults.eps_env if eps_env is None else eps_env
     eps_stack = None if eps_sub is None else (eps_env, eps_sub)
     beta_stack = None if beta is None else (beta,)
     return Sample(eps_stack=eps_stack, beta_stack=beta_stack, eps_env=eps_env, **kwargs)

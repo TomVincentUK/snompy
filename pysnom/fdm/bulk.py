@@ -2,7 +2,7 @@ import numpy as np
 from numpy.polynomial import Polynomial
 
 from .. import defaults
-from .._utils import _pad_for_broadcasting
+from .._utils import _fdm_defaults, _pad_for_broadcasting
 from ..demodulate import demod
 
 
@@ -140,12 +140,9 @@ def eff_pol(z_tip, sample, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q
        doi: 10.1364/OE.20.013173.
     """
     # Set defaults
-    r_tip = defaults.r_tip if r_tip is None else r_tip
-    L_tip = defaults.L_tip if L_tip is None else L_tip
-    g_factor = defaults.g_factor if g_factor is None else g_factor
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-    d_Q1 = defaults.d_Q1 if d_Q1 is None else d_Q1
+    r_tip, L_tip, g_factor, d_Q0, d_Q1 = _fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    )
 
     beta = sample.refl_coef_qs()
 
@@ -318,18 +315,7 @@ def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
     return f_0 * f_1 ** (j_taylor - 1)
 
 
-def taylor_coef(
-    z_tip,
-    j_taylor,
-    A_tip,
-    n,
-    r_tip=None,
-    L_tip=None,
-    g_factor=None,
-    d_Q0=None,
-    d_Q1=None,
-    n_trapz=None,
-):
+def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_trapz):
     r"""Return the coefficient for the power of reflection coefficient used
     by the Taylor series representation of the bulk FDM.
 
@@ -390,14 +376,6 @@ def taylor_coef(
     :class:`numpy.polynomial.polynomial.Polynomial` requires the first index
     to be zero.
     """
-    # Set defaults
-    r_tip = defaults.r_tip if r_tip is None else r_tip
-    L_tip = defaults.L_tip if L_tip is None else L_tip
-    g_factor = defaults.g_factor if g_factor is None else g_factor
-    if d_Q0 is None:
-        d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
-    d_Q1 = defaults.d_Q1 if d_Q1 is None else d_Q1
-
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
@@ -496,6 +474,9 @@ def eff_pol_n_taylor(
     here as :func:`taylor_coef`.
     """
     # Set defaults
+    r_tip, L_tip, g_factor, d_Q0, d_Q1 = _fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
 
     beta = sample.refl_coef_qs()
@@ -505,16 +486,7 @@ def eff_pol_n_taylor(
     )
 
     coefs = taylor_coef(
-        z_tip,
-        j_taylor,
-        A_tip,
-        n,
-        r_tip,
-        L_tip,
-        g_factor,
-        d_Q0,
-        d_Q1,
-        n_trapz,
+        z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_trapz
     )
     delta = np.where(n == 0, 1, 0)
     alpha_eff = np.sum(coefs * beta**j_taylor, axis=0) + delta
@@ -607,6 +579,9 @@ def refl_coef_qs(
     values. Values which are invalid are masked.
     """
     # Set defaults
+    r_tip, L_tip, g_factor, d_Q0, d_Q1 = _fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
     beta_threshold = (
         defaults.beta_threshold if beta_threshold is None else beta_threshold

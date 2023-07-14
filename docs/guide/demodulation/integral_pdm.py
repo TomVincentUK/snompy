@@ -38,11 +38,7 @@ for ax, twin, component in zip(axes, twins, (np.real, np.imag)):
 
     # Twin plots
     (env,) = twin.plot(
-        theta,
-        component(envelope),
-        c="k",
-        ls="--",
-        label=r"$e^{" f"{n}" r"i \theta}$",
+        theta, component(envelope), c="k", ls="--", label=r"$e^{" f"{n}" r"i \theta}$"
     )
     for side, visible in zip(
         ("top", "right", "bottom", "left"), (False, True, False, False)
@@ -50,9 +46,7 @@ for ax, twin, component in zip(axes, twins, (np.real, np.imag)):
         twin.spines[side].set_visible(visible)
 axes[0].set(ylabel=r"$\Re(\alpha_{eff})$")
 axes[-1].set(
-    xlabel=r"$\theta$",
-    ylabel=r"$\Im(\alpha_{eff})$",
-    xlim=(theta.min(), theta.max()),
+    xlabel=r"$\theta$", ylabel=r"$\Im(\alpha_{eff})$", xlim=(theta.min(), theta.max())
 )
 axes[0].legend(handles=(f, env, filled))
 axes[0].set_title(  # Print integration result as title

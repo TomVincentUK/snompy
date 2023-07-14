@@ -7,10 +7,7 @@ import pysnom
 class TestSample:
     # Error messages
     eps_beta_input_error = r" ".join(
-        [
-            r"Either `eps_stack` or `beta_stack` must be specified,",
-            r"\(but not both\).",
-        ]
+        [r"Either `eps_stack` or `beta_stack` must be specified,", r"\(but not both\)."]
     )
 
     eps_beta_t_incompatible_error = " ".join(
@@ -102,11 +99,7 @@ class TestSample:
 
         beta_in = 0.5 + 0.5j
         beta_out = pysnom.sample.refl_coef_qs_single(
-            eps_j=pysnom.sample.permitivitty(
-                beta_in,
-                eps_i=eps_i,
-            ),
-            eps_i=eps_i,
+            eps_j=pysnom.sample.permitivitty(beta_in, eps_i=eps_i), eps_i=eps_i
         )
         np.testing.assert_allclose(beta_in, beta_out)
 

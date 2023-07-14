@@ -9,10 +9,7 @@ class TestDemod:
             return np.ones_like(x)
 
         result = pysnom.demodulate.demod(
-            f_x=constant_function,
-            x_0=0,
-            x_amplitude=1,
-            n=np.arange(3),
+            f_x=constant_function, x_0=0, x_amplitude=1, n=np.arange(3)
         )
         np.testing.assert_almost_equal(result, np.array([1, 0, 0]))
 

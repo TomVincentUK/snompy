@@ -48,8 +48,7 @@ axes[0].plot(t_us, alpha_eff.real, c="k", label="total signal")
 # Plot waves
 cmap = plt.cm.Spectral
 sm = plt.cm.ScalarMappable(
-    cmap=cmap,
-    norm=BoundaryNorm(boundaries=np.arange(n_max + 2) - 0.5, ncolors=cmap.N),
+    cmap=cmap, norm=BoundaryNorm(boundaries=np.arange(n_max + 2) - 0.5, ncolors=cmap.N)
 )
 axes[0].plot(t_us, waves[0].real, ls="--", c=sm.to_rgba(0), label="components")
 for i, wave in enumerate(waves[1:]):
