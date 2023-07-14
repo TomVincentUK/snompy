@@ -11,6 +11,7 @@ and permitivitties.
 Classes
 -------
 .. autosummary::
+    :nosignatures:
     :toctree: generated/
 
     Sample
