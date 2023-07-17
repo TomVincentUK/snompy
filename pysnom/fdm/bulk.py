@@ -282,7 +282,7 @@ def eff_pol_n(
 
 def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
     r"""The height-dependent part of the separable Taylor series expression
-    for the bulk FDM.
+    for the FDM.
 
     Parameters
     ----------
@@ -328,7 +328,9 @@ def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
 
     .. math::
 
-        f_{t} = f_{geom}(z_{tip}, d_Q0, r_{tip}, L_{tip}, g) f_{geom}(z_{tip}, d_Q1, r_{tip}, L_{tip}, g)^{j-1}
+        f_{t} =
+        f_{geom}(z_{tip}, d_Q0, r_{tip}, L_{tip}, g)
+        f_{geom}(z_{tip}, d_Q1, r_{tip}, L_{tip}, g)^{j-1}
 
     where :math:`f_{t}` is `f_t`, :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is
     `L_tip`, :math:`g` is `g_factor`, :math:`j` is `j_taylor`,

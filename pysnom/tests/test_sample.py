@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from scipy.integrate import quad_vec
 
 import pysnom
 
@@ -35,6 +36,8 @@ class TestSample:
         (None, [[1 / 2, 1 / 3]], []),
         (None, [[1 / 2, 1 / 2], [1 / 3, 1 / 4]], [10e-9]),
     )
+
+    z_Q = 60e-9
 
     # Input tests
     def test_error_when_no_eps_or_beta(self):
@@ -119,3 +122,31 @@ class TestSample:
         beta = scalar_sample_bulk.refl_coef_qs(q)
         print(beta - beta.mean())
         np.testing.assert_array_almost_equal(beta - beta.mean(), 0)
+
+    def test_surf_pot_and_field_integrals(self, vector_sample_multi):
+        phi, E = vector_sample_multi.surf_pot_and_field(self.z_Q)
+
+        phi_scipy, _ = quad_vec(
+            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q)) * np.exp(-x),
+            0,
+            np.inf,
+        )
+        phi_scipy /= 2 * self.z_Q
+        np.testing.assert_allclose(phi, phi_scipy)
+
+        E_scipy, _ = quad_vec(
+            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+            * x
+            * np.exp(-x),
+            0,
+            np.inf,
+        )
+        E_scipy /= 4 * self.z_Q**2
+        np.testing.assert_allclose(E, E_scipy)
+
+    def test_image_depth_and_charge_broadcasting(self, vector_sample_multi):
+        target_shape = (
+            self.z_Q * vector_sample_multi.eps_stack[0] * vector_sample_multi.t_stack[0]
+        ).shape
+        z_image, beta_image = vector_sample_multi.image_depth_and_charge(self.z_Q)
+        assert z_image.shape == beta_image.shape == target_shape
