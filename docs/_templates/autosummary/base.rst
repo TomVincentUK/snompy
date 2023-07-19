@@ -11,7 +11,3 @@ property
 {% endif %}
 
 .. auto{{ objtype }}:: {{ fullname | replace("pysnom.", "pysnom::") }}
-
-{# In the fullname (e.g. `numpy.ma.MaskedArray.methodname`), the module name
-is ambiguous. Using a `::` separator (e.g. `numpy::ma.MaskedArray.methodname`)
-specifies `numpy` as the module name. #}

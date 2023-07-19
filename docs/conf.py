@@ -48,7 +48,7 @@ html_sidebars = {"guide/index": []}
 autosummary_generate = True
 autosummary_imported_members = True
 # numpydoc_show_class_members = False
-# numpydoc_class_members_toctree = False
+numpydoc_class_members_toctree = False
 
 add_function_parentheses = True
 numpydoc_use_plots = True

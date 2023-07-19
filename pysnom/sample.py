@@ -11,6 +11,7 @@ and permitivitties.
 Classes
 -------
 .. autosummary::
+    :recursive:
     :nosignatures:
     :toctree: generated/
 
@@ -189,6 +190,7 @@ class Sample:
         -------
         beta_total : complex
             Quasistatic reflection coefficient of the sample.
+
         """
         beta_total = self.beta_stack[0] * np.ones_like(q)
         for i in range(self.t_stack.shape[0]):
@@ -227,6 +229,7 @@ class Sample:
         -------
         M : complex
             The transfer matrix of the sample.
+
         """
         if k_vac is None:
             if self.k_vac is None:
@@ -331,6 +334,7 @@ class Sample:
         -------
         r : complex
             Fresnel reflection coefficient of the sample.
+
         """
         M = self.transfer_matrix(
             theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
@@ -366,6 +370,7 @@ class Sample:
         -------
         t : complex
             Fresnel transmission coefficient of the sample.
+
         """
         M = self.transfer_matrix(
             theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
@@ -420,9 +425,19 @@ class Sample:
 
         .. math::
 
-            \overline{\beta} = \frac
+            \overline{\beta} =\frac
             {\int_0^\infty \beta(q) q e^{-2 z_Q q} dq}
             {\int_0^\infty q e^{-2 z_Q q} dq}
+
+        where :math:`\overline{\beta}` is the effective quasistatic
+        reflection coefficient for a charge at height :math:`z_Q`
+        (evaluated at the position of the charge itself), :math:`q` is the
+        electromagnetic wave momentum, and :math:`\beta(q)` is the
+        momentum-dependent effective reflection coefficient for the
+        surface  [1]_.
+
+        To do this, the denominator is first solved explicitly as
+        :math:`1 / (4 z_Q^2)`.
 
         The choice of :math:`N`, defined in this function as `n_lag`,
         will affect the accuracy of the approximation, with higher
@@ -437,13 +452,10 @@ class Sample:
         References
         ----------
         .. [1] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
-        R. Hillenbrand, “Subsurface chemical nanoidentification by
-        nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
-        Dec. 2020, doi: 10.1038/s41467-020-17034-6.
-        .. [2] S. Ehrich, “On stratified extensions of Gauss-Laguerre and
-        Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
-        140, no. 1-2, pp. 291-299, Mar. 2002,
-        doi: 10.1016/S0377-0427(01)00407-1.
+           R. Hillenbrand, “Subsurface chemical nanoidentification by
+           nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
+           Dec. 2020, doi: 10.1038/s41467-020-17034-6.
+
         """
         # Set defaults
         n_lag = defaults.n_lag if n_lag is None else n_lag
@@ -535,6 +547,7 @@ class Sample:
         polynomial
 
         .. math::
+
             L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
 
         and :math:`w_n` is a weight given by
@@ -570,13 +583,14 @@ class Sample:
         References
         ----------
         .. [1] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
-        R. Hillenbrand, “Subsurface chemical nanoidentification by
-        nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
-        Dec. 2020, doi: 10.1038/s41467-020-17034-6.
+           R. Hillenbrand, “Subsurface chemical nanoidentification by
+           nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
+           Dec. 2020, doi: 10.1038/s41467-020-17034-6.
         .. [2] S. Ehrich, “On stratified extensions of Gauss-Laguerre and
-        Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
-        140, no. 1-2, pp. 291-299, Mar. 2002,
-        doi: 10.1016/S0377-0427(01)00407-1.
+           Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
+           140, no. 1-2, pp. 291-299, Mar. 2002,
+           doi: 10.1016/S0377-0427(01)00407-1.
+
         """
         # Set defaults
         n_lag = defaults.n_lag if n_lag is None else n_lag
@@ -653,12 +667,13 @@ class Sample:
         References
         ----------
         .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner,
-        “Quasi-analytical model for scattering infrared near-field
-        microscopy on layered systems,” Opt. Express, vol. 20, no. 12,
-        p. 13173, Jun. 2012, doi: 10.1364/OE.20.013173.
+           “Quasi-analytical model for scattering infrared near-field
+           microscopy on layered systems,” Opt. Express, vol. 20, no. 12,
+           p. 13173, Jun. 2012, doi: 10.1364/OE.20.013173.
         .. [2] C. Lupo et al., “Quantitative infrared near-field imaging of
-        suspended topological insulator nanostructures,” pp. 1–23, Dec.
-        2021, [Online]. Available: http://arxiv.org/abs/2112.10104
+           suspended topological insulator nanostructures,” pp. 1-23, Dec.
+           2021, [Online]. Available: http://arxiv.org/abs/2112.10104
+
         """
         phi, E = self.surf_pot_and_field(z_Q, n_lag)
         d_image = np.abs(phi / E) - z_Q
@@ -718,6 +733,7 @@ def refl_coef_qs_single(eps_i, eps_j):
     >>> refl_coef_qs_single([1, 3], [[1], [3]])
     array([[ 0. , -0.5],
           [ 0.5,  0. ]])
+
     """
     eps_i = np.asarray(eps_i)
     eps_j = np.asarray(eps_j)
@@ -748,6 +764,7 @@ def permitivitty(beta, eps_i=1 + 0j):
     --------
     refl_coef_qs_single :
         The inverse of this function.
+
     """
     beta = np.asarray(beta)
     eps_i = np.asarray(eps_i)
