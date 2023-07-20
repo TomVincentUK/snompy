@@ -437,7 +437,41 @@ class Sample:
         surface  [1]_.
 
         To do this, the denominator is first solved explicitly as
-        :math:`1 / (4 z_Q^2)`.
+        :math:`1 / (4 z_Q^2)`. Then the substitution :math:`x = 2 z_Q q`,
+        is made to give
+
+        .. math::
+
+            \overline{\beta} =
+            \int_0^\infty \beta\left(\frac{x}{2 z_Q}\right) x e^{-x} dx.
+
+        It then uses the Gauss-Laguerre approximation [2]_
+
+        .. math::
+
+            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{n=1}^N w_n f(x_n),
+
+        where :math:`x_n` is the :math:`n^{th}` root of the Laguerre
+        polynomial
+
+        .. math::
+
+            L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
+
+        and :math:`w_n` is a weight given by
+
+        .. math::
+
+            w_n = \frac{x_n}{\left((N + 1) L_{N+1}(x_n) \right)^2}.
+
+        The integral can therefore be approximated by the sum
+
+        .. math::
+
+            \overline{\beta} \approx
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
+
+
 
         The choice of :math:`N`, defined in this function as `n_lag`,
         will affect the accuracy of the approximation, with higher
@@ -455,6 +489,10 @@ class Sample:
            R. Hillenbrand, “Subsurface chemical nanoidentification by
            nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
            Dec. 2020, doi: 10.1038/s41467-020-17034-6.
+        .. [2] S. Ehrich, “On stratified extensions of Gauss-Laguerre and
+           Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
+           140, no. 1-2, pp. 291-299, Mar. 2002,
+           doi: 10.1016/S0377-0427(01)00407-1.
 
         """
         # Set defaults
@@ -469,7 +507,7 @@ class Sample:
 
         beta_q = self.refl_coef_qs(q)
 
-        beta_eff = z_Q * np.sum(w_lag * x_lag * beta_q, axis=0)
+        beta_eff = np.sum(w_lag * x_lag * beta_q, axis=0)
 
         return beta_eff
 

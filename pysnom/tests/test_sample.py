@@ -144,6 +144,31 @@ class TestSample:
         E_scipy /= 4 * self.z_Q**2
         np.testing.assert_allclose(E, E_scipy)
 
+    def test_refl_coef_qs_above_surf_integral(self, vector_sample_multi):
+        numerator_longhand, _ = quad_vec(
+            lambda q: vector_sample_multi.refl_coef_qs(q)
+            * q
+            * np.exp(-2 * self.z_Q * q),
+            0,
+            np.inf,
+        )
+        denominator_longhand, _ = quad_vec(
+            lambda q: q * np.exp(-2 * self.z_Q * q), 0, np.inf
+        )
+        beta_eff_longhand = numerator_longhand / denominator_longhand
+
+        beta_eff_scipy, _ = quad_vec(
+            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+            * x
+            * np.exp(-x),
+            0,
+            np.inf,
+        )
+        np.testing.assert_allclose(beta_eff_scipy, beta_eff_longhand)
+
+        beta_eff = vector_sample_multi.refl_coef_qs_above_surf(self.z_Q)
+        np.testing.assert_allclose(beta_eff, beta_eff_scipy)
+
     def test_image_depth_and_charge_broadcasting(self, vector_sample_multi):
         target_shape = (
             self.z_Q * vector_sample_multi.eps_stack[0] * vector_sample_multi.t_stack[0]
