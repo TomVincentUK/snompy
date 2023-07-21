@@ -7,6 +7,6 @@ near-field optical microscopy experiments (SNOM) using the finite dipole
 model (FDM).
 
 """
-from . import bulk, multi
+from . import bulk, combo, multi
 
-__all__ = ["bulk", "multi"]
+__all__ = ["bulk", "multi", "combo"]

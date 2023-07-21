@@ -96,6 +96,7 @@ def eff_pol(
     g_factor=None,
     d_Q0=None,
     d_Q1=None,
+    d_Qa=None,
     n_lag=None,
 ):
     r"""Return the effective probe-sample polarizability using the
@@ -171,17 +172,17 @@ def eff_pol(
        doi: 10.1364/OE.20.013173.
     """
     # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1 = defaults._fdm_defaults(
-        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
     )
 
-    z_q_0 = z_tip + r_tip * d_Q0
-    z_im_0, beta_im_0 = sample.image_depth_and_charge(z_q_0, n_lag)
-    f_0 = geom_func(z_tip, z_im_0, r_tip, L_tip, g_factor)
+    z_Q0 = z_tip + r_tip * d_Q0
+    z_im0, beta_im_0 = sample.image_depth_and_charge(z_Q0, n_lag)
+    f_0 = geom_func(z_tip, z_im0, r_tip, L_tip, g_factor)
 
-    z_q_1 = z_tip + r_tip * d_Q1
-    z_im_1, beta_im_1 = sample.image_depth_and_charge(z_q_1, n_lag)
-    f_1 = geom_func(z_tip, z_im_1, r_tip, L_tip, g_factor)
+    z_Q1 = z_tip + r_tip * d_Q1
+    z_im1, beta_im_1 = sample.image_depth_and_charge(z_Q1, n_lag)
+    f_1 = geom_func(z_tip, z_im1, r_tip, L_tip, g_factor)
 
     return 1 + (beta_im_0 * f_0) / (2 * (1 - beta_im_1 * f_1))
 
@@ -196,6 +197,7 @@ def eff_pol_n(
     g_factor=None,
     d_Q0=None,
     d_Q1=None,
+    d_Qa=None,
     n_lag=None,
     n_trapz=None,
 ):

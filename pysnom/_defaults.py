@@ -43,6 +43,12 @@ class Defaults:
         Depth of an induced charge 1 within the tip. Specified in units
         of the tip radius.
 
+    d_Qa : float, default 1.4
+        Depth of a single representative charge within the tip. Specified
+        in units of the tip radius. Used by the Mester implementation of
+        the finite dipole model to calculate the effective quasistatic
+        reflection coefficient for the tip.
+
     Demodulation-related
     --------------------
     n_trapz : int, default 64
@@ -73,6 +79,7 @@ class Defaults:
         L_tip=300e-9,
         g_factor=0.7 * np.exp(0.06j),
         d_Q1=0.5,
+        d_Qa=1.4,
         n_trapz=64,
         n_lag=64,
         n_tayl=16,
@@ -88,6 +95,7 @@ class Defaults:
         # FDM-related properties
         self.g_factor = g_factor
         self.d_Q1 = d_Q1
+        self.d_Qa = d_Qa
 
         # Demodulation-related properties
         self.n_trapz = n_trapz
@@ -99,14 +107,15 @@ class Defaults:
         self.n_tayl = n_tayl
         self.beta_threshold = beta_threshold
 
-    def _fdm_defaults(self, r_tip, L_tip, g_factor, d_Q0, d_Q1):
+    def _fdm_defaults(self, r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa):
         r_tip = self.r_tip if r_tip is None else r_tip
         L_tip = self.L_tip if L_tip is None else L_tip
         g_factor = self.g_factor if g_factor is None else g_factor
         if d_Q0 is None:
             d_Q0 = 1.31 * L_tip / (L_tip + 2 * r_tip)
         d_Q1 = self.d_Q1 if d_Q1 is None else d_Q1
-        return r_tip, L_tip, g_factor, d_Q0, d_Q1
+        d_Qa = self.d_Qa if d_Qa is None else d_Qa
+        return r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
 
 
 defaults = Defaults()

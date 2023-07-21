@@ -105,7 +105,16 @@ def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
     )
 
 
-def eff_pol(z_tip, sample, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q1=None):
+def eff_pol(
+    z_tip,
+    sample,
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
+    d_Q0=None,
+    d_Q1=None,
+    d_Qa=None,
+):
     r"""Return the effective probe-sample polarizability using the bulk
     finite dipole model.
 
@@ -174,8 +183,8 @@ def eff_pol(z_tip, sample, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q
        doi: 10.1364/OE.20.013173.
     """
     # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1 = defaults._fdm_defaults(
-        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
     )
 
     beta = sample.refl_coef_qs()
@@ -196,6 +205,7 @@ def eff_pol_n(
     g_factor=None,
     d_Q0=None,
     d_Q1=None,
+    d_Qa=None,
     n_trapz=None,
 ):
     r"""Return the effective probe-sample polarizability, demodulated at
@@ -409,8 +419,8 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
 
     This function returns 0 when :math:`j = 0`, because the Taylor series
     representation of the bulk FDM begins at :math:`j = 1`, however
-    :class:`numpy.polynomial.polynomial.Polynomial` requires the first index
-    to be zero.
+    :class:`numpy.polynomial.polynomial.Polynomial` requires the first
+    index to be zero.
     """
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
@@ -426,7 +436,7 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
         )
         / 2
     )
-    return np.where(j_taylor == 0, 0, non_zero_terms)
+    return np.where(j_taylor == 0, np.where(n == 0, 1, 0), non_zero_terms)
 
 
 def eff_pol_n_taylor(
@@ -439,6 +449,7 @@ def eff_pol_n_taylor(
     g_factor=None,
     d_Q0=None,
     d_Q1=None,
+    d_Qa=None,
     n_trapz=None,
     n_tayl=None,
 ):
@@ -515,8 +526,8 @@ def eff_pol_n_taylor(
     here as :func:`taylor_coef`.
     """
     # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1 = defaults._fdm_defaults(
-        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
     )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
 
@@ -529,8 +540,7 @@ def eff_pol_n_taylor(
     coefs = taylor_coef(
         z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_trapz
     )
-    delta = np.where(n == 0, 1, 0)
-    alpha_eff = np.sum(coefs * beta**j_taylor, axis=0) + delta
+    alpha_eff = np.sum(coefs * beta**j_taylor, axis=0)
     return alpha_eff
 
 
@@ -544,6 +554,7 @@ def refl_coef_qs(
     g_factor=None,
     d_Q0=None,
     d_Q1=None,
+    d_Qa=None,
     n_trapz=None,
     n_tayl=None,
     beta_threshold=None,
@@ -620,8 +631,8 @@ def refl_coef_qs(
     values. Values which are invalid are masked.
     """
     # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1 = defaults._fdm_defaults(
-        r_tip, L_tip, g_factor, d_Q0, d_Q1
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
     )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
     beta_threshold = (
@@ -636,8 +647,7 @@ def refl_coef_qs(
         z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n_trapz
     )
 
-    delta = np.where(n == 0, 1, 0)
-    offset_coefs = np.where(j_taylor == 0, delta - alpha_eff_n, coefs)
+    offset_coefs = np.where(j_taylor == 0, coefs - alpha_eff_n, coefs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coefs)
 
     # Sort roots by abs value
