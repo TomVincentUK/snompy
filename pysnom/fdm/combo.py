@@ -41,7 +41,7 @@ def eff_pol(
         f_1 = geom_func_multi(z_tip, z_im1, r_tip, L_tip, g_factor)
     elif method == "Mester":
         z_Qa = z_tip + r_tip * d_Qa
-        beta_0 = beta_1 = sample.image_depth_and_charge(z_Qa, n_lag)
+        beta_0 = beta_1 = sample.refl_coef_qs_above_surf(z_Qa, n_lag)
 
         f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
         f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
