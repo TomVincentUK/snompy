@@ -47,14 +47,14 @@ eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)
 sample_Au = pysnom.sample.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=wavenumber)
 
 # Measurement
-alpha_eff_PMMA = pysnom.fdm.multi.eff_pol_n(
+alpha_eff_PMMA = pysnom.fdm.eff_pol_n(
     z_tip=z_tip, A_tip=A_tip, n=n, sample=sample_PMMA, r_tip=r_tip, L_tip=L_tip
 )
 r_PMMA = sample_PMMA.refl_coef(theta_in=theta_in)
 sigma_PMMA = (1 + c_r * r_PMMA) ** 2 * alpha_eff_PMMA
 
 # Gold reference
-alpha_eff_Au = pysnom.fdm.bulk.eff_pol_n(
+alpha_eff_Au = pysnom.fdm.eff_pol_n(
     z_tip=z_tip, A_tip=A_tip, n=n, sample=sample_Au, r_tip=r_tip, L_tip=L_tip
 )
 r_Au = sample_Au.refl_coef(theta_in=theta_in)

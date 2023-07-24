@@ -5,11 +5,13 @@ Finite dipole model (:mod:`pysnom.fdm`)
 .. currentmodule:: pysnom.fdm
 
 This module provides functions for simulating the results of scanning
-near-field optical microscopy (SNOM)experiments using the finite dipole
-model (FDM).
+near-field optical microscopy (SNOM) experiments by calculating the
+effective polarisability using the finite dipole model (FDM).
 
 Standard functions
 ^^^^^^^^^^^^^^^^^^
+Functions for the effective polarisability of an AFM tip coupled to a
+sample, and the effective polarisability demodulated at higher harmonics.
 
 .. autosummary::
     :nosignatures:
@@ -17,10 +19,11 @@ Standard functions
 
     eff_pol_n
     eff_pol
-    eff_pol_n_taylor
 
 Inverse function
 ^^^^^^^^^^^^^^^^
+Functions to return the quasistatic reflection coefficient of a sample
+based on the effective polarisability of an AFM tip coupled to the sample.
 
 .. autosummary::
     :nosignatures:
@@ -31,6 +34,8 @@ Inverse function
 
 Internal functions
 ^^^^^^^^^^^^^^^^^^
+These functions are used by the standard functions in this module. In
+most cases you shouldn't need to call these functions directly.
 
 .. autosummary::
     :nosignatures:
@@ -40,6 +45,7 @@ Internal functions
     geom_func_multi
     geom_func_taylor
     taylor_coef
+    eff_pol_n_taylor
 
 """
 
@@ -200,7 +206,8 @@ def eff_pol(
     See also
     --------
     eff_pol_n :
-        This function demodulated at harmonics of the tapping frequency.
+        This function demodulated at chosen harmonics of the tapping
+        frequency.
 
     Notes
     -----
@@ -216,8 +223,8 @@ def eff_pol(
     :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
     is `g_factor`.
 
-    The definitions of :math:`beta_i` and :math:`f_{geom, i}` depend on the
-    FDM method used, and are described below.
+    The definitions of :math:`\beta_i` and :math:`f_{geom, i}` depend on
+    the FDM method used, and are described below.
 
     Method "bulk" is the bulk Hauer method given in reference [1]_. Here,
     :math:`\beta_0 = \beta_1 = \beta`, the momentum independent quasistatic
@@ -228,9 +235,9 @@ def eff_pol(
     `d_Q0`, `d_Q1` for :math:`i = 0, 1`.
 
     Method "Hauer" is the multilayer Hauer method given in reference [1]_.
-    Here, :math:`beta_i`, is the relative charge of an image of charge
+    Here, :math:`\beta_i`, is the relative charge of an image of charge
     :math:`Q_i` below the sample at depth :math:`z_{Q'i}` below the
-    surface. :math:`beta_i` and :math:`d_{z'i}` are calculated from
+    surface. :math:`\beta_i` and :math:`d_{z'i}` are calculated from
     :func:`pysnom.sample.Sample.image_depth_and_charge`.
     :math:`f_{geom, i}` is given by :func:`geom_func_multi`, with arguments
     `(z_tip, z_im_i, r_tip, L_tip, g_factor)` where `z_im_i` is given by
@@ -456,7 +463,6 @@ def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
 
     See also
     --------
-    geom_func
     taylor_coef :
         Function that uses this to calculate the Taylor series coefficients
         for the bulk FDM.
@@ -525,7 +531,6 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
 
     See also
     --------
-    geom_func_taylor
     pysnom.demodulate.demod :
         The function used here for demodulation.
 
@@ -637,9 +642,6 @@ def eff_pol_n_taylor(
 
     See also
     --------
-    taylor_coef :
-        Function that calculates the Taylor series coefficients for the
-        bulk FDM.
     eff_pol_n : The non-Taylor series version of this function.
     pysnom.demodulate.demod :
         The function used here for demodulation.
