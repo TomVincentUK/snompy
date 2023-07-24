@@ -1,12 +1,12 @@
 """
-Bulk finite dipole model (:mod:`pysnom.fdm.bulk`)
-=================================================
+Finite dipole model (:mod:`pysnom.fdm`)
+=======================================
 
-.. currentmodule:: pysnom.fdm.bulk
+.. currentmodule:: pysnom.fdm
 
 This module provides functions for simulating the results of scanning
-near-field optical microscopy experiments (SNOM) using the bulk finite
-dipole model (FDM).
+near-field optical microscopy (SNOM)experiments using the finite dipole
+model (FDM).
 
 Standard functions
 ^^^^^^^^^^^^^^^^^^
@@ -17,27 +17,280 @@ Standard functions
 
     eff_pol_n
     eff_pol
-    geom_func
+    eff_pol_n_taylor
 
-Taylor series representation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Inverse function
+^^^^^^^^^^^^^^^^
 
 .. autosummary::
     :nosignatures:
     :toctree: generated/
 
     refl_coef_qs
-    eff_pol_n_taylor
-    taylor_coef
+
+
+Internal functions
+^^^^^^^^^^^^^^^^^^
+
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    geom_func
+    geom_func_multi
     geom_func_taylor
+    taylor_coef
 
 """
+
 import numpy as np
 from numpy.polynomial import Polynomial
 
-from .._defaults import defaults
-from .._utils import _pad_for_broadcasting
-from ..demodulate import demod
+from ._defaults import defaults
+from ._utils import _pad_for_broadcasting
+from .demodulate import demod
+
+
+def eff_pol_n(
+    z_tip,
+    A_tip,
+    n,
+    sample,
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
+    d_Q0=None,
+    d_Q1=None,
+    d_Qa=None,
+    n_lag=None,
+    method=None,
+    n_trapz=None,
+):
+    r"""Return the effective probe-sample polarizability using the finite
+    dipole model, demodulated at harmonics of the tapping frequency.
+
+    Parameters
+    ----------
+    z_tip : float
+        Height of the tip above the sample.
+    A_tip : float
+        The tapping amplitude of the AFM tip.
+    n : int
+        The harmonic of the AFM tip tapping frequency at which to
+        demodulate.
+    sample : :class:`pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
+    r_tip : float
+        Radius of curvature of the AFM tip.
+    L_tip : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    d_Qa : float
+        Depth of a single representative charge within the tip. Specified
+        in units of the tip radius. Used by the Mester implementation of
+        the finite dipole model to calculate the effective quasistatic
+        reflection coefficient for the tip.
+    n_lag : int
+        The order of the Gauss-Laguerre integration used by the "Hauer" and
+        "Mester" methods.
+    method : {"bulk", "Hauer", "Mester"}
+        The method of the finite dipole model to use. See :func:`eff_pol`
+        for descriptions of the different methods.
+    n_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
+
+    Returns
+    -------
+    alpha_eff_n : complex
+        Demodulated effective polarizability of the tip and sample.
+
+    See also
+    --------
+    eff_pol : The unmodulated/demodulated version of this function.
+    pysnom.demodulate.demod :
+        The function used here for demodulation.
+
+    """
+    # Set oscillation centre so AFM tip just touches sample at z_tip = 0
+    z_0 = z_tip + A_tip
+
+    alpha_eff_n = demod(
+        eff_pol,
+        z_0,
+        A_tip,
+        n,
+        f_args=(sample, r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa, n_lag, method),
+        n_trapz=n_trapz,
+    )
+
+    return alpha_eff_n
+
+
+def eff_pol(
+    z_tip,
+    sample,
+    r_tip=None,
+    L_tip=None,
+    g_factor=None,
+    d_Q0=None,
+    d_Q1=None,
+    d_Qa=None,
+    n_lag=None,
+    method=None,
+):
+    r"""Return the effective probe-sample polarizability using the finite
+    dipole model.
+
+    Parameters
+    ----------
+    z_tip : float
+        Height of the tip above the sample.
+    sample : :class:`pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
+    r_tip : float
+        Radius of curvature of the AFM tip.
+    L_tip : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    d_Qa : float
+        Depth of a single representative charge within the tip. Specified
+        in units of the tip radius. Used by the Mester implementation of
+        the finite dipole model to calculate the effective quasistatic
+        reflection coefficient for the tip.
+    n_lag : int
+        The order of the Gauss-Laguerre integration used by the "Hauer" and
+        "Mester" methods.
+    method : {"bulk", "Hauer", "Mester"}
+        The method of the finite dipole model to use. See Notes for the
+        description of each method. Defaults to "bulk" for bulk samples and
+        "Hauer" otherwise.
+
+    Returns
+    -------
+    alpha_eff : complex
+        Effective polarizability of the tip and sample.
+
+    See also
+    --------
+    eff_pol_n :
+        This function demodulated at harmonics of the tapping frequency.
+
+    Notes
+    -----
+    This function implements the equation
+
+    .. math::
+
+        \alpha_{eff} = 1 + \frac
+            {\beta_0 f_{geom, 0}(z_{tip}, r_{tip}, L_{tip}, g)}
+            {2 (1 - \beta_1 f_{geom, 1}(z_{tip}, r_{tip}, L_{tip}, g))}
+
+    where :math:`\alpha_{eff}` is `\alpha_eff`, :math:`z_{tip}` is `z_tip`,
+    :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
+    is `g_factor`.
+
+    The definitions of :math:`beta_i` and :math:`f_{geom, i}` depend on the
+    FDM method used, and are described below.
+
+    Method "bulk" is the bulk Hauer method given in reference [1]_. Here,
+    :math:`\beta_0 = \beta_1 = \beta`, the momentum independent quasistatic
+    reflection coefficient of the sample, which is calculated from
+    :func:`pysnom.sample.Sample.refl_coef_qs` (with argument `q = 0`).
+    :math:`f_{geom, i}` is given by :func:`geom_func`, with arguments
+    `(z_tip, d_Qi, r_tip, L_tip, g_factor)` where `d_Qi` is given by
+    `d_Q0`, `d_Q1` for :math:`i = 0, 1`.
+
+    Method "Hauer" is the multilayer Hauer method given in reference [1]_.
+    Here, :math:`beta_i`, is the relative charge of an image of charge
+    :math:`Q_i` below the sample at depth :math:`z_{Q'i}` below the
+    surface. :math:`beta_i` and :math:`d_{z'i}` are calculated from
+    :func:`pysnom.sample.Sample.image_depth_and_charge`.
+    :math:`f_{geom, i}` is given by :func:`geom_func_multi`, with arguments
+    `(z_tip, z_im_i, r_tip, L_tip, g_factor)` where `z_im_i` is given by
+    :math:`d_{z'i}` for :math:`i = 0, 1`.
+
+    Method "Mester" is described in reference [2]_. Here
+    :math:`\beta_0 = \beta_1 = \overline{\beta}`, the effective reflection
+    coefficient for a test charge :math:`Q_a`, evaluated at the position of
+    the charge itself, which is calculated from
+    :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`. The definition of
+    :math:`f_{geom, i}` is the same as for the bulk Hauer method.
+
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+           model for scattering infrared near-field microscopy on layered
+           systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+           doi: 10.1364/OE.20.013173.
+    .. [2] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
+           R. Hillenbrand, “Subsurface chemical nanoidentification by
+           nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
+           Dec. 2020, doi: 10.1038/s41467-020-17034-6.
+    """
+    # Set defaults
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
+    )
+
+    # Default to one of the Hauer methods based on sample type.
+    if method is None:
+        method = "Hauer" if sample.multilayer else "bulk"
+
+    if method == "bulk":
+        if sample.multilayer:
+            raise ValueError("`method`='bulk' cannot be used for multilayer samples.")
+        beta_0 = beta_1 = sample.refl_coef_qs()
+
+        f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
+        f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
+    elif method == "Hauer":
+        z_Q0 = z_tip + r_tip * d_Q0
+        z_Q1 = z_tip + r_tip * d_Q1
+        z_im0, beta_0 = sample.image_depth_and_charge(z_Q0, n_lag)
+        z_im1, beta_1 = sample.image_depth_and_charge(z_Q1, n_lag)
+
+        f_0 = geom_func_multi(z_tip, z_im0, r_tip, L_tip, g_factor)
+        f_1 = geom_func_multi(z_tip, z_im1, r_tip, L_tip, g_factor)
+    elif method == "Mester":
+        z_Qa = z_tip + r_tip * d_Qa
+        beta_0 = beta_1 = sample.refl_coef_qs_above_surf(z_Qa, n_lag)
+
+        f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
+        f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
+    else:
+        raise ValueError("`method` must be one of `bulk`, `Hauer`, or `Mester`.")
+
+    alpha_eff = 1 + (beta_0 * f_0) / (2 * (1 - beta_1 * f_1))
+
+    return alpha_eff
 
 
 def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
@@ -69,27 +322,24 @@ def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
         A complex number encapsulating geometric properties of the tip-
         sample system.
 
-    See also
-    --------
-    pysnom.fdm.multi.geom_func :
-        The multilayer equivalent of this function.
-
     Notes
     -----
     This function implements the equation
 
     .. math::
 
-        f_{geom} =
+        f_{geom, i} =
         \left(
-            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_Q}{2 L_{tip}}
+            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_{Qi}}{2 L_{tip}}
         \right)
-        \frac{\ln{\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_Q}\right)}}
+        \frac{\ln{\left(
+            \frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_{Qi}}
+        \right)}}
         {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z_{tip}` is `z_tip`, :math:`d_Q` is `d_Q`, :math:`r_{tip}` is
-    `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g` is `g_factor`.
-    This is given as equation (2) in reference [1]_.
+    where :math:`z_{tip}` is `z_tip`, :math:`d_{Qi}` is `d_Q`,
+    :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
+    is `g_factor`. This is given as equation (2) in reference [1]_.
 
     References
     ----------
@@ -105,27 +355,18 @@ def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
     )
 
 
-def eff_pol(
-    z_tip,
-    sample,
-    r_tip=None,
-    L_tip=None,
-    g_factor=None,
-    d_Q0=None,
-    d_Q1=None,
-    d_Qa=None,
-):
-    r"""Return the effective probe-sample polarizability using the bulk
-    finite dipole model.
+def geom_func_multi(z_tip, d_image, r_tip, L_tip, g_factor):
+    r"""Return a complex number that encapsulates various geometric
+    properties of the tip-sample system for the multilayer finite dipole
+    model.
 
     Parameters
     ----------
     z_tip : float
         Height of the tip above the sample.
-    sample : :class:`pysnom.sample.Sample`
-        Object representing a layered sample with a semi-infinite substrate
-        and superstrate. Sample must have only one interface for bulk
-        methods.
+    d_image : float
+        Depth of an image charge induced below the upper surface of a stack
+        of interfaces.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -137,24 +378,12 @@ def eff_pol(
         induced it. A small imaginary component can be used to account for
         phase shifts caused by the capacitive interaction of the tip and
         sample.
-    d_Q0 : float
-        Depth of an induced charge 0 within the tip. Specified in units of
-        the tip radius.
-    d_Q1 : float
-        Depth of an induced charge 1 within the tip. Specified in units
-        of the tip radius.
 
     Returns
     -------
-    alpha_eff_0 : complex
-        Effective polarizability of the tip and sample.
-
-    See also
-    --------
-    pysnom.fdm.multi.eff_pol :
-        The multilayer equivalent of this function.
-    eff_pol_n : The modulated/demodulated version of this function.
-    geom_func : Geometry function.
+    f_n : complex
+        A complex number encapsulating geometric properties of the tip-
+        sample system.
 
     Notes
     -----
@@ -162,111 +391,19 @@ def eff_pol(
 
     .. math::
 
-        \alpha_{eff} =
-        1
-        + \frac{\beta f_{geom}(z_{tip}, d_{Q0}, r_{tip}, L_{tip}, g)}
-        {2 (1 - \beta f_{geom}(z_{tip}, d_{Q1}, r_{tip}, L_{tip}, g))}
+        f_{geom, i} =
+        \left(
+            g - \frac{r_{tip} + z_{tip} + z_{Q'i}}{2 L_{tip}}
+        \right)
+        \frac{\ln{\left(
+            \frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 z_{Q'i}}
+        \right)}
+        }
+        {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\beta` is `beta`,
-    :math:`z_{tip}` is `z_tip`, :math:`d_{Q0}` is `d_Q0`, :math:`d_{Q1}` is `d_Q1`,
-    :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, :math:`g` is
-    `g_factor`, and :math:`f_{geom}` is a function encapsulating the
-    geometric properties of the tip-sample system. This is given as
-    equation (3) in reference [1]_. The function :math:`f_{geom}` is
-    implemented here as :func:`geom_func`.
-
-    References
-    ----------
-    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
-       model for scattering infrared near-field microscopy on layered
-       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
-       doi: 10.1364/OE.20.013173.
-    """
-    # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
-        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
-    )
-
-    beta = sample.refl_coef_qs()
-
-    f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
-    f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
-
-    return 1 + (beta * f_0) / (2 * (1 - beta * f_1))
-
-
-def eff_pol_n(
-    z_tip,
-    A_tip,
-    n,
-    sample,
-    r_tip=None,
-    L_tip=None,
-    g_factor=None,
-    d_Q0=None,
-    d_Q1=None,
-    d_Qa=None,
-    n_trapz=None,
-):
-    r"""Return the effective probe-sample polarizability, demodulated at
-    higher harmonics, using the bulk finite dipole model.
-
-    Parameters
-    ----------
-    z_tip : float
-        Height of the tip above the sample.
-    A_tip : float
-        The tapping amplitude of the AFM tip.
-    n : int
-        The harmonic of the AFM tip tapping frequency at which to
-        demodulate.
-    sample : :class:`pysnom.sample.Sample`
-        Object representing a layered sample with a semi-infinite substrate
-        and superstrate. Sample must have only one interface for bulk
-        methods.
-    r_tip : float
-        Radius of curvature of the AFM tip.
-    L_tip : float
-        Semi-major axis length of the effective spheroid from the finite
-        dipole model.
-    g_factor : complex
-        A dimensionless approximation relating the magnitude of charge
-        induced in the AFM tip to the magnitude of the nearby charge which
-        induced it. A small imaginary component can be used to account for
-        phase shifts caused by the capacitive interaction of the tip and
-        sample.
-    d_Q0 : float
-        Depth of an induced charge 0 within the tip. Specified in units of
-        the tip radius.
-    d_Q1 : float
-        Depth of an induced charge 1 within the tip. Specified in units of
-        the tip radius.
-    n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
-        the trapezium-method integration.
-
-    Returns
-    -------
-    alpha_eff : complex
-        Effective polarizability of the tip and sample, demodulated at
-        `n`.
-
-    See also
-    --------
-    pysnom.fdm.multi.eff_pol_n :
-        The multilayer equivalent of this function.
-    eff_pol : The unmodulated/demodulated version of this function.
-    pysnom.demodulate.demod :
-        The function used here for demodulation.
-
-    Notes
-    -----
-    This function implements
-    :math:`\alpha_{eff, n} = \hat{F_n}(\alpha_{eff})`, where
-    :math:`\hat{F_n}(\alpha_{eff})` is the :math:`n^{th}` Fourier
-    coefficient of the effective polarizability of the tip and sample,
-    :math:`\alpha_{eff}`, as described in reference [1]_. The function
-    :math:`\alpha_{eff}` is implemented here as :func:`eff_pol`.
+    where :math:`z_{tip}` is `z_tip`, :math:`z_{Q'i}` is `d_image`,
+    :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
+    is `g_factor`. This is given as equation (11) in reference [1]_.
 
     References
     ----------
@@ -275,19 +412,11 @@ def eff_pol_n(
        systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
        doi: 10.1364/OE.20.013173.
     """
-    # Set oscillation centre so AFM tip touches sample at z_tip = 0
-    z_0 = z_tip + A_tip
-
-    alpha_eff = demod(
-        eff_pol,
-        z_0,
-        A_tip,
-        n,
-        f_args=(sample, r_tip, L_tip, g_factor, d_Q0, d_Q1),
-        n_trapz=n_trapz,
+    return (
+        (g_factor - (r_tip + z_tip + d_image) / (2 * L_tip))
+        * np.log(4 * L_tip / (r_tip + 2 * z_tip + 2 * d_image))
+        / np.log(4 * L_tip / r_tip)
     )
-
-    return alpha_eff
 
 
 def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
@@ -338,23 +467,13 @@ def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
 
     .. math::
 
-        f_{t} =
-        f_{geom}(z_{tip}, d_Q0, r_{tip}, L_{tip}, g)
-        f_{geom}(z_{tip}, d_Q1, r_{tip}, L_{tip}, g)^{j-1}
+        f_{t} = f_{geom, 0} f_{geom, 1}^{j-1}
 
-    where :math:`f_{t}` is `f_t`, :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is
-    `L_tip`, :math:`g` is `g_factor`, :math:`j` is `j_taylor`,
-    and :math:`f_{geom}` is a function encapsulating the geometric
-    properties of the tip-sample system. This is given as equation (3) in
-    reference [1]_. The function :math:`f_{geom}` is implemented here as
+    where :math:`f_{t}` is `f_t`, :math:`j` is `j_taylor`,
+    and :math:`f_{geom, i}` is a function encapsulating the geometric
+    properties of the tip-sample system, implemented here as
     :func:`geom_func`.
 
-    References
-    ----------
-    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
-       model for scattering infrared near-field microscopy on layered
-       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
-       doi: 10.1364/OE.20.013173.
     """
     f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
     f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
@@ -413,14 +532,14 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
     Notes
     -----
     This function implements
-    :math:`a_j = \frac{1}{2} \hat{F_n}(f_t)`, where :math:`\hat{F_n}(f_t)`
-    is the :math:`n^{th}` Fourier coefficient of the function :math:`f_t`,
-    which is implemented here as :func:`geom_func_taylor`.
 
-    This function returns 0 when :math:`j = 0`, because the Taylor series
-    representation of the bulk FDM begins at :math:`j = 1`, however
-    :class:`numpy.polynomial.polynomial.Polynomial` requires the first
-    index to be zero.
+    .. math::
+
+        a_j = \frac{1}{2} \hat{F_n}[f_t(j)],
+
+    where :math:`\hat{F_n}[f_t(j)]` is the :math:`n^{th}` Fourier
+    coefficient of the function :math:`f_t(j)`, which is implemented here
+    as :func:`geom_func_taylor`.
     """
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
@@ -450,11 +569,14 @@ def eff_pol_n_taylor(
     d_Q0=None,
     d_Q1=None,
     d_Qa=None,
+    n_lag=None,
+    method=None,
     n_trapz=None,
     n_tayl=None,
 ):
-    r"""Return the effective probe-sample polarizability, demodulated at
-    higher harmonics, using a Taylor series representation of the bulk FDM.
+    r"""Return the effective probe-sample polarizability using the finite
+    dipole model, demodulated at harmonics of the tapping frequency, using
+    a Taylor series representation of the bulk FDM.
 
     .. note::
         This function primarily exists to check the validity of the Taylor
@@ -472,8 +594,7 @@ def eff_pol_n_taylor(
         demodulate.
     sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
-        and superstrate. Sample must have only one interface for bulk
-        methods.
+        and superstrate.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -491,6 +612,17 @@ def eff_pol_n_taylor(
     d_Q1 : float
         Depth of an induced charge 1 within the tip. Specified in units of
         the tip radius.
+    d_Qa : float
+        Depth of a single representative charge within the tip. Specified
+        in units of the tip radius. Used by the Mester implementation of
+        the finite dipole model to calculate the effective quasistatic
+        reflection coefficient for the tip.
+    n_lag : int
+        The order of the Gauss-Laguerre integration used by the "Hauer" and
+        "Mester" methods.
+    method : {"bulk", "Mester"}
+        The method of the finite dipole model to use. See :func:`eff_pol`
+        for descriptions of the different methods.
     n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
@@ -531,7 +663,19 @@ def eff_pol_n_taylor(
     )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
 
-    beta = sample.refl_coef_qs()
+    # Default to one of the Hauer methods based on sample type.
+    if method is None:
+        method = "Hauer" if sample.multilayer else "bulk"
+
+    if method == "bulk":
+        if sample.multilayer:
+            raise ValueError("`method`='bulk' cannot be used for multilayer samples.")
+        beta = sample.refl_coef_qs()
+    elif method == "Mester":
+        z_Qa = z_tip + r_tip * d_Qa
+        beta = sample.refl_coef_qs_above_surf(z_Qa, n_lag)
+    else:
+        raise ValueError("`method` must be one of `bulk`, or `Mester`.")
 
     j_taylor = _pad_for_broadcasting(
         np.arange(n_tayl), (z_tip, A_tip, n, beta, r_tip, L_tip, g_factor, d_Q0, d_Q1)
@@ -554,14 +698,13 @@ def refl_coef_qs(
     g_factor=None,
     d_Q0=None,
     d_Q1=None,
-    d_Qa=None,
     n_trapz=None,
     n_tayl=None,
     beta_threshold=None,
 ):
-    r"""Return the reflection coefficient corresponding to a particular
-    effective polarizability, demodulated at higher harmonics, using a
-    Taylor series representation of the bulk FDM.
+    r"""Return the quasistatic reflection coefficient corresponding to a
+    particular effective polarizability, demodulated at higher harmonics,
+    using a Taylor series representation of the FDM.
 
     Parameters
     ----------
@@ -631,8 +774,8 @@ def refl_coef_qs(
     values. Values which are invalid are masked.
     """
     # Set defaults
-    r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
-        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, _ = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa=None
     )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
     beta_threshold = (
