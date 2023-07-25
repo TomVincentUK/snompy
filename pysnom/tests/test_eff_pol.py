@@ -15,6 +15,7 @@ class TestEffPol:
         (pysnom.fdm, {"method": "bulk"}),
         (pysnom.fdm, {"method": "Mester"}),
     ]
+    inverse_model = [pysnom.fdm]
 
     # eff_pol
 
@@ -161,29 +162,6 @@ class TestEffPol:
             model.eff_pol_n(**params), model.eff_pol_n_taylor(**params), rtol=1e-4
         )
 
-    @pytest.mark.parametrize("model", [pysnom.fdm])
-    def test_refl_coef_qs(self, model, vector_AFM_params, vector_tapping_params):
-        n_test_beta = 10
-        beta_in = np.linspace(0.9, 0.1, n_test_beta) * np.exp(
-            1j * np.linspace(0, np.pi, n_test_beta)
-        )
-        beta_in = np.hstack([beta_in, -0.5 + 0.5j])  # a case with multiple solutions
-        sample = pysnom.sample.Sample(beta_stack=(beta_in,))
-
-        alpha_eff_n = model.eff_pol_n_taylor(
-            sample=sample, **vector_AFM_params | vector_tapping_params
-        )
-        beta_out = model.refl_coef_qs(
-            alpha_eff_n=alpha_eff_n, **vector_AFM_params | vector_tapping_params
-        )
-
-        # beta_out may contain multiple solutions
-        # need to check if any solutions correspond to the input
-        atol = 0
-        rtol = 1.0e-7
-        close_values = np.abs(beta_out - beta_in) <= (atol + rtol * np.abs(beta_in))
-        assert close_values.any(axis=0).all()
-
     @pytest.mark.parametrize("model, model_kwargs", taylor_model_and_kwargs)
     def test_taylor_broadcasting(
         self,
@@ -207,3 +185,46 @@ class TestEffPol:
         )
 
         assert alpha_eff.shape == target_shape
+
+    # Inverse functions
+
+    @pytest.mark.parametrize("model", inverse_model)
+    def test_refl_coef_qs_from_eff_pol(self, model, vector_AFM_params):
+        n_test_beta = 10
+        beta_in = np.linspace(0.9, 0.1, n_test_beta) * np.exp(
+            1j * np.linspace(0, np.pi, n_test_beta)
+        )
+        sample = pysnom.sample.bulk_sample(beta=beta_in)
+
+        alpha_eff = model.eff_pol(sample=sample, **vector_AFM_params)
+        beta_out = model.refl_coef_qs_from_eff_pol(
+            alpha_eff=alpha_eff, **vector_AFM_params
+        )
+
+        atol = 1e-12
+        assert np.all(np.abs(beta_out - beta_in) < atol)
+
+    @pytest.mark.parametrize("model", inverse_model)
+    def test_refl_coef_qs_from_eff_pol_n(
+        self, model, vector_AFM_params, vector_tapping_params
+    ):
+        n_test_beta = 10
+        beta_in = np.linspace(0.9, 0.1, n_test_beta) * np.exp(
+            1j * np.linspace(0, np.pi, n_test_beta)
+        )
+        beta_in = np.hstack([beta_in, -0.5 + 0.5j])  # a case with multiple solutions
+        sample = pysnom.sample.bulk_sample(beta=beta_in)
+
+        alpha_eff_n = model.eff_pol_n_taylor(
+            sample=sample, **vector_AFM_params | vector_tapping_params
+        )
+        beta_out = model.refl_coef_qs_from_eff_pol_n(
+            alpha_eff_n=alpha_eff_n, **vector_AFM_params | vector_tapping_params
+        )
+
+        # beta_out may contain multiple solutions
+        # need to check if any solutions correspond to the input
+        atol = 0
+        rtol = 1.0e-7
+        close_values = np.abs(beta_out - beta_in) <= (atol + rtol * np.abs(beta_in))
+        assert close_values.any(axis=0).all()

@@ -6,17 +6,7 @@ Tasks / issues
 --------------
 * FDM:
 
-  * Bulk:
-
-    * Add a `refl_coef_qs_from_eff_pol` function (just invert it algebraically)
-
-  * Multilayer:
-
-    * Add Lars's version of the effective polarizability (perhaps via a flag in the existing function)
-
-    * Add a Taylor series representation of Lars's version of effective polarizability
-
-    * Add in `refl_coef_qs_from_eff_pol` and `refl_coef_qs` functions
+  * Add a `refl_coef_qs_from_eff_pol` function (just invert it algebraically)
 
 * PDM:
 

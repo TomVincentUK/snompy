@@ -20,8 +20,8 @@ sample, and the effective polarisability demodulated at higher harmonics.
     eff_pol_n
     eff_pol
 
-Inverse function
-^^^^^^^^^^^^^^^^
+Inverse functions
+^^^^^^^^^^^^^^^^^
 Functions to return the quasistatic reflection coefficient of a sample
 based on the effective polarisability of an AFM tip coupled to the sample.
 
@@ -29,7 +29,8 @@ based on the effective polarisability of an AFM tip coupled to the sample.
     :nosignatures:
     :toctree: generated/
 
-    refl_coef_qs
+    refl_coef_qs_from_eff_pol_n
+    refl_coef_qs_from_eff_pol
 
 
 Internal functions
@@ -690,7 +691,7 @@ def eff_pol_n_taylor(
     return alpha_eff
 
 
-def refl_coef_qs(
+def refl_coef_qs_from_eff_pol_n(
     z_tip,
     A_tip,
     n,
@@ -717,7 +718,7 @@ def refl_coef_qs(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    alpha_eff : complex
+    alpha_eff_n : complex
         Effective polarizability of the tip and sample, demodulated at
         `n`.
     r_tip : float
@@ -805,4 +806,89 @@ def refl_coef_qs(
     )
     unmasked_roots = all_roots[slice_contains_valid]
     beta = np.ma.array(unmasked_roots, mask=np.abs(unmasked_roots) >= beta_threshold)
+    return beta
+
+
+def refl_coef_qs_from_eff_pol(
+    z_tip, alpha_eff, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q1=None
+):
+    r"""Return the quasistatic reflection coefficient corresponding to a
+    particular effective polarizability.
+
+    Parameters
+    ----------
+    z_tip : float
+        Height of the tip above the sample.
+    alpha_eff : complex
+        Effective polarizability of the tip and sample.
+    r_tip : float
+        Radius of curvature of the AFM tip.
+    L_tip : float
+        Semi-major axis length of the effective spheroid from the finite
+        dipole model.
+    g_factor : complex
+        A dimensionless approximation relating the magnitude of charge
+        induced in the AFM tip to the magnitude of the nearby charge which
+        induced it. A small imaginary component can be used to account for
+        phase shifts caused by the capacitive interaction of the tip and
+        sample.
+    d_Q0 : float
+        Depth of an induced charge 0 within the tip. Specified in units of
+        the tip radius.
+    d_Q1 : float
+        Depth of an induced charge 1 within the tip. Specified in units of
+        the tip radius.
+    n_trapz : int
+        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        the trapezium-method integration.
+    n_tayl : int
+        Maximum power index for the Taylor series in `beta`.
+    beta_threshold : float
+        The maximum amplitude of returned `beta` values determined to be
+        valid.
+
+    Returns
+    -------
+    beta : complex, masked array
+        Quasistatic  reflection coefficient of the interface.
+
+    See also
+    --------
+    eff_pol : The inverse of this function.
+    refl_coef_qs_from_n : The demodulated equivalent of this function.
+
+    Notes
+    -----
+    This function implements the equation
+
+    .. math::
+
+        \beta = \frac
+            {2 (\alpha_{eff} - 1)}
+            {f_{geom, 0} + 2 f_{geom, 1} (\alpha_{eff} - 1)}
+
+    where :math:`\alpha_{eff}` is `\alpha_eff`, and :math:`f_{geom, i}` is
+    a function encapsulating the FDM geometry, taken from reference [1]_.
+    Here it is given by :func:`geom_func`, with arguments
+    `(z_tip, d_Qi, r_tip, L_tip, g_factor)` where `d_Qi` is replaced by
+    `d_Q0`, `d_Q1` for :math:`i = 0, 1`.
+
+    References
+    ----------
+    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
+       model for scattering infrared near-field microscopy on layered
+       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
+       doi: 10.1364/OE.20.013173.
+
+    """
+    # Set defaults
+    r_tip, L_tip, g_factor, d_Q0, d_Q1, _ = defaults._fdm_defaults(
+        r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa=None
+    )
+
+    f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
+    f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
+
+    beta = 2 * (alpha_eff - 1) / (f_0 + 2 * f_1 * (alpha_eff - 1))
+
     return beta
