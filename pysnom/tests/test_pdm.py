@@ -5,7 +5,7 @@ import pysnom
 
 
 class TestPDM:
-    def test_eff_pol_warning_if_eps_and_alpha_sphere(
+    def test_eff_pol_error_if_eps_and_alpha_sphere(
         self, scalar_sample_bulk, scalar_AFM_params, scalar_tapping_params
     ):
         with pytest.raises(

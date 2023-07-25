@@ -4,10 +4,6 @@ A Python package for modelling contrast in scanning near-field optical microscop
 
 Tasks / issues
 --------------
-* FDM:
-
-  * Add a `refl_coef_qs_from_eff_pol` function (just invert it algebraically)
-
 * PDM:
 
   * Add a Taylor series representation of effective polarizability

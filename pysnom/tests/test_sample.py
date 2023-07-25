@@ -10,7 +10,6 @@ class TestSample:
     eps_beta_input_error = r" ".join(
         [r"Either `eps_stack` or `beta_stack` must be specified,", r"\(but not both\)."]
     )
-
     eps_beta_t_incompatible_error = " ".join(
         [
             "Invalid inputs:",
@@ -19,6 +18,9 @@ class TestSample:
             "along the first axis.",
         ]
     )
+    k_vac_None_error = "`k_vac` must not be None."
+    theta_q_error = "Either `theta_in` or `q` must be None."
+    polarization_error = "`polarization` must be 's' or 'p'"
 
     valid_inputs_kw = ", ".join(["eps_stack", "beta_stack", "t_stack"])
     valid_inputs = (
@@ -55,6 +57,42 @@ class TestSample:
     def test_error_when_beta_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
             pysnom.sample.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
+
+    def test_transfer_matrix_errors_when_no_k_vac(self):
+        eps_sub = 10
+        k_vac = 1.0
+        # No error when k_vac specified at init or function call
+        k_at_init = pysnom.sample.bulk_sample(eps_sub=eps_sub, k_vac=k_vac)
+        k_at_init.refl_coef()
+
+        no_k_at_init = pysnom.sample.bulk_sample(eps_sub=eps_sub)
+        no_k_at_init.refl_coef(k_vac=k_vac)
+
+        # Error with no k_vac
+        with pytest.raises(ValueError, match=self.k_vac_None_error):
+            no_k_at_init.refl_coef()
+
+    def test_transfer_matrix_errors_when_theta_and_q(self):
+        sample = pysnom.sample.bulk_sample(eps_sub=10, k_vac=1.0)
+        q = theta_in = 0.0
+
+        # No error when theta_in or q specified separately
+        sample.transfer_matrix(q=q)
+        sample.transfer_matrix(theta_in=theta_in)
+
+        # Error with both
+        with pytest.raises(ValueError, match=self.theta_q_error):
+            sample.transfer_matrix(q=q, theta_in=theta_in)
+
+    def test_transfer_matrix_errors_for_unknown_polarization(self):
+        sample = pysnom.sample.bulk_sample(eps_sub=10, k_vac=1.0)
+        # No error for "p" or "s"
+        sample.transfer_matrix(polarization="p")
+        sample.transfer_matrix(polarization="s")
+
+        # Error with unknown
+        with pytest.raises(ValueError, match=self.polarization_error):
+            sample.transfer_matrix(polarization="not s or p")
 
     def test_warn_when_zero_thickness(self):
         with pytest.warns(
@@ -111,13 +149,21 @@ class TestSample:
         sample = pysnom.sample.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
+        k_vac = np.ones_like(sample.eps_stack[0], dtype=float)
         assert (
             np.shape(sample.refl_coef_qs())
+            == np.shape(sample.refl_coef(k_vac=k_vac))
+            == np.shape(sample.trans_coef(k_vac=k_vac))
+            == np.shape(sample.refl_coef_qs_above_surf(z_Q=self.z_Q))
+            == np.shape(sample.surf_pot_and_field(z_Q=self.z_Q)[0])
+            == np.shape(sample.surf_pot_and_field(z_Q=self.z_Q)[1])
+            == np.shape(sample.image_depth_and_charge(z_Q=self.z_Q)[0])
+            == np.shape(sample.image_depth_and_charge(z_Q=self.z_Q)[1])
             == np.shape(sample.eps_stack[0])
             == np.shape(sample.beta_stack[0])
         )
 
-    def test_refl_coeff_qs_flat_for_bulk(self, scalar_sample_bulk):
+    def test_refl_coef_qs_flat_for_bulk(self, scalar_sample_bulk):
         q = np.linspace(0, 10, 64)
         beta = scalar_sample_bulk.refl_coef_qs(q)
         print(beta - beta.mean())

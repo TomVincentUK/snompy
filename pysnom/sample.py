@@ -115,7 +115,7 @@ class Sample:
             self.eps_stack = eps_stack
         elif beta_stack is not None:
             self.beta_stack = beta_stack
-        self.k_vac = np.asarray(k_vac)
+        self.k_vac = None if k_vac is None else np.array(k_vac)
 
     @property
     def t_stack(self):

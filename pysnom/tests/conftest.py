@@ -9,9 +9,9 @@ def scalar_sample_bulk():
     return pysnom.sample.bulk_sample(2 + 1j)
 
 
-# @pytest.fixture
-# def scalar_sample_multi():
-# return pysnom.sample.Sample(eps_stack=(1, 2 + 1j, 10), t_stack=(50e-9,))
+@pytest.fixture
+def scalar_sample_multi():
+    return pysnom.sample.Sample(eps_stack=(1, 2 + 1j, 10), t_stack=(50e-9,))
 
 
 @pytest.fixture

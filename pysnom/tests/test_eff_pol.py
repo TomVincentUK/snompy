@@ -111,10 +111,7 @@ class TestEffPol:
     # Multilayer
 
     def test_multi_same_as_bulk_for_single_interface(
-        self,
-        vector_sample_bulk,
-        vector_AFM_params,
-        vector_tapping_params,
+        self, vector_sample_bulk, vector_AFM_params, vector_tapping_params
     ):
         params = dict(
             sample=vector_sample_bulk, **vector_AFM_params | vector_tapping_params
