@@ -20,7 +20,7 @@ from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
 
 
-def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None):
+def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
     r"""Simulate a lock-in amplifier measurement by modulating the input of
     an arbitrary function then demodulating the output.
 
@@ -31,8 +31,8 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None):
     Parameters
     ----------
     f_x : callable
-        The function to demodulate. Must be of the form ``f(x, *args)``,
-        where `x` is a scalar quantity.
+        The function to demodulate. Must be of the form
+        ``f(x, *args, **kwargs)``, where `x` is a scalar quantity.
     x_0 : float
         The centre of modulation for the parameter `x`.
     x_amplitude : float
@@ -40,10 +40,12 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None):
     n : int
         The harmonic at which to demodulate.
     f_args : tuple
-        A tuple of extra arguments to the function `f_x`.
+        A tuple of extra positional arguments to the function `f_x`.
     n_trapz : int
         The number of intervals to use for the trapezium-method
         integration.
+    **kwargs : dict, optional
+        Extra keyword arguments are passed to the function `f_x`.
 
     Returns
     -------
@@ -52,14 +54,14 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None):
 
     Notes
     -----
-    For a function in the form `f_x(x, *args)`, :func:`demod` calculates
+    For a function in the form `f_x(x, *args, **kwargs)`, :func:`demod` calculates
 
     .. math::
 
         \frac{1}{2 \pi}
         \int_{-\pi}^{\pi}
         \mathtt{f\_x(x\_0} + \mathtt{x\_amplitude} \cdot \cos(\theta)
-        \mathtt{, *args)}
+        \mathtt{, *args, **kwargs)}
         e^{-i \theta \cdot \mathtt{n}}
         d{\theta}
 
@@ -91,9 +93,9 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None):
 
     theta = _pad_for_broadcasting(
         np.linspace(-np.pi, np.pi, n_trapz + 1),
-        (f_x(x_0 + 0 * x_amplitude, *f_args), n),
+        (f_x(x_0 + 0 * x_amplitude, *f_args, **kwargs), n),
     )
-    integrand = f_x(x_0 + np.cos(theta) * x_amplitude, *f_args) * np.exp(
+    integrand = f_x(x_0 + np.cos(theta) * x_amplitude, *f_args, **kwargs) * np.exp(
         -1j * n * theta
     )
     return np.trapz(integrand, axis=0) / (n_trapz)

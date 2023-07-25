@@ -11,6 +11,7 @@ and permitivitties.
 Classes
 -------
 .. autosummary::
+    :recursive:
     :nosignatures:
     :toctree: generated/
 
@@ -22,14 +23,17 @@ Functions
     :nosignatures:
     :toctree: generated/
 
+    bulk_sample
     refl_coef_qs_single
     permitivitty
 """
 import warnings
 
 import numpy as np
+from numpy.polynomial.laguerre import laggauss
 
 from ._defaults import defaults
+from ._utils import _pad_for_broadcasting
 
 
 class Sample:
@@ -112,7 +116,7 @@ class Sample:
             self.eps_stack = eps_stack
         elif beta_stack is not None:
             self.beta_stack = beta_stack
-        self.k_vac = np.asarray(k_vac)
+        self.k_vac = None if k_vac is None else np.array(k_vac)
 
     @property
     def t_stack(self):
@@ -187,6 +191,7 @@ class Sample:
         -------
         beta_total : complex
             Quasistatic reflection coefficient of the sample.
+
         """
         beta_total = self.beta_stack[0] * np.ones_like(q)
         for i in range(self.t_stack.shape[0]):
@@ -225,6 +230,19 @@ class Sample:
         -------
         M : complex
             The transfer matrix of the sample.
+
+        Notes
+        -----
+        This implementation of the transfer matrix method is based on the
+        description given in reference [1]_.
+
+        References
+        ----------
+        .. [1] T. Zhan, X. Shi, Y. Dai, X. Liu, and J. Zi, “Transfer matrix
+           method for optics in graphene layers,” J. Phys. Condens. Matter,
+           vol. 25, no. 21, p. 215301, May 2013,
+           doi: 10.1088/0953-8984/25/21/215301.
+
         """
         if k_vac is None:
             if self.k_vac is None:
@@ -329,6 +347,7 @@ class Sample:
         -------
         r : complex
             Fresnel reflection coefficient of the sample.
+
         """
         M = self.transfer_matrix(
             theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
@@ -364,6 +383,7 @@ class Sample:
         -------
         t : complex
             Fresnel transmission coefficient of the sample.
+
         """
         M = self.transfer_matrix(
             theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
@@ -384,8 +404,358 @@ class Sample:
                     )
                 )
 
+    def refl_coef_qs_above_surf(self, z_Q, n_lag=None):
+        r"""Return the effective quasistatic reflection coefficient for a
+        charge over the sample surface, evaluated at the position of the
+        charge itself.
+
+        This function works by performing integrals over all values of
+        in-plane electromagnetic wave momentum `q`, using Gauss-Laguerre
+        quadrature.
+
+        Parameters
+        ----------
+        z_Q : float
+            Height of the charge above the sample.
+        n_lag : int
+            The order of the Laguerre polynomial used to evaluate the integrals
+            over all `q`.
+
+        Returns
+        -------
+        beta_eff : complex
+            The effective quasistatic reflection coefficient at position
+            `z_Q`.
+
+        See also
+        --------
+        numpy.polynomial.laguerre.laggauss :
+            Laguerre polynomial weights and roots for integration.
+
+        Notes
+        -----
+        This function evaluates
+
+        .. math::
+
+            \overline{\beta} =\frac
+            {\int_0^\infty \beta(q) q e^{-2 z_Q q} dq}
+            {\int_0^\infty q e^{-2 z_Q q} dq}
+
+        where :math:`\overline{\beta}` is the effective quasistatic
+        reflection coefficient for a charge at height :math:`z_Q`
+        (evaluated at the position of the charge itself), :math:`q` is the
+        electromagnetic wave momentum, and :math:`\beta(q)` is the
+        momentum-dependent effective reflection coefficient for the
+        surface  [1]_.
+
+        To do this, the denominator is first solved explicitly as
+        :math:`1 / (4 z_Q^2)`. Then the substitution :math:`x = 2 z_Q q`,
+        is made to give
+
+        .. math::
+
+            \overline{\beta} =
+            \int_0^\infty \beta\left(\frac{x}{2 z_Q}\right) x e^{-x} dx.
+
+        It then uses the Gauss-Laguerre approximation [2]_
+
+        .. math::
+
+            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{n=1}^N w_n f(x_n),
+
+        where :math:`x_n` is the :math:`n^{th}` root of the Laguerre
+        polynomial
+
+        .. math::
+
+            L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
+
+        and :math:`w_n` is a weight given by
+
+        .. math::
+
+            w_n = \frac{x_n}{\left((N + 1) L_{N+1}(x_n) \right)^2}.
+
+        The integral can therefore be approximated by the sum
+
+        .. math::
+
+            \overline{\beta} \approx
+            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
+
+
+
+        The choice of :math:`N`, defined in this function as `n_lag`,
+        will affect the accuracy of the approximation, with higher
+        :math:`N` values leading to more accurate evaluation of the
+        integrals.
+
+        In this function the Laguerre weights and roots are found using
+        :func:`numpy.polynomial.laguerre.laggauss` and the
+        momentum-dependent reflection coefficient is found using
+        :func:`pysnom.sample.Sample.refl_coef_qs`.
+
+        References
+        ----------
+        .. [1] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
+           R. Hillenbrand, “Subsurface chemical nanoidentification by
+           nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
+           Dec. 2020, doi: 10.1038/s41467-020-17034-6.
+        .. [2] S. Ehrich, “On stratified extensions of Gauss-Laguerre and
+           Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
+           140, no. 1-2, pp. 291-299, Mar. 2002,
+           doi: 10.1016/S0377-0427(01)00407-1.
+
+        """
+        # Set defaults
+        n_lag = defaults.n_lag if n_lag is None else n_lag
+
+        # Evaluate integral in terms of x = q * 2 * z_Q
+        x_lag, w_lag = [
+            _pad_for_broadcasting(a, (self.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
+        ]
+
+        q = x_lag / np.asarray(2 * z_Q)
+
+        beta_q = self.refl_coef_qs(q)
+
+        beta_eff = np.sum(w_lag * x_lag * beta_q, axis=0)
+
+        return beta_eff
+
+    def surf_pot_and_field(self, z_Q, n_lag=None):
+        r"""Return the electric potential and field at the sample surface,
+        induced by a charge above the top interface.
+
+        This function works by performing integrals over all values of
+        in-plane electromagnetic wave momentum `q`, using Gauss-Laguerre
+        quadrature.
+
+        Parameters
+        ----------
+        z_Q : float
+            Height of the charge above the sample.
+        n_lag : int
+            The order of the Laguerre polynomial used to evaluate the integrals
+            over all `q`.
+
+        Returns
+        -------
+        phi : complex
+            The electric potential induced at the sample surface by the charge.
+        E : complex
+            The component of the surface electric field perpendicular to the
+            surface.
+
+        See also
+        --------
+        numpy.polynomial.laguerre.laggauss :
+            Laguerre polynomial weights and roots for integration.
+
+        Notes
+        -----
+        This function evaluates the integrals
+
+        .. math::
+
+            \begin{align*}
+                \phi \rvert_{z=0} &=
+                \int_0^\infty \beta(q) e^{-2 z_Q q} dq,
+                \ \text{and}\\
+                E_z \rvert_{z=0} &=
+                \int_0^\infty \beta(q) q e^{-2 z_Q q} dq,
+            \end{align*}
+
+        where :math:`\phi` is the electric potential, :math:`E_z` is the
+        vertical component of the electric field, :math:`q` is the
+        electromagnetic wave momentum, :math:`\beta(q)` is the
+        momentum-dependent effective reflection coefficient for the
+        surface, and :math:`z_Q` is the height of the inducing charge above
+        the surface [1]_.
+
+        To do this, it first makes the substitution :math:`x = 2 z_Q q`,
+        such that the integrals become
+
+        .. math::
+
+            \begin{align*}
+                \phi \rvert_{z=0}
+                & = \frac{1}{2 z_Q} \int_0^\infty
+                \beta\left(\frac{x}{2 z_Q}\right) e^{-x} dx, \ \text{and}\\
+                E_z \rvert_{z=0}
+                & = \frac{1}{4 z_Q^2} \int_0^\infty
+                \beta\left(\frac{x}{2 z_Q}\right) x e^{-x} dx.
+            \end{align*}
+
+        It then uses the Gauss-Laguerre approximation [2]_
+
+        .. math::
+
+            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{n=1}^N w_n f(x_n),
+
+        where :math:`x_n` is the :math:`n^{th}` root of the Laguerre
+        polynomial
+
+        .. math::
+
+            L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
+
+        and :math:`w_n` is a weight given by
+
+        .. math::
+
+            w_n = \frac{x_n}{\left((N + 1) L_{N+1}(x_n) \right)^2}.
+
+        The integrals can therefore be approximated by the sums
+
+        .. math::
+
+            \begin{align*}
+                \phi \rvert_{z=0}
+                & \approx \frac{1}{2 z_Q}
+                \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right),
+                \ \text{and}\\
+                E_z \rvert_{z=0}
+                & \approx \frac{1}{4 z_Q^2}
+                \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
+            \end{align*}
+
+        The choice of :math:`N`, defined in this function as `n_lag`,
+        will affect the accuracy of the approximation, with higher
+        :math:`N` values leading to more accurate evaluation of the
+        integrals.
+
+        In this function the Laguerre weights and roots are found using
+        :func:`numpy.polynomial.laguerre.laggauss` and the
+        momentum-dependent reflection coefficient is found using
+        :func:`pysnom.sample.Sample.refl_coef_qs`.
+
+        References
+        ----------
+        .. [1] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and
+           R. Hillenbrand, “Subsurface chemical nanoidentification by
+           nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359,
+           Dec. 2020, doi: 10.1038/s41467-020-17034-6.
+        .. [2] S. Ehrich, “On stratified extensions of Gauss-Laguerre and
+           Gauss-Hermite quadrature formulas,” J. Comput. Appl. Math., vol.
+           140, no. 1-2, pp. 291-299, Mar. 2002,
+           doi: 10.1016/S0377-0427(01)00407-1.
+
+        """
+        # Set defaults
+        n_lag = defaults.n_lag if n_lag is None else n_lag
+
+        # Evaluate integral in terms of x = q * 2 * z_Q
+        x_lag, w_lag = [
+            _pad_for_broadcasting(a, (self.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
+        ]
+
+        q = x_lag / np.asarray(2 * z_Q)
+
+        beta_q = self.refl_coef_qs(q)
+
+        phi = np.sum(w_lag * beta_q, axis=0) / (2 * z_Q)
+        E = np.sum(w_lag * x_lag * beta_q, axis=0) / (4 * z_Q**2)
+
+        return phi, E
+
+    def image_depth_and_charge(self, z_Q, n_lag=None):
+        r"""Calculate the depth and relative charge of an image charge
+        induced below the top surface of the sample.
+
+        This function works by evaluating the electric potential and field
+        induced at the sample surface using :func:`Sample.surf_pot_and_field`.
+
+        Parameters
+        ----------
+        z_Q : float
+            Height of the charge above the sample.
+        n_lag : int
+            The order of the Laguerre polynomial used by :func:`surf_pot_and_field`.
+
+        Returns
+        -------
+        d_image : complex
+            The effective depth of the image charge induced below the
+            surface.
+        beta_image : complex
+            The relative charge of the image charge induced below the
+            surface.
+
+        See also
+        --------
+        surf_pot_and_field : Surface electric potential and field.
+
+        Notes
+        -----
+
+        This function calculates the depth of an image charge induced by a
+        charge :math:`q` at height :math:`z_Q` above a sample surface using
+        the equation
+
+        .. math::
+
+            z_{image} = \left|
+                \frac{\phi \rvert_{z=0}}{E_z \rvert_{z=0}}
+            \right| - z_Q,
+
+        and the effective charge of the image, relative to :math:`q`, using
+        the equation
+
+        .. math::
+
+            \beta_{image} =
+            \frac{ \left( \phi \rvert_{z=0} \right)^2 }
+            {E_z \rvert_{z=0}},
+
+        where :math:`\phi` is the electric potential, and :math:`E_z` is
+        the vertical component of the electric field. These are based on
+        equations (9) and (10) from reference [1]_. The depth :math:`z_Q`
+        is converted to a real number by taking the absolute value of the
+        :math:`\phi`-:math:`E_z` ratio, as described in reference [2]_.
+
+        References
+        ----------
+        .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner,
+           “Quasi-analytical model for scattering infrared near-field
+           microscopy on layered systems,” Opt. Express, vol. 20, no. 12,
+           p. 13173, Jun. 2012, doi: 10.1364/OE.20.013173.
+        .. [2] C. Lupo et al., “Quantitative infrared near-field imaging of
+           suspended topological insulator nanostructures,” pp. 1-23, Dec.
+           2021, [Online]. Available: http://arxiv.org/abs/2112.10104
+
+        """
+        phi, E = self.surf_pot_and_field(z_Q, n_lag)
+        d_image = np.abs(phi / E) - z_Q
+        beta_image = phi**2 / E
+        return d_image, beta_image
+
 
 def bulk_sample(eps_sub=None, beta=None, eps_env=None, **kwargs):
+    r"""Return an object representing a bulk sample with just a
+    semi-infinite substrate and superstrate.
+
+    Parameters
+    ----------
+    eps_sub : array_like
+        Dielectric function of the semi-infinite substrate. Either
+        `eps_sub` or `beta` must be None.
+    beta : array_like
+        Quasistatic  reflection coefficients of the interface between the
+        substrate and superstrate. Either `eps_stack` or `beta_stack` must
+        be None.
+    eps_env : array_like
+        Dielectric function of the environment.
+    **kwargs : dict, optional
+        Extra keyword arguments are passed to :func:`pysnom.sample.Sample`.
+
+    Returns
+    -------
+    sample : :class:`pysnom.sample.Sample`
+        Object representing the sample.
+
+    """
     eps_env = defaults.eps_env if eps_env is None else eps_env
     eps_stack = None if eps_sub is None else (eps_env, eps_sub)
     beta_stack = None if beta is None else (beta,)
@@ -413,8 +783,6 @@ def refl_coef_qs_single(eps_i, eps_j):
 
     See also
     --------
-    refl_coef_qs_ml :
-        Momentum-dependent reflection coefficient for multilayer samples.
     permitivitty :
         The inverse of this function.
 
@@ -437,6 +805,7 @@ def refl_coef_qs_single(eps_i, eps_j):
     >>> refl_coef_qs_single([1, 3], [[1], [3]])
     array([[ 0. , -0.5],
           [ 0.5,  0. ]])
+
     """
     eps_i = np.asarray(eps_i)
     eps_j = np.asarray(eps_j)
@@ -467,6 +836,7 @@ def permitivitty(beta, eps_i=1 + 0j):
     --------
     refl_coef_qs_single :
         The inverse of this function.
+
     """
     beta = np.asarray(beta)
     eps_i = np.asarray(eps_i)

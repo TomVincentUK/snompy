@@ -20,42 +20,55 @@ def eps_Drude(wavenumber, eps_inf, plasma_frequency, gamma):
 
 
 # Set some experimental parameters
-z_tip = 20e-9  # AFM tip height
+z_tip = 0e-9  # AFM tip height
 A_tip = 20e-9  # AFM tip tapping amplitude
 r_tip = 30e-9  # AFM tip radius of curvature
 L_tip = 350e-9  # Semi-major axis length of ellipsoid tip model
-n = 3  # Harmonic for demodulation
+n = 4  # Harmonic for demodulation
 theta_in = np.deg2rad(60)  # Light angle of incidence
-c_r = 0.5  # Experimental weighting factor
-wavenumber = np.linspace(1680, 1780, 128) * 1e2
+c_r = 0.3  # Experimental weighting factor
+k_vac = np.linspace(1680, 1800, 128) * 1e2  # Vacuum wavenumber
+method = "Mester"  # The FDM method to use
 
 # Semi-infinite superstrate and substrate
 eps_air = 1
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
-eps_PMMA = eps_Lorentz(wavenumber, 2, 1738e2, 14e-3, 20e2)
-PMMA_thickness = np.geomspace(10, 100, 32) * 1e-9
+eps_PMMA = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
+PMMA_thickness = np.geomspace(1, 35, 32) * 1e-9
 sample_PMMA = pysnom.sample.Sample(
     eps_stack=(eps_air, eps_PMMA, eps_Si),
     t_stack=(PMMA_thickness[:, np.newaxis],),
-    k_vac=wavenumber,
+    k_vac=k_vac,
 )
 
 # Model of Au dielectric function from ref [2] below
-eps_Au = eps_Drude(wavenumber, 1, 7.25e6, 2.16e4)
-sample_Au = pysnom.sample.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=wavenumber)
+eps_Au = eps_Drude(k_vac, 1, 7.25e6, 2.16e4)
+sample_Au = pysnom.sample.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 
 # Measurement
-alpha_eff_PMMA = pysnom.fdm.multi.eff_pol_n(
-    z_tip=z_tip, A_tip=A_tip, n=n, sample=sample_PMMA, r_tip=r_tip, L_tip=L_tip
+alpha_eff_PMMA = pysnom.fdm.eff_pol_n(
+    z_tip=z_tip,
+    A_tip=A_tip,
+    n=n,
+    sample=sample_PMMA,
+    r_tip=r_tip,
+    L_tip=L_tip,
+    method=method,
 )
 r_PMMA = sample_PMMA.refl_coef(theta_in=theta_in)
 sigma_PMMA = (1 + c_r * r_PMMA) ** 2 * alpha_eff_PMMA
 
 # Gold reference
-alpha_eff_Au = pysnom.fdm.bulk.eff_pol_n(
-    z_tip=z_tip, A_tip=A_tip, n=n, sample=sample_Au, r_tip=r_tip, L_tip=L_tip
+alpha_eff_Au = pysnom.fdm.eff_pol_n(
+    z_tip=z_tip,
+    A_tip=A_tip,
+    n=n,
+    sample=sample_Au,
+    r_tip=r_tip,
+    L_tip=L_tip,
+    method=method,
 )
 r_Au = sample_Au.refl_coef(theta_in=theta_in)
 sigma_Au = (1 + c_r * r_Au) ** 2 * alpha_eff_Au
@@ -67,7 +80,7 @@ sigma_n = sigma_PMMA / sigma_Au
 fig, axes = plt.subplots(nrows=2, sharex=True)
 
 # For neater plotting
-k_per_cm = wavenumber * 1e-2
+k_per_cm = k_vac * 1e-2
 thickness_nm = PMMA_thickness * 1e9
 
 SM = plt.cm.ScalarMappable(

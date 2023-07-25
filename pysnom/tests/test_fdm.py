@@ -1,38 +1,48 @@
-import numpy as np
-from scipy.integrate import quad_vec
+import pytest
 
 import pysnom
 
 
 class TestFDM:
-    z_Q = 60e-9
+    # Error messages
+    multilayer_sample_for_bulk_error = (
+        "`method`='bulk' cannot be used for multilayer samples."
+    )
+    unknown_method_error = "`method` must be one of `bulk`, `Hauer`, or `Mester`."
+    unknown_method_taylor_error = "`method` must be one of `bulk`, or `Mester`."
 
-    def test_phi_E_0_integrals(self, vector_sample_multi):
-        phi, E = pysnom.fdm.multi.phi_E_0(self.z_Q, vector_sample_multi)
+    def test_eff_pol_error_bulk_used_for_multilayer_sample(
+        self, scalar_sample_multi, scalar_AFM_params
+    ):
+        with pytest.raises(ValueError, match=self.multilayer_sample_for_bulk_error):
+            pysnom.fdm.eff_pol(
+                sample=scalar_sample_multi, **scalar_AFM_params, method="bulk"
+            )
 
-        phi_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q)) * np.exp(-x),
-            0,
-            np.inf,
-        )
-        phi_scipy /= 2 * self.z_Q
-        np.testing.assert_allclose(phi, phi_scipy)
+    def test_eff_pol_n_taylor_error_bulk_used_for_multilayer_sample(
+        self, scalar_sample_multi, scalar_AFM_params, scalar_tapping_params
+    ):
+        with pytest.raises(ValueError, match=self.multilayer_sample_for_bulk_error):
+            pysnom.fdm.eff_pol_n_taylor(
+                sample=scalar_sample_multi,
+                **scalar_AFM_params | scalar_tapping_params,
+                method="bulk"
+            )
 
-        E_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
-            * x
-            * np.exp(-x),
-            0,
-            np.inf,
-        )
-        E_scipy /= 4 * self.z_Q**2
-        np.testing.assert_allclose(E, E_scipy)
+    def test_eff_pol_error_for_unknown_method(
+        self, scalar_sample_multi, scalar_AFM_params
+    ):
+        with pytest.raises(ValueError, match=self.unknown_method_error):
+            pysnom.fdm.eff_pol(
+                sample=scalar_sample_multi, **scalar_AFM_params, method="not a method"
+            )
 
-    def test_eff_pos_and_charge_broadcasting(self, vector_sample_multi):
-        target_shape = (
-            self.z_Q * vector_sample_multi.eps_stack[0] * vector_sample_multi.t_stack[0]
-        ).shape
-        z_image, beta_image = pysnom.fdm.multi.eff_pos_and_charge(
-            self.z_Q, vector_sample_multi
-        )
-        assert z_image.shape == beta_image.shape == target_shape
+    def test_eff_pol_n_taylor_error_for_unknown_method(
+        self, scalar_sample_multi, scalar_AFM_params, scalar_tapping_params
+    ):
+        with pytest.raises(ValueError, match=self.unknown_method_taylor_error):
+            pysnom.fdm.eff_pol_n_taylor(
+                sample=scalar_sample_multi,
+                **scalar_AFM_params | scalar_tapping_params,
+                method="not a method"
+            )
