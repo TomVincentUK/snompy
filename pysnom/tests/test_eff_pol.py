@@ -15,7 +15,7 @@ class TestEffPol:
         (pysnom.fdm, {"method": "bulk"}),
         (pysnom.fdm, {"method": "Mester"}),
     ]
-    inverse_model = [pysnom.fdm]
+    inverse_model = [pysnom.fdm, pysnom.pdm]
 
     # eff_pol
 

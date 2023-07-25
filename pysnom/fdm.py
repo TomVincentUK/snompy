@@ -813,7 +813,7 @@ def refl_coef_qs_from_eff_pol(
     z_tip, alpha_eff, r_tip=None, L_tip=None, g_factor=None, d_Q0=None, d_Q1=None
 ):
     r"""Return the quasistatic reflection coefficient corresponding to a
-    particular effective polarizability.
+    particular effective polarizability using the finite dipole model.
 
     Parameters
     ----------

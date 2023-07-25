@@ -117,5 +117,23 @@ class Defaults:
         d_Qa = self.d_Qa if d_Qa is None else d_Qa
         return r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa
 
+    def _pdm_defaults(self, r_tip, eps_sphere, alpha_sphere):
+        # Set defaults
+        r_tip = self.r_tip if r_tip is None else r_tip
+
+        # alpha_sphere calculated from eps_sphere if not specified
+        if eps_sphere is None:
+            if alpha_sphere is None:
+                alpha_sphere = 4 * np.pi * r_tip**3
+        else:
+            if alpha_sphere is None:
+                alpha_sphere = (
+                    4 * np.pi * r_tip**3 * (eps_sphere - 1) / (eps_sphere + 2)
+                )
+            else:
+                raise ValueError("Either `alpha_sphere` or `eps_sphere` must be None.")
+
+        return r_tip, alpha_sphere
+
 
 defaults = Defaults()
