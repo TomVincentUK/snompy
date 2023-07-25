@@ -23,6 +23,7 @@ Functions
     :nosignatures:
     :toctree: generated/
 
+    bulk_sample
     refl_coef_qs_single
     permitivitty
 """
@@ -229,6 +230,18 @@ class Sample:
         -------
         M : complex
             The transfer matrix of the sample.
+
+        Notes
+        -----
+        This implementation of the transfer matrix method is based on the
+        description given in reference [1]_.
+
+        References
+        ----------
+        .. [1] T. Zhan, X. Shi, Y. Dai, X. Liu, and J. Zi, “Transfer matrix
+           method for optics in graphene layers,” J. Phys. Condens. Matter,
+           vol. 25, no. 21, p. 215301, May 2013,
+           doi: 10.1088/0953-8984/25/21/215301.
 
         """
         if k_vac is None:
@@ -720,6 +733,29 @@ class Sample:
 
 
 def bulk_sample(eps_sub=None, beta=None, eps_env=None, **kwargs):
+    r"""Return an object representing a bulk sample with just a
+    semi-infinite substrate and superstrate.
+
+    Parameters
+    ----------
+    eps_sub : array_like
+        Dielectric function of the semi-infinite substrate. Either
+        `eps_sub` or `beta` must be None.
+    beta : array_like
+        Quasistatic  reflection coefficients of the interface between the
+        substrate and superstrate. Either `eps_stack` or `beta_stack` must
+        be None.
+    eps_env : array_like
+        Dielectric function of the environment.
+    **kwargs : dict, optional
+        Extra keyword arguments are passed to :func:`pysnom.sample.Sample`.
+
+    Returns
+    -------
+    sample : :class:`pysnom.sample.Sample`
+        Object representing the sample.
+
+    """
     eps_env = defaults.eps_env if eps_env is None else eps_env
     eps_stack = None if eps_sub is None else (eps_env, eps_sub)
     beta_stack = None if beta is None else (beta,)
@@ -747,8 +783,6 @@ def refl_coef_qs_single(eps_i, eps_j):
 
     See also
     --------
-    refl_coef_qs_ml :
-        Momentum-dependent reflection coefficient for multilayer samples.
     permitivitty :
         The inverse of this function.
 

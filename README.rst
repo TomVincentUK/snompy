@@ -18,8 +18,6 @@ Tasks / issues
 
 * Finish API docs:
 
-  * Make sure all public methods and classes have docstrings.
-
   * Make sure all links work
 
 * Finish/rewrite narrative documentation:
