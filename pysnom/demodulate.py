@@ -31,8 +31,8 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
     Parameters
     ----------
     f_x : callable
-        The function to demodulate. Must be of the form ``f(x, *args)``,
-        where `x` is a scalar quantity.
+        The function to demodulate. Must be of the form
+        ``f(x, *args, **kwargs)``, where `x` is a scalar quantity.
     x_0 : float
         The centre of modulation for the parameter `x`.
     x_amplitude : float
@@ -54,14 +54,14 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
 
     Notes
     -----
-    For a function in the form `f_x(x, *args)`, :func:`demod` calculates
+    For a function in the form `f_x(x, *args, **kwargs)`, :func:`demod` calculates
 
     .. math::
 
         \frac{1}{2 \pi}
         \int_{-\pi}^{\pi}
         \mathtt{f\_x(x\_0} + \mathtt{x\_amplitude} \cdot \cos(\theta)
-        \mathtt{, *args)}
+        \mathtt{, *args, **kwargs)}
         e^{-i \theta \cdot \mathtt{n}}
         d{\theta}
 

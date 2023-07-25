@@ -309,7 +309,7 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
 
     where :math:`\hat{F_n}[f_{geom}(j)]` is the :math:`n^{th}` Fourier
     coefficient of the function :math:`f_{geom}^j`, and :math:`f_{geom}`
-    is implemented here as :func:`geom_func_taylor`.
+    is implemented here as :func:`geom_func`.
 
     """
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
@@ -572,7 +572,7 @@ def refl_coef_qs_from_eff_pol(
     See also
     --------
     eff_pol : The inverse of this function.
-    refl_coef_qs_from_n : The demodulated equivalent of this function.
+    refl_coef_qs_from_eff_pol_n : The demodulated equivalent of this function.
 
     Notes
     -----

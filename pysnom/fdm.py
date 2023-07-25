@@ -303,7 +303,7 @@ def eff_pol(
 
 def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
     r"""Return a complex number that encapsulates various geometric
-    properties of the tip-sample system for bulk finite dipole model.
+    properties of the tip-sample system for the finite dipole model.
 
     Parameters
     ----------
@@ -541,11 +541,17 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
 
     .. math::
 
-        a_j = \frac{1}{2} \hat{F_n}[f_t(j)],
+        a_j =
+        \begin{cases}
+            1, & \text{if  $j = 0$, $n = 0$}\\
+            0, & \text{if  $j = 0$, $n \neq 0$}\\
+            \frac{1}{2} \hat{F_n}[f_t(j)], & \text{if $j \neq 0$}
+        \end{cases}
 
     where :math:`\hat{F_n}[f_t(j)]` is the :math:`n^{th}` Fourier
     coefficient of the function :math:`f_t(j)`, which is implemented here
     as :func:`geom_func_taylor`.
+
     """
     # Set oscillation centre so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
@@ -654,11 +660,10 @@ def eff_pol_n_taylor(
     use :func:`eff_pol_n`
 
     This function implements
-    :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
-    :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
-    :math:`j` is the index of the Taylor series, :math:`J` is
-    `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
-    here as :func:`taylor_coef`.
+    :math:`\alpha_{eff, n} = \sum_{j=0}^{J} a_j \beta^j`, where
+    :math:`\beta` is `beta`, :math:`j` is the index of the Taylor series,
+    :math:`J` is `n_tayl` and :math:`a_j` is the Taylor coefficient,
+    implemented here as :func:`taylor_coef`.
     """
     # Set defaults
     r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa = defaults._fdm_defaults(
@@ -855,7 +860,7 @@ def refl_coef_qs_from_eff_pol(
     See also
     --------
     eff_pol : The inverse of this function.
-    refl_coef_qs_from_n : The demodulated equivalent of this function.
+    refl_coef_qs_from_eff_pol_n : The demodulated equivalent of this function.
 
     Notes
     -----

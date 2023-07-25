@@ -10,10 +10,6 @@ Tasks / issues
 
   * Add a wishlist to development (e.g. Lightning-rod model).
 
-* Finish API docs:
-
-  * Make sure all links work
-
 * Finish/rewrite narrative documentation:
 
   * Go through all examples and update them to use the new API
