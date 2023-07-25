@@ -24,7 +24,7 @@ z_tip = 0e-9  # AFM tip height
 A_tip = 20e-9  # AFM tip tapping amplitude
 r_tip = 30e-9  # AFM tip radius of curvature
 L_tip = 350e-9  # Semi-major axis length of ellipsoid tip model
-n = 4  # Harmonic for demodulation
+n = 3  # Harmonic for demodulation
 theta_in = np.deg2rad(60)  # Light angle of incidence
 c_r = 0.3  # Experimental weighting factor
 k_vac = np.linspace(1680, 1800, 128) * 1e2  # Vacuum wavenumber
@@ -37,7 +37,7 @@ eps_Si = 11.7  # Si permitivitty in the mid-infrared
 # Very simplified model of PMMA dielectric function based on ref [1] below
 eps_PMMA = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
 PMMA_thickness = np.geomspace(1, 35, 32) * 1e-9
-sample_PMMA = pysnom.sample.Sample(
+sample_PMMA = pysnom.Sample(
     eps_stack=(eps_air, eps_PMMA, eps_Si),
     t_stack=(PMMA_thickness[:, np.newaxis],),
     k_vac=k_vac,
@@ -57,8 +57,8 @@ alpha_eff_PMMA = pysnom.fdm.eff_pol_n(
     L_tip=L_tip,
     method=method,
 )
-r_PMMA = sample_PMMA.refl_coef(theta_in=theta_in)
-sigma_PMMA = (1 + c_r * r_PMMA) ** 2 * alpha_eff_PMMA
+r_coef_PMMA = sample_PMMA.refl_coef(theta_in=theta_in)
+sigma_PMMA = (1 + c_r * r_coef_PMMA) ** 2 * alpha_eff_PMMA
 
 # Gold reference
 alpha_eff_Au = pysnom.fdm.eff_pol_n(
@@ -70,8 +70,8 @@ alpha_eff_Au = pysnom.fdm.eff_pol_n(
     L_tip=L_tip,
     method=method,
 )
-r_Au = sample_Au.refl_coef(theta_in=theta_in)
-sigma_Au = (1 + c_r * r_Au) ** 2 * alpha_eff_Au
+r_coef_Au = sample_Au.refl_coef(theta_in=theta_in)
+sigma_Au = (1 + c_r * r_coef_Au) ** 2 * alpha_eff_Au
 
 # Normalised complex scattering
 sigma_n = sigma_PMMA / sigma_Au

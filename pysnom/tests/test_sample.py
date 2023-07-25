@@ -44,19 +44,19 @@ class TestSample:
     # Input tests
     def test_error_when_no_eps_or_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            pysnom.sample.Sample()
+            pysnom.Sample()
 
     def test_error_when_both_eps_and_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            pysnom.sample.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
+            pysnom.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
 
     def test_error_when_eps_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            pysnom.sample.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
+            pysnom.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
 
     def test_error_when_beta_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            pysnom.sample.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
+            pysnom.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
 
     def test_transfer_matrix_errors_when_no_k_vac(self):
         eps_sub = 10
@@ -105,28 +105,26 @@ class TestSample:
                 ]
             ),
         ):
-            pysnom.sample.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
+            pysnom.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
 
     # Behaviour tests
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.sample.Sample(
+        sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         assert sample.multilayer == (np.shape(sample.t_stack)[0] > 0)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_eps_beta_conversion_reversible(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.sample.Sample(
+        sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         if eps_stack is not None:
-            from_beta = pysnom.sample.Sample(
-                beta_stack=sample.beta_stack, t_stack=t_stack
-            )
+            from_beta = pysnom.Sample(beta_stack=sample.beta_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_beta.eps_stack)
         if beta_stack is not None:
-            from_eps = pysnom.sample.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
+            from_eps = pysnom.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_eps.eps_stack)
 
     @pytest.mark.parametrize("eps_i", np.linspace(0.9, 1.1, 3))
@@ -146,7 +144,7 @@ class TestSample:
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_outputs_correct_shape(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.sample.Sample(
+        sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         k_vac = np.ones_like(sample.eps_stack[0], dtype=float)

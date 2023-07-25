@@ -42,8 +42,8 @@ html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 html_context = {"default_mode": "light"}
 
-# Remove contents from user guide index
-html_sidebars = {"guide/index": []}
+# # Remove contents from user guide index
+# html_sidebars = {"guide/index": []}
 
 autosummary_generate = True
 autosummary_imported_members = True

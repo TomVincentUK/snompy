@@ -11,7 +11,7 @@ def scalar_sample_bulk():
 
 @pytest.fixture
 def scalar_sample_multi():
-    return pysnom.sample.Sample(eps_stack=(1, 2 + 1j, 10), t_stack=(50e-9,))
+    return pysnom.Sample(eps_stack=(1, 2 + 1j, 10), t_stack=(50e-9,))
 
 
 @pytest.fixture
@@ -42,7 +42,7 @@ def vector_sample_multi():
         osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
     )  # Lorentzian oscillator
     thickness = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
-    return pysnom.sample.Sample(
+    return pysnom.Sample(
         eps_stack=(eps_env, eps_middle, eps_substrate), t_stack=(thickness,)
     )
 
