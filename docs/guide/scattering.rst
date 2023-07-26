@@ -7,23 +7,14 @@ In both the finite dipole model (FDM) and the point dipole model (PDM), the SNOM
 On this page we'll explain why that works, without worrying about which model to use.
 We'll also introduce the :class:`pysnom.Sample` object, which is used in this package to represent different types of sample that can be measured by SNOM.
 
-.. .. note::
-
-..    In practice, it's common to use :math:`\alpha_{eff, n}`, which is
-..    :math:`\alpha_{eff}` demodulated at the :math:`n^{th}` harmonic of the
-..    AFM tip tapping frequency.
-..    The :ref:`demodulation` page of this guide explains why that's
-..    necessary, and how it's implemented in ``pysnom``.
 
 Scattering and effective polarizability
 ---------------------------------------
 
-The image below shows a typical scattering SNOM experiment, in which we
-illuminate an AFM tip and sample with far-field light whose electric field
-we can call :math:`E_{in}`.
-This excites a near field at the apex of the AFM tip, which interacts with
-the sample and scatters light with electric field :math:`E_{scat}` back
-into the far-field.
+The image below shows a typical scattering SNOM experiment.
+A far-field light source with electric field :math:`E_{in}` shines onto an AFM tip close to a sample.
+The electric field interacts with the charges in the tip and sample to create a near-field polarization.
+Because they are close, the tip and sample couple together to produce a combined dipole in response to the electric field, which scatters light with electric field :math:`E_{scat}` back into the far field.
 
 .. image:: scattering/tip_sample.svg
    :align: center
@@ -35,7 +26,7 @@ light to the incident light as
 .. math::
    :label: scatter_def
 
-   \sigma_{scat} = \frac{E_{scat}}{E_{in}}.
+   \sigma_{scat} = \frac{E_{scat}}{E_{in}} = (1 + c r)^2 \alpha_{eff}.
 
 When the incident light falls on the tip and sample, the electric field
 induces a polarization of the charges inside them, and a consequent dipole

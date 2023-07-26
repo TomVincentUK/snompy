@@ -22,19 +22,19 @@ NOTE TO SELF: user guide plan
 
   * Sample, tip, incident and scattered light:
 
-    * Effective polarisability scatters near-field into far-field
+    * Dipole formed by the coupled tip and sample scatters near-field into far-field
     * Far-field factor from sample
 
-  * Specifying samples in pysnom
+* Specifying samples in pysnom
 
-    * Samples are layered and extend infinitely
-    * Sample object can be specified by eps_stack, t_stack
-    * Sample object returns quasistatic reflection coefficients
-    * Sample object can be specified by beta_stack
-    * eps or beta can be different shapes: produces expected shape for output
-    * Sample can calculate far-field Fresnel reflection for different angles, but needs to be told k_vac
-    * Can also give k_vac as an argument at initialisation, as it doesn't usually change
-    * Bulk samples can be made easily using :func:`pysnom.sample.bulk_sample`.
+  * Samples are layered and extend infinitely
+  * Sample object can be specified by eps_stack, t_stack
+  * Sample object returns quasistatic reflection coefficients
+  * Sample object can be specified by beta_stack
+  * eps or beta, and t can be different shapes: produces expected shape for output
+  * Sample can calculate far-field Fresnel reflection for different angles, but needs to be told k_vac
+  * Can also give k_vac as an argument at initialisation, as it doesn't usually change
+  * Bulk samples can be made easily using :func:`pysnom.sample.bulk_sample`.
 
 .. toctree::
    :maxdepth: 1
