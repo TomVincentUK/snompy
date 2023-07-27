@@ -6,12 +6,12 @@ Finite dipole model (:mod:`pysnom.fdm`)
 
 This module provides functions for simulating the results of scanning
 near-field optical microscopy (SNOM) experiments by calculating the
-effective polarisability using the finite dipole model (FDM).
+effective polarizability using the finite dipole model (FDM).
 
 Standard functions
 ^^^^^^^^^^^^^^^^^^
-Functions for the effective polarisability of an AFM tip coupled to a
-sample, and the effective polarisability demodulated at higher harmonics.
+Functions for the effective polarizability of an AFM tip coupled to a
+sample, and the effective polarizability demodulated at higher harmonics.
 
 .. autosummary::
     :nosignatures:
@@ -23,7 +23,7 @@ sample, and the effective polarisability demodulated at higher harmonics.
 Inverse functions
 ^^^^^^^^^^^^^^^^^
 Functions to return the quasistatic reflection coefficient of a sample
-based on the effective polarisability of an AFM tip coupled to the sample.
+based on the effective polarizability of an AFM tip coupled to the sample.
 
 .. autosummary::
     :nosignatures:

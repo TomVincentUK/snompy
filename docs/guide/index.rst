@@ -40,8 +40,7 @@ NOTE TO SELF: user guide plan
    :maxdepth: 1
 
    intro
-   scattering
-   bulk_fdm
-   multi_fdm
-   bulk_pdm
+   basics
+   fdm
+   pdm
    demodulation

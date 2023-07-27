@@ -222,7 +222,7 @@ class Sample:
             matrix method. Should be broadcastable with all
             `eps_stack[i, ...]`.
         polarization: {"p", "s"}
-            The polarisation of the incident light. "p" for parallel to the
+            The polarization of the incident light. "p" for parallel to the
             plane of incidence, and "s" for perpendicular (from the German
             word *senkrecht*).
 
@@ -339,7 +339,7 @@ class Sample:
             matrix method. Should be broadcastable with all
             `eps_stack[i, ...]`.
         polarization: {"p", "s"}
-            The polarisation of the incident light. "p" for parallel to the
+            The polarization of the incident light. "p" for parallel to the
             plane of incidence, and "s" for perpendicular (from the German
             word *senkrecht*).
 
@@ -375,7 +375,7 @@ class Sample:
             matrix method. Should be broadcastable with all
             `eps_stack[i, ...]`.
         polarization: {"p", "s"}
-            The polarisation of the incident light. "p" for parallel to the
+            The polarization of the incident light. "p" for parallel to the
             plane of incidence, and "s" for perpendicular (from the German
             word *senkrecht*).
 
