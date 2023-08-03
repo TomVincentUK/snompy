@@ -16,6 +16,6 @@ Working with samples
 
 .. doctest::
 
-   >>> sample = pysnom.sample.bulk_sample([10, 20])
+   >>> sample = pysnom.bulk_sample([10, 20])
    >>> print(sample.beta_stack)
    [0.81818182+0.j]
