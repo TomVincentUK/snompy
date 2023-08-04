@@ -45,7 +45,7 @@ sample_PMMA = pysnom.Sample(
 
 # Model of Au dielectric function from ref [2] below
 eps_Au = eps_Drude(k_vac, 1, 7.25e6, 2.16e4)
-sample_Au = pysnom.sample.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
+sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 
 # Measurement
 alpha_eff_PMMA = pysnom.fdm.eff_pol_n(

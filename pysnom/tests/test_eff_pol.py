@@ -191,7 +191,7 @@ class TestEffPol:
         beta_in = np.linspace(0.9, 0.1, n_test_beta) * np.exp(
             1j * np.linspace(0, np.pi, n_test_beta)
         )
-        sample = pysnom.sample.bulk_sample(beta=beta_in)
+        sample = pysnom.bulk_sample(beta=beta_in)
 
         alpha_eff = model.eff_pol(sample=sample, **vector_AFM_params)
         beta_out = model.refl_coef_qs_from_eff_pol(
@@ -210,7 +210,7 @@ class TestEffPol:
             1j * np.linspace(0, np.pi, n_test_beta)
         )
         beta_in = np.hstack([beta_in, -0.5 + 0.5j])  # a case with multiple solutions
-        sample = pysnom.sample.bulk_sample(beta=beta_in)
+        sample = pysnom.bulk_sample(beta=beta_in)
 
         alpha_eff_n = model.eff_pol_n_taylor(
             sample=sample, **vector_AFM_params | vector_tapping_params

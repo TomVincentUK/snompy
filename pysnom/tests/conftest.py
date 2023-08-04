@@ -6,7 +6,7 @@ import pysnom
 
 @pytest.fixture
 def scalar_sample_bulk():
-    return pysnom.sample.bulk_sample(2 + 1j)
+    return pysnom.bulk_sample(2 + 1j)
 
 
 @pytest.fixture
@@ -25,7 +25,7 @@ def vector_sample_bulk():
     eps_substrate = eps_inf + (osc_strength * osc_freq**2) / (
         osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
     )  # Lorentzian oscillator
-    return pysnom.sample.bulk_sample(eps_substrate)
+    return pysnom.bulk_sample(eps_substrate)
 
 
 @pytest.fixture

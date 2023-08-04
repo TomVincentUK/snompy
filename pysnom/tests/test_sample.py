@@ -62,10 +62,10 @@ class TestSample:
         eps_sub = 10
         k_vac = 1.0
         # No error when k_vac specified at init or function call
-        k_at_init = pysnom.sample.bulk_sample(eps_sub=eps_sub, k_vac=k_vac)
+        k_at_init = pysnom.bulk_sample(eps_sub=eps_sub, k_vac=k_vac)
         k_at_init.refl_coef()
 
-        no_k_at_init = pysnom.sample.bulk_sample(eps_sub=eps_sub)
+        no_k_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
         no_k_at_init.refl_coef(k_vac=k_vac)
 
         # Error with no k_vac
@@ -73,7 +73,7 @@ class TestSample:
             no_k_at_init.refl_coef()
 
     def test_transfer_matrix_errors_when_theta_and_q(self):
-        sample = pysnom.sample.bulk_sample(eps_sub=10, k_vac=1.0)
+        sample = pysnom.bulk_sample(eps_sub=10, k_vac=1.0)
         q = theta_in = 0.0
 
         # No error when theta_in or q specified separately
@@ -85,7 +85,7 @@ class TestSample:
             sample.transfer_matrix(q=q, theta_in=theta_in)
 
     def test_transfer_matrix_errors_for_unknown_polarization(self):
-        sample = pysnom.sample.bulk_sample(eps_sub=10, k_vac=1.0)
+        sample = pysnom.bulk_sample(eps_sub=10, k_vac=1.0)
         # No error for "p" or "s"
         sample.transfer_matrix(polarization="p")
         sample.transfer_matrix(polarization="s")
