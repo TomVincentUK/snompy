@@ -3,11 +3,27 @@
 Working with samples
 ====================
 
+Samples in ``pysnom`` are represented by instances of the :class:`~pysnom.sample.Sample` class.
+This page gives an overview of how samples are modelled in the :ref:`finite dipole model  (FDM) <fdm>` and :ref:`point dipole model (PDM) <pdm>`, with examples of how to create different types of :class:`~pysnom.sample.Sample` object in ``pysnom``.
+
+Bulk samples
+------------
+
+The simplest sort of sample to use for SNOM modelling is a bulk sample.
+These are infinite in the :math:`x` and :math:`y` directions, and are made of:
+
+*  a semi-infinite environment (sometimes called the superstrate) stretching from :math:`z=0` to :math:`\infty`,
+*  a surface at :math:`z=0`, and
+*  a semi-infinite substrate stretching from :math:`z=0` to :math:`-\infty`.
+
+In ``pysnom``, bulk samples can be created with the :func:`~pysnom.sample.bulk_sample` function.
+
+
 Samples in SNOM modelling
 -------------------------
 
 Samples in the :ref:`finite dipole <fdm>` and :ref:`point dipole <pdm>` models are represented by layered structures extending infinitely in the :math:`x`-:math:`y` plane.
-The top interface is at :math:`z = 0`, and above this (:math:`z > 0`) there is a semi-infinite environment or superstrate.
+The top interface is at :math:`z = 0`, and above this (:math:`z > 0`) is a semi-infinite environment or superstrate.
 There is also a semi-infinite substrate below the lowest interface.
 
 The way that different kinds of material interact with light can be described by their `relative permittivity <https://en.wikipedia.org/wiki/Relative_permittivity>`_, :math:`\varepsilon`.
@@ -54,8 +70,6 @@ The image below shows examples of both kinds of sample.
    :align: center
    :alt: WRITE ME.
 
-Creating samples
-----------------
 
 * Specifying samples in pysnom
 
