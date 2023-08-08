@@ -265,7 +265,9 @@ class Sample:
                 raise ValueError("Either `theta_in` or `q` must be None.")
 
         # Wavevector in each layer
-        k_z_medium = np.sqrt(self.eps_stack * k_vac**2 - q**2)
+        k_z_medium = np.stack(
+            [np.sqrt(eps * k_vac**2 - q**2) for eps in self.eps_stack]
+        )
 
         # Transmission matrix depends on polarization
         if polarization == "p":
