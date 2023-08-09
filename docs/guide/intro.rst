@@ -70,7 +70,7 @@ This example uses both the FDM and PDM  to calculate the decay of the SNOM ampli
 Thickness-dependent PMMA spectra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This more involved example uses the a multilayer FDM to simulate a SNOM spectrum from a thin layer of poly(methyl methacrylate) (PMMA) on silicon, for different thicknesses of PMMA, and normalises the signal to a reference spectrum taken from bulk gold.
+This more involved example uses the a multilayer FDM to simulate a SNOM spectrum from a thin layer of `poly(methyl methacrylate) <https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)>`_ (PMMA) on silicon, for different thicknesses of PMMA, and normalises the signal to a reference spectrum taken from bulk gold.
 It also includes the effects of the far-field reflection coefficient of the sample on the observed SNOM spectra.
 
 .. plot:: guide/intro/spectra.py

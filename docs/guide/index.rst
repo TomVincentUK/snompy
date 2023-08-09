@@ -15,6 +15,7 @@ For more detailed documentation of the functions provided by this package, see :
    intro
    basics
    sample
+   far-field
    fdm
    pdm
    demodulation

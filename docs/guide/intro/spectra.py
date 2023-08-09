@@ -35,11 +35,11 @@ eps_air = 1
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
-eps_PMMA = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
-PMMA_thickness = np.geomspace(1, 35, 32) * 1e-9
-sample_PMMA = pysnom.Sample(
-    eps_stack=(eps_air, eps_PMMA, eps_Si),
-    t_stack=(PMMA_thickness[:, np.newaxis],),
+eps_pmma = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
+pmma_thickness = np.geomspace(1, 35, 32) * 1e-9
+sample_pmma = pysnom.Sample(
+    eps_stack=(eps_air, eps_pmma, eps_Si),
+    t_stack=(pmma_thickness[:, np.newaxis],),
     k_vac=k_vac,
 )
 
@@ -48,17 +48,17 @@ eps_Au = eps_Drude(k_vac, 1, 7.25e6, 2.16e4)
 sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 
 # Measurement
-alpha_eff_PMMA = pysnom.fdm.eff_pol_n(
+alpha_eff_pmma = pysnom.fdm.eff_pol_n(
     z_tip=z_tip,
     A_tip=A_tip,
     n=n,
-    sample=sample_PMMA,
+    sample=sample_pmma,
     r_tip=r_tip,
     L_tip=L_tip,
     method=method,
 )
-r_coef_PMMA = sample_PMMA.refl_coef(theta_in=theta_in)
-sigma_PMMA = (1 + c_r * r_coef_PMMA) ** 2 * alpha_eff_PMMA
+r_coef_pmma = sample_pmma.refl_coef(theta_in=theta_in)
+sigma_pmma = (1 + c_r * r_coef_pmma) ** 2 * alpha_eff_pmma
 
 # Gold reference
 alpha_eff_Au = pysnom.fdm.eff_pol_n(
@@ -74,14 +74,14 @@ r_coef_Au = sample_Au.refl_coef(theta_in=theta_in)
 sigma_Au = (1 + c_r * r_coef_Au) ** 2 * alpha_eff_Au
 
 # Normalised complex scattering
-sigma_n = sigma_PMMA / sigma_Au
+sigma_n = sigma_pmma / sigma_Au
 
 # Plot output
 fig, axes = plt.subplots(nrows=2, sharex=True)
 
 # For neater plotting
 k_per_cm = k_vac * 1e-2
-thickness_nm = PMMA_thickness * 1e9
+thickness_nm = pmma_thickness * 1e9
 
 SM = plt.cm.ScalarMappable(
     cmap=plt.cm.Spectral_r,

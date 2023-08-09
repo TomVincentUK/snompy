@@ -10,7 +10,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
-    "sphinx.ext.doctest",
     "sphinx_design",
     "sphinx_togglebutton",
     "numpydoc",
@@ -43,22 +42,12 @@ html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 html_context = {"default_mode": "light"}
 
-# # Remove contents from user guide index
-# html_sidebars = {"guide/index": []}
-
 autosummary_generate = True
 autosummary_imported_members = True
-# numpydoc_show_class_members = False
 numpydoc_class_members_toctree = False
 
 add_function_parentheses = True
 numpydoc_use_plots = True
-
-doctest_test_doctest_blocks = ""
-doctest_global_setup = """
-import numpy as np
-import pysnom
-"""
 
 plot_pre_code = """
 import numpy as np
