@@ -60,7 +60,7 @@ We can see that :func:`~pysnom.sample.bulk_sample` creates an instance of the :c
 The layers of the sample are represented by a complex array of :math:`\varepsilon` values called `eps_stack`, which for our simple bulk sample has just two elements.
 The first of these corresponds to the environment, and the second to the substrate.
 
-.. note::
+.. hint::
 
    We didn't have to specify the environment dielectric here, as we just used the default value of 1, but if needed :func:`~pysnom.bulk_sample` has an optional argument `eps_env`.
 
@@ -84,6 +84,7 @@ This can be done easily like:
    array([ 1. +0.j, 11.7+0.j])
 
 We can see that creating samples via `eps_sub` and `beta` lead to equivalent results.
+
 
 Creating dispersive samples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

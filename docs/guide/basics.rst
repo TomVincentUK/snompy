@@ -37,6 +37,7 @@ The right-hand side of the equation is made from two parts:
    This determines the strength of the near-field polarization that is excited by :math:`E_{in}`, so it contains all the information about the near-field sample interaction.
 
    The value of :math:`\alpha_{eff}` is challenging to model, and depends on many factors, including the dielectric function of the sample, the shape of the tip, and the distance between the tip and sample.
+
    The main task of ``pysnom`` is to calculate :math:`\alpha_{eff}` using different methods (see :ref:`FDM <fdm>` and :ref:`PDM <pdm>` for details).
 
 *  A **far-field factor**, :math:`(1 + c_r r)^2`.
@@ -45,15 +46,17 @@ The right-hand side of the equation is made from two parts:
    As shown by the diagram above, the :math:`(1 + c_r r)` term appears because the tip is illuminated both directly and through reflection from the sample surface.
    The scattered light is also detected directly and by reflection, which means the total contribution from the far field appears twice, as :math:`(1 + c_r r) (1 + c_r r) = (1 + c_r r)^2`.
 
-.. hint::
-   .. _far_field_warning:
+   See :ref:`far-field` for details of how to calculate this term using ``pysnom``.
 
-   It's common to assume that the :math:`(1 + c_r r)^2` term will be constant throughout a SNOM experiment, because the area of the far-field laser spot is so much bigger than the near-field-confined area probed by SNOM.
-   So it's often neglected in analysis.
+   .. hint::
+      .. _far_field_warning:
 
-   However, there are many occasions where the far-field reflection coefficient *does* have a significant affect on results, particularly
-   near large features or on cluttered substrates [1]_.
-   *Don't neglect it without thinking!*
+      It's common to assume that the :math:`(1 + c_r r)^2` term will be constant throughout a SNOM experiment, because the area of the far-field laser spot is so much bigger than the near-field-confined area probed by SNOM.
+      So it's often neglected in analysis.
+
+      However, there are many occasions where the far-field reflection coefficient *does* have a significant affect on results, particularly
+      near large features or on cluttered substrates [1]_.
+      *Don't neglect it without thinking!*
 
 SNOM experiments are typically sensitive to not just the amplitude but also
 the phase of the scattered light, relative to the incident light.
@@ -136,16 +139,15 @@ where a superscript :math:`\text{(ref)}` indicates a quantity taken from the ref
 Here the unknown :math:`E_{in}` terms cancel, and (provided the experimental conditions remain the same) any detector-related effects should also cancel.
 As any unknown conditions have been removed, :math:`\eta_n` can be used for quantitative comparisons between experimental and modelled data.
 
-.. hint::
-   Additionally, if :math:`r \approx r^{\text{(ref)}}` the far-field terms should cancel too, meaning
+Additionally, if :math:`r \approx r^{\text{(ref)}}` the far-field terms should cancel too, meaning
 
-   .. math::
-      :label: eta_n_no_far_field
+.. math::
+   :label: eta_n_no_far_field
 
-      \eta_n
-      \approx \frac{\alpha_{eff, n}}{\alpha_{eff, n}^{\text{(ref)}}}
+   \eta_n
+   \approx \frac{\alpha_{eff, n}}{\alpha_{eff, n}^{\text{(ref)}}}
 
-   (however see :ref:`the hint above <far_field_warning>` for advice on when this is safe to do).
+(however see :ref:`the hint above <far_field_warning>` for advice on when this is safe to do).
 
 References
 ----------
