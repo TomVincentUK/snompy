@@ -36,10 +36,10 @@ eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
 eps_pmma = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
-pmma_thickness = np.geomspace(1, 35, 32) * 1e-9
+t_pmma = np.geomspace(1, 35, 32) * 1e-9  # A range of thicknesses
 sample_pmma = pysnom.Sample(
     eps_stack=(eps_air, eps_pmma, eps_Si),
-    t_stack=(pmma_thickness[:, np.newaxis],),
+    t_stack=(t_pmma[:, np.newaxis],),
     k_vac=k_vac,
 )
 
@@ -81,14 +81,14 @@ fig, axes = plt.subplots(nrows=2, sharex=True)
 
 # For neater plotting
 k_per_cm = k_vac * 1e-2
-thickness_nm = pmma_thickness * 1e9
+t_nm = t_pmma * 1e9
 
 SM = plt.cm.ScalarMappable(
     cmap=plt.cm.Spectral_r,
-    norm=Normalize(vmin=thickness_nm.min(), vmax=thickness_nm.max()),
+    norm=Normalize(vmin=t_nm.min(), vmax=t_nm.max()),
 )  # This maps thickness to colour
 
-for t, sigma in zip(thickness_nm, sigma_n):
+for t, sigma in zip(t_nm, sigma_n):
     c = SM.to_rgba(t)
     axes[0].plot(k_per_cm, np.abs(sigma), c=c)
     axes[1].plot(k_per_cm, np.angle(sigma), c=c)

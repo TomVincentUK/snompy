@@ -278,9 +278,109 @@ This makes it clear that bulk samples are actually just a special case of multil
 Creating dispersive samples with varying thickness
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-PLAN:
+In the section on bulk samples above, we showed how you can create a single :class:`~pysnom.sample.Sample` object with an array of permitivitties to represent a dispersive sample.
 
-* Recreate example figure here to show numpy broadcasting
+Let's show the same process for multilayer samples, by creating a thin layer of 50 nm of PMMA on Si.
+We already defined permitivitties for Si and PMMA above, so we can reuse the same values here:
+
+.. plot::
+   :context:
+
+   >>> t_pmma = 50e-9
+   >>> pmma_si = pysnom.Sample(
+   ...     eps_stack=(eps_air, eps_pmma, eps_si),
+   ...     t_stack=(t_pmma,),
+   ...     k_vac=wavenumber,
+   ... )
+
+Remember that `eps_pmma` is a 128-value ``numpy`` array, but `eps_air` and `eps_si` are scalar values.
+Let's compare the shape of the resulting `eps_stack` with the shapes of the inputs:
+
+.. plot::
+   :context:
+
+   >>> [np.shape(eps) for eps in (eps_air, eps_pmma, eps_si)]
+   [(), (128,), ()]
+   >>> pmma_si.eps_stack.shape
+   (3, 128)
+   >>> pmma_si.eps_stack[:, :4]
+   array([[ 1.        +0.j        ,  1.        +0.j        ,
+            1.        +0.j        ,  1.        +0.j        ],
+          [ 2.20736131+0.03514527j,  2.21053732+0.03628489j,
+            2.21381045+0.03748023j,  2.21718504+0.03873494j],
+           [11.7       +0.j        , 11.7       +0.j        ,
+            11.7       +0.j        , 11.7       +0.j        ]])
+
+We can see that ``pysnom`` automatically pads the input permitivitties so that each layer of the stack has the same shape.
+This same process also works for `beta_stack` and `t_stack`.
+
+What if we want to also vary the thickness of the PMMA?
+As we did for the permitivitty, we can create a single :class:`pysnom.sample.Sample` object with a range of thickness values.
+In fact, ``pysnom`` takes advantage of `numpy broadcasting <https://numpy.org/doc/stable/user/basics.broadcasting.html>`_, meaning that one sample can have both a range of thickness values and a range of permitivitties, as long as all the input arrays broadcast nicely with each other.
+
+We can check whether two arrays broadcast nicely by adding them together.
+If we don't get an error, the shape of the resulting array should tell us our broadcast shape:
+
+.. plot::
+   :context:
+
+   >>> t_pmma_varied = np.linspace(1, 400, 32) * 1e-9
+   >>> t_pmma_varied = t_pmma_varied[:, np.newaxis]  # Add new axis for broadcasting
+   >>> (eps_pmma + t_pmma_varied).shape  # Error if arrays don't broadcast
+   (32, 128)
+
+
+Now we know our arrays broadcast nicely, let's show the advantage of broadcasting, by calculating the far-field reflection spectrum for all 32 thicknesses of PMMA in one vectorized calculation (see :ref:`far-field` for more detail):
+
+.. plot::
+   :context:
+
+   >>> pmma_si_varied = pysnom.Sample(
+   ...     eps_stack=(eps_air, eps_pmma, eps_si),
+   ...     t_stack=(t_pmma_varied,),
+   ...     k_vac=wavenumber,
+   ... )
+   >>> theta_in = np.deg2rad(70)  # Incident angle of light
+   >>> r_p = pmma_si_varied.refl_coef(theta_in)
+   >>> r_p.shape
+   (32, 128)
+
+We can see that our far-field reflection coefficient `r_p` has the same shape as the broadcast array from our inputs.
+Let's plot this in 3D to see what this looks like:
+
+.. plot::
+   :context:
+
+   >>> fig, ax = plt.subplots(subplot_kw={"projection":"3d"})
+   >>> for i, t in enumerate(t_pmma_varied * 1e9):
+   ...     l_real, = ax.plot(
+   ...         wavenumber * 1e-2,
+   ...         r_p[i].real,
+   ...         t,
+   ...         zdir="x",
+   ...         c='C0'
+   ...     )
+   ...     l_imag, = ax.plot(
+   ...         wavenumber * 1e-2,
+   ...         r_p[i].imag,
+   ...         t,
+   ...         zdir="x",
+   ...         c='C1'
+   ...     )
+   >>> ax.set(
+   ...    xlabel=r"$t_{PMMA}$ / nm",
+   ...    ylabel=r"$k$ / cm$^-1$",
+   ...    zlabel=r"$r_p$",
+   ... )
+   >>> ax.legend((l_real, l_imag), ("real", "imag"))
+   >>> fig.tight_layout()
+   >>> plt.show()
+
+.. plot::
+   :context:
+   :include-source: false
+
+   plt.close()
 
 Momentum-dependence
 ^^^^^^^^^^^^^^^^^^^
