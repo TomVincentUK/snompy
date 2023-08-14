@@ -25,3 +25,6 @@ Fresnel reflection coefficient
 
 The Fresnel reflection coefficient relates the strength of an incident light beam to the beam that gets reflected from it's surface.
 
+.. image:: far-field/fresnel.svg
+   :align: center
+
