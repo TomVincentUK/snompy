@@ -71,10 +71,74 @@ Accounting for far-field in SNOM simulations
 --------------------------------------------
 
 The most common use for the far-field reflection coefficient in ``pysnom`` is to calculate the far-field factor :math:`(1 + c_r r)^2` (as in equation :eq:`demod_scatter_recap`).
-In this section we'll show a worked example of how that can be done, by simulating SNOM spectra from `poly(methyl methacrylate) <https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)>`_ (PMMA) layers of different thickness on Si.
+In this section we'll show a worked example, by simulating a SNOM spectrum from a layer of `poly(methyl methacrylate) <https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)>`_ (PMMA) on Si.
 
-Let's start by creating a model of permittivity for our PMMA
+Far-field factor from a bulk reference
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We'll :ref:`normalize our spectrum <normalization>` to bulk Si.
+Let's start by creating a :class:`~pysnom.sample.Sample` object for our reference (see :ref:`sample` for a guide to sample creation):
+
+.. plot::
+   :context:
+
+   >>> import pysnom
+   >>> eps_si = 11.7
+   >>> si = pysnom.bulk_sample(eps_si)
+
+The single permitivitty value :math:`\varepsilon = 11.7` for Si, is relatively constant across most of the mid-infrared [2]_.
+
+Now let's calculate our far-field factor.
+We'll need to define some experimental constants here:
+
+* The fresnel reflection coefficient depends on **the angle of incidence** of the far-field beam, :math:`\theta_{in}`:
+  For most SNOM experiments this is around 60°.
+* **The empirical factor**, :math:`c_r`, will vary from microscope to microscope and the value should be chosen to best fit the data.
+  We'll use a value of :math:`c_r = 0.3`.
+
+.. plot::
+   :context:
+
+   >>> import numpy as np
+   >>> theta_in = np.deg2rad(60)  # Angle must be in radians
+   >>> c_r = 0.3
+   >>> r_si = si.refl_coef(theta_in)
+   >>> fff_si = (1 + c_r * r_si)**2  # Far-field factor
+   >>> fff_si
+   (1.173379279716862+0j)
+
+Far-field factor from a dispersive thin film
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now let's do the same for our PMMA sample.
+First let's create a model for the permitivitty (based loosely on [2]_):
+
+.. plot::
+   :context:
+
+   >>> wavenumber = np.linspace(1680, 1800, 128) * 1e2  # In units of m^-1
+   >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 14e-3, 20e2
+   >>> eps_pmma = eps_inf + (strength * centre_wavenumber**2) / (
+   ...     centre_wavenumber**2 - wavenumber**2 - 1j * width * wavenumber
+   ... )
+
+Now we can create our sample.
+Let's make it 50 nm thick, and we'll define the environment to be air (with :math:`\varepsilon_{env} = 1`).
+
+.. plot::
+   :context:
+
+   >>> eps_air = 1.0
+   >>> t_pmma = 50e-9
+   >>> pmma_si = pysnom.Sample(
+   ...     eps_stack=(eps_air, eps_pmma, eps_si),
+   ...     t_stack=(t_pmma,),
+   ...     k_vac=wavenumber,
+   ... )
+
+
 
 References
 ----------
 .. [1] T. Zhan, X. Shi, Y. Dai, X. Liu, and J. Zi, “Transfer matrix  method for optics in graphene layers,” J Phys. Condens. Matter, vol. 25, no. 21, p. 215301, May 2013, doi: 10.1088/0953-8984/25/21/215301.
+.. [2] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and R. Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020, doi: 10.1038/s41467-020-17034-6.
