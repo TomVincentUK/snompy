@@ -18,7 +18,7 @@ class TestSample:
             "along the first axis.",
         ]
     )
-    k_vac_None_error = "`k_vac` must not be None."
+    k_vac_None_error = "`k_vac` must not be None for multilayer samples."
     theta_q_error = "Either `theta_in` or `q` must be None."
     polarization_error = "`polarization` must be 's' or 'p'"
 
@@ -58,14 +58,19 @@ class TestSample:
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
             pysnom.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
 
-    def test_transfer_matrix_errors_when_no_k_vac(self):
+    def test_transfer_matrix_no_errors_when_bulk_no_k_vac(self):
         eps_sub = 10
+        no_k_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
+        no_k_at_init.refl_coef()
+
+    def test_transfer_matrix_errors_when_multilayer_no_k_vac(self):
+        sample_params = dict(eps_stack=(1, 2, 10), t_stack=(50e-9,))
         k_vac = 1.0
         # No error when k_vac specified at init or function call
-        k_at_init = pysnom.bulk_sample(eps_sub=eps_sub, k_vac=k_vac)
+        k_at_init = pysnom.Sample(k_vac=k_vac, **sample_params)
         k_at_init.refl_coef()
 
-        no_k_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
+        no_k_at_init = pysnom.Sample(**sample_params)
         no_k_at_init.refl_coef(k_vac=k_vac)
 
         # Error with no k_vac

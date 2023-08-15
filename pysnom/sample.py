@@ -244,9 +244,13 @@ class Sample:
            doi: 10.1088/0953-8984/25/21/215301.
 
         """
+        # Check k_vac given for multilayer samples (at init or function call)
         if k_vac is None:
             if self.k_vac is None:
-                raise ValueError("`k_vac` must not be None.")
+                if self.multilayer:
+                    raise ValueError("`k_vac` must not be None for multilayer samples.")
+                else:
+                    k_vac = 1  # k_vac has no effect for bulk samples
             else:
                 k_vac = self.k_vac
         else:
