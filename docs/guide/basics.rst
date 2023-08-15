@@ -106,6 +106,8 @@ In these equations a subscript :math:`n` indicates that a signal is demodulated 
 For modelling SNOM signals, the practical difference here is that we must calculate the demodulated effective polarizability, :math:`\alpha_{eff, n}`, instead of just :math:`\alpha_{eff}`.
 ``pysnom`` has the ability to calculate both of these quantities, as well as a function which can be used to simulate lock-in measurements of arbitrary functions (see the page :ref:`Demodulation <demodulation>` for more details).
 
+.. _normalization:
+
 Normalization
 -------------
 
