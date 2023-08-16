@@ -20,7 +20,7 @@ def eps_Drude(wavenumber, eps_inf, plasma_frequency, gamma):
 
 
 # Set some experimental parameters
-z_tip = 0e-9  # AFM tip height
+z_tip = 0  # AFM tip height
 A_tip = 20e-9  # AFM tip tapping amplitude
 r_tip = 30e-9  # AFM tip radius of curvature
 L_tip = 350e-9  # Semi-major axis length of ellipsoid tip model

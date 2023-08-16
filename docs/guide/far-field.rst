@@ -14,11 +14,11 @@ We showed that the detected SNOM signal, :math:`\sigma_n`, depends on the effect
 .. math::
    :label: demod_scatter_recap
 
-   \sigma_{scat, n} = (1 + c_r r)^2 \alpha_{eff, n},
+   \sigma_n = (1 + c_r r)^2 \alpha_{eff, n},
 
 where :math:`r` is the the far-field, Fresnel reflection coefficient and :math:`c_r` is an empirical factor that describes the detected strength of the reflected light compared to the incident light.
 
-DESCRIBE THIS PAGE.
+On this page, we'll provide some background on what the far-field, Fresnel reflection coefficient is, and give an example of how it can be calculated using ``pysnom``.
 
 Fresnel reflection coefficient
 ------------------------------
@@ -94,23 +94,28 @@ We'll need to define some experimental constants here:
 * The fresnel reflection coefficient depends on **the angle of incidence** of the far-field beam, :math:`\theta_{in}`:
   For most SNOM experiments this is around 60°.
 * **The empirical factor**, :math:`c_r`, will vary from microscope to microscope and the value should be chosen to best fit the data.
-  We'll use a value of :math:`c_r = 0.3`.
+  We'll use a value of :math:`c_r = 0.9`.
 
 .. plot::
    :context:
 
    >>> import numpy as np
    >>> theta_in = np.deg2rad(60)  # Angle must be in radians
-   >>> c_r = 0.3
+   >>> c_r = 0.9
    >>> r_si = si.refl_coef(theta_in)
    >>> fff_si = (1 + c_r * r_si)**2  # Far-field factor
    >>> fff_si
    (1.173379279716862+0j)
 
-Far-field factor from a dispersive thin film
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note::
 
-Now let's do the same for our PMMA sample.
+   The method :func:`~pysnom.sample.Sample.refl_coef` has an optional argument `polarization` which can be either `"s"` or `"p"`.
+   Here we use the default p polarization which is most common for SNOM experiments.
+
+Far-field factor from a dispersive sample
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now let's do the same for our PMMA.
 First let's create a model for the permitivitty (based loosely on [2]_):
 
 .. plot::
@@ -123,20 +128,222 @@ First let's create a model for the permitivitty (based loosely on [2]_):
    ... )
 
 Now we can create our sample.
-Let's make it 50 nm thick, and we'll define the environment to be air (with :math:`\varepsilon_{env} = 1`).
+Let's make it 500 nm thick, and we'll define the environment to be air with :math:`\varepsilon_{env} = 1` (this was done automatically for Si by :func:`~pysnom.sample.bulk_sample` above).
 
 .. plot::
    :context:
 
    >>> eps_air = 1.0
-   >>> t_pmma = 50e-9
+   >>> t_pmma = 500e-9
    >>> pmma_si = pysnom.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma,),
    ...     k_vac=wavenumber,
    ... )
 
+We'll use the same values for :math:`c_r` and :math:`\theta_{in}` that we used for our reference (this is important so it's a fair comparison).
+Let's calculate our far-field factor:
 
+.. plot::
+   :context:
+
+   >>> r_pmma_si = pmma_si.refl_coef(theta_in)
+   >>> fff_pmma_si = (1 + c_r * r_pmma_si)**2
+   >>> wavenumber.shape == r_pmma_si.shape == fff_pmma_si.shape
+   True
+
+We can see that our reflection coefficient and far-field factor have the same shape as our `wavenumber` array (*i.e.* one value per wavenumber).
+
+Normalized SNOM spectra with far-field factor
+---------------------------------------------
+
+Now we've found our far-field factors, we can calculate the effective polarizability from our sample and reference and combine them together using:
+
+.. math::
+   :label: eta_n_recap
+
+   \eta_n
+   = \frac{\sigma_n}{\sigma_n^{\text{(ref)}}}
+   = \frac{(1 + c_r r)^2 \alpha_{eff, n}}
+   {(1 + c_r r^{\text{(ref)}})^2 \alpha_{eff, n}^{\text{(ref)}}}
+
+(see :ref:`normalization` for why we use :math:`\eta_n` rather than :math:`\sigma_n`).
+
+Let's use the :ref:`finite dipole method <fdm>` to calculate our effective polarizabilities and SNOM contrast.
+We'll also create an array `eta_uncorr`, which will show the results if we didn't account for the far-field factors:
+
+.. plot::
+   :context:
+
+   >>> fdm_params = dict(z_tip=0, A_tip=20e-9, n=3)
+   >>> alpha_eff_si = pysnom.fdm.eff_pol_n(sample=si, **fdm_params)
+   >>> alpha_eff_pmma_si = pysnom.fdm.eff_pol_n(
+   ...     sample=pmma_si,
+   ...     **fdm_params,
+   ... )
+   >>> eta_uncorr = alpha_eff_pmma_si / alpha_eff_si
+   >>> eta = (
+   ...     (fff_pmma_si * alpha_eff_pmma_si)
+   ...     / (fff_si * alpha_eff_si)
+   ... )
+
+Finally, let's make a plot to show our results.
+This is quite a busy plot, so let's break it up into steps.
+First we'll set up our axes and define some colours:
+
+.. plot::
+   :context:
+   :nofigs:
+
+   >>> import matplotlib.pyplot as plt
+   >>> wavenumber_per_cm = wavenumber * 1e-2
+   >>> c_re, c_im = "C0", "C1"
+   >>> c_s, c_phi = "C2", "C3"
+   >>> ls_sample, ls_ref = "-", "--"
+   >>> ls_corr, ls_uncorr = "-.", ":"
+   >>> fig, axes = plt.subplots(nrows=3, sharex=True)
+   >>> axes[-1].set(
+   ...    xlabel=r"$k$ / cm$^{-1}$",
+   ...    xlim=(wavenumber_per_cm.max(), wavenumber_per_cm.min()),
+   ... )
+
+Now we'll plot our parameters one by one:
+
+* The real part of our reflection coefficients:
+
+  .. plot::
+     :context:
+     :nofigs:
+
+     >>> # Plot real part
+     >>> ax_r_re = axes[0]
+     >>> ax_r_re.plot(
+     ...     wavenumber_per_cm,
+     ...     r_pmma_si.real,
+     ...     c=c_re,
+     ...     ls=ls_sample,
+     ...     label="sample",
+     ... )
+     >>> ax_r_re.axhline(
+     ...     r_si.real,
+     ...     c=c_re,
+     ...     ls=ls_ref,
+     ...     label="reference"
+     ... )
+     >>> ax_r_re.set_ylabel(r"$\Re(r_p)$", c=c_re)
+     >>> ax_r_re.legend(loc="lower left")
+
+* The imaginary part of our reflection coefficients:
+
+  .. plot::
+     :context:
+     :nofigs:
+
+     >>> ax_r_im = ax_r_re.twinx()
+     >>> ax_r_im.spines["right"].set_visible(True)
+     >>> ax_r_im.plot(
+     ...     wavenumber_per_cm,
+     ...     r_pmma_si.imag,
+     ...     c=c_im,
+     ...     ls=ls_sample,
+     ... )
+     >>> ax_r_im.axhline(r_si.imag, c=c_im, ls=ls_ref)
+     >>> ax_r_im.set_ylabel(r"$\Im(r_p)$", c=c_im)
+
+* The magnitude of our effective polarizabilities:
+
+  .. plot::
+     :context:
+     :nofigs:
+
+     >>> ax_alpha_s = axes[1]
+     >>> ax_alpha_s.plot(
+     ...     wavenumber_per_cm,
+     ...     np.abs(alpha_eff_pmma_si),
+     ...     c=c_s,
+     ...     ls=ls_sample,
+     ... )
+     >>> ax_alpha_s.axhline(
+     ...     np.abs(alpha_eff_si),
+     ...     c=c_s,
+     ...     ls=ls_ref,
+     ... )
+     >>> ax_alpha_s.set_ylabel(r"$s_3$", c=c_s)
+
+* The phase of our effective polarizabilities:
+
+  .. plot::
+     :context:
+     :nofigs:
+
+     >>> ax_alpha_phi = ax_alpha_s.twinx()
+     >>> ax_alpha_phi.spines["right"].set_visible(True)
+     >>> ax_alpha_phi.plot(
+     ...     wavenumber_per_cm,
+     ...     np.angle(alpha_eff_pmma_si),
+     ...     c=c_phi,
+     ...     ls=ls_sample,
+     ... )
+     >>> ax_alpha_phi.axhline(
+     ...     np.angle(alpha_eff_si),
+     ...     c=c_phi,
+     ...     ls=ls_ref,
+     ... )
+     >>> ax_alpha_phi.set_ylabel(r"$\phi_3$", c=c_phi)
+
+* The magnitude of our near field contrast:
+
+  .. plot::
+     :context:
+     :nofigs:
+
+     >>> ax_eta_s = axes[2]
+     >>> ax_eta_s.plot(
+     ...     wavenumber_per_cm,
+     ...     np.abs(eta),
+     ...     c=c_s,
+     ...     ls=ls_corr,
+     ...     label="far-field",
+     ... )
+     >>> ax_eta_s.plot(
+     ...     wavenumber_per_cm,
+     ...     np.abs(eta_uncorr),
+     ...     c=c_s,
+     ...     ls=ls_uncorr,
+     ...     label="no far-field",
+     ... )
+     >>> ax_eta_s.set_ylabel(r"$|\eta_3|$", c=c_s)
+     >>> ax_eta_s.legend(loc="upper left")
+
+* The phase of our near field contrast:
+
+  .. plot::
+     :context:
+     :nofigs:
+
+     >>> ax_eta_phi = ax_eta_s.twinx()
+     >>> ax_eta_phi.spines["right"].set_visible(True)
+     >>> ax_eta_phi.plot(
+     ...     wavenumber_per_cm,
+     ...     np.angle(eta),
+     ...     c=c_phi,
+     ...     ls=ls_corr,
+     ... )
+     >>> ax_eta_phi.plot(
+     ...     wavenumber_per_cm,
+     ...     np.angle(eta_uncorr),
+     ...     c=c_phi,
+     ...     ls=ls_uncorr,
+     ... )
+     >>> ax_eta_phi.set_ylabel(r"$\arg(\eta_3)$", c=c_phi)
+
+Finally, let's show our finished figure:
+
+.. plot::
+   :context:
+
+   >>> fig.tight_layout()
+   >>> plt.show()
 
 References
 ----------

@@ -26,10 +26,10 @@ This process can be described with the fundamental equation for modelling SNOM s
 .. math::
    :label: scatter
 
-   \sigma_{scat} = \frac{E_{scat}}{E_{in}} = (1 + c_r r)^2 \alpha_{eff}.
+   \sigma = \frac{E_{scat}}{E_{in}} = (1 + c_r r)^2 \alpha_{eff}.
 
 
-This introduces the scattering coefficient, :math:`\sigma_{scat}`, which relates the strength of the near-field scattered light to the strength of the incident light.
+This introduces the scattering coefficient, :math:`\sigma`, which relates the strength of the near-field scattered light to the strength of the incident light.
 
 The right-hand side of the equation is made from two parts:
 
@@ -60,15 +60,15 @@ The right-hand side of the equation is made from two parts:
 
 SNOM experiments are typically sensitive to not just the amplitude but also
 the phase of the scattered light, relative to the incident light.
-Because of this, :math:`\sigma_{scat}` takes the form of a complex number
+Because of this, :math:`\sigma` takes the form of a complex number
 with amplitude, :math:`s`, and phase, :math:`\phi`, given by
 
 .. math::
    :label: amp_and_phase
 
    \begin{align*}
-      s &= |\sigma_{scat}|, \ \text{and}\\
-      \phi &= \arg(\sigma_{scat}).
+      s &= |\sigma|, \ \text{and}\\
+      \phi &= \arg(\sigma).
    \end{align*}
 
 Demodulation
@@ -89,7 +89,7 @@ The lock-in-demodulated signals that we actually detect are determined, not by e
 .. math::
    :label: demod_scatter
 
-   \sigma_{scat, n} = \frac{E_{scat, n}}{E_{in}} = (1 + c_r r)^2 \alpha_{eff, n},
+   \sigma_n = \frac{E_{scat, n}}{E_{in}} = (1 + c_r r)^2 \alpha_{eff, n},
 
 with amplitude and phase
 
@@ -97,8 +97,8 @@ with amplitude and phase
    :label: demod_amp_and_phase
 
    \begin{align*}
-      s_n &= |\sigma_{scat, n}|, \ \text{and}\\
-      \phi_n &= \arg(\sigma_{scat, n}).
+      s_n &= |\sigma_n|, \ \text{and}\\
+      \phi_n &= \arg(\sigma_n).
    \end{align*}
 
 In these equations a subscript :math:`n` indicates that a signal is demodulated at the :math:`n^\text{th}` harmonic.
@@ -131,7 +131,7 @@ This gives us the near-field contrast, :math:`\eta_n`, which is described by
    :label: eta_n
 
    \eta_n
-   = \frac{\sigma_{scat, n}}{\sigma_{scat, n}^{\text{(ref)}}}
+   = \frac{\sigma_n}{\sigma_n^{\text{(ref)}}}
    = \frac{E_{scat, n}}{E_{scat, n}^{\text{(ref)}}}
    = \frac{(1 + c_r r)^2 \alpha_{eff, n}}
    {(1 + c_r r^{\text{(ref)}})^2 \alpha_{eff, n}^{\text{(ref)}}},

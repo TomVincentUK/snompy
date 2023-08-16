@@ -189,7 +189,7 @@ by the demodulated near-field scattering coefficient
 .. math::
    :label: fdm_scattering
 
-   \sigma_{scat, n} \propto \alpha_{eff, n},
+   \sigma_n \propto \alpha_{eff, n},
 
 with amplitude and phase
 
@@ -197,8 +197,8 @@ with amplitude and phase
    :label: fdm_amp_and_phase
 
    \begin{align*}
-      s_n &= |\sigma_{scat, n}|, \ \text{and}\\
-      \phi_n &= \arg(\sigma_{scat, n}).
+      s_n &= |\sigma_n|, \ \text{and}\\
+      \phi_n &= \arg(\sigma_n).
    \end{align*}
 
 This is explained in detail on the dedicated page :ref:`demodulation`.
