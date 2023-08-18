@@ -671,9 +671,9 @@ def eff_pol_n_taylor(
     )
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
 
-    # Default to one of the Hauer methods based on sample type.
+    # Choose method based on sample type.
     if method is None:
-        method = "Hauer" if sample.multilayer else "bulk"
+        method = "Mester" if sample.multilayer else "bulk"
 
     if method == "bulk":
         if sample.multilayer:
