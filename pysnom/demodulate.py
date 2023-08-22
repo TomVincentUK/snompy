@@ -89,9 +89,9 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
     >>> demod(lambda x, y: x * y, x_0, x_amplitude, n, (y,)).shape
     (4, 3, 2, 1)
     """
-    x_0 = np.asarray(x_0)
-    x_amplitude = np.asarray(x_amplitude)
-    n = np.asarray(n)
+    x_0 = np.asanyarray(x_0)
+    x_amplitude = np.asanyarray(x_amplitude)
+    n = np.asanyarray(n)
     n_trapz = defaults.n_trapz if n_trapz is None else n_trapz
 
     theta = _pad_for_broadcasting(

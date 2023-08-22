@@ -6,4 +6,4 @@ def _pad_for_broadcasting(array, broadcast_with):
     all arrays in `broadcast_with` along first axis.
     """
     index_pad_dims = np.max([np.ndim(a) for a in broadcast_with])
-    return np.asarray(array).reshape(-1, *(1,) * index_pad_dims)
+    return np.asanyarray(array).reshape(-1, *(1,) * index_pad_dims)

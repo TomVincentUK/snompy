@@ -127,7 +127,7 @@ class Sample:
         if val is None:
             self._t_stack = np.array([])
         else:
-            self._t_stack = np.asarray(np.broadcast_arrays(*val))
+            self._t_stack = np.asanyarray(np.broadcast_arrays(*val))
 
         # Check inputs make sense
         self._check_layers_valid()
@@ -148,7 +148,7 @@ class Sample:
 
     @eps_stack.setter
     def eps_stack(self, val):
-        self._eps_stack = np.asarray(np.broadcast_arrays(*val), dtype=complex)
+        self._eps_stack = np.asanyarray(np.broadcast_arrays(*val), dtype=complex)
 
         # Check inputs make sense
         self._check_layers_valid()
@@ -161,7 +161,7 @@ class Sample:
     @beta_stack.setter
     def beta_stack(self, val):
         # Calculate eps_stack from beta assuming first eps is 1
-        beta = np.asarray(np.broadcast_arrays(*val))
+        beta = np.asanyarray(np.broadcast_arrays(*val))
         eps_stack = np.ones([beta.shape[0] + 1, *beta.shape[1:]], dtype=complex)
         eps_stack[1:] = np.cumprod(permitivitty(beta), axis=0)
         eps_stack *= self.eps_env
@@ -254,14 +254,14 @@ class Sample:
             else:
                 k_vac = self.k_vac
         else:
-            k_vac = np.asarray(k_vac)
+            k_vac = np.asanyarray(k_vac)
 
         # Get q from theta in if needed
         if theta_in is None:
             if q is None:
                 q = 0
             else:
-                q = np.asarray(q)
+                q = np.asanyarray(q)
         else:
             if q is None:
                 q = k_vac * np.sin(np.abs(theta_in))
@@ -522,7 +522,7 @@ class Sample:
             _pad_for_broadcasting(a, (self.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
         ]
 
-        q = x_lag / np.asarray(2 * z_Q)
+        q = x_lag / np.asanyarray(2 * z_Q)
 
         beta_q = self.refl_coef_qs(q)
 
@@ -657,7 +657,7 @@ class Sample:
             _pad_for_broadcasting(a, (self.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
         ]
 
-        q = x_lag / np.asarray(2 * z_Q)
+        q = x_lag / np.asanyarray(2 * z_Q)
 
         beta_q = self.refl_coef_qs(q)
 
@@ -813,8 +813,8 @@ def refl_coef_qs_single(eps_i, eps_j):
           [ 0.5,  0. ]])
 
     """
-    eps_i = np.asarray(eps_i)
-    eps_j = np.asarray(eps_j)
+    eps_i = np.asanyarray(eps_i)
+    eps_j = np.asanyarray(eps_j)
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
@@ -844,6 +844,6 @@ def permitivitty(beta, eps_i=1 + 0j):
         The inverse of this function.
 
     """
-    beta = np.asarray(beta)
-    eps_i = np.asarray(eps_i)
+    beta = np.asanyarray(beta)
+    eps_i = np.asanyarray(eps_i)
     return eps_i * (1 + beta) / (1 - beta)
