@@ -225,3 +225,41 @@ class TestEffPol:
         rtol = 1.0e-7
         close_values = np.abs(beta_out - beta_in) <= (atol + rtol * np.abs(beta_in))
         assert close_values.any(axis=0).all()
+
+    @pytest.mark.parametrize("model", inverse_model)
+    def test_refl_coef_qs_from_eff_pol_n_reject_negative_eps_imag(
+        self, model, vector_AFM_params, vector_tapping_params
+    ):
+        eps_in = np.array([10 + 1j, 10 - 1j])  # 1 valid, 1 invalid
+        sample = pysnom.bulk_sample(eps_in)
+
+        alpha_eff_n = model.eff_pol_n_taylor(
+            sample=sample, **vector_AFM_params | vector_tapping_params
+        )
+        beta_out = model.refl_coef_qs_from_eff_pol_n(
+            alpha_eff_n=alpha_eff_n,
+            reject_negative_eps_imag=True,
+            **vector_AFM_params | vector_tapping_params
+        )
+        eps_out = pysnom.sample.permitivitty(beta_out)
+
+        assert (eps_out.imag >= 0).all()
+
+    @pytest.mark.parametrize("model", inverse_model)
+    def test_refl_coef_qs_from_eff_pol_n_reject_subvacuum_eps_abs(
+        self, model, vector_AFM_params, vector_tapping_params
+    ):
+        eps_in = np.array([10 + 10j, 0.1 + 0.1j])  # 1 valid, 1 invalid
+        sample = pysnom.bulk_sample(eps_in)
+
+        alpha_eff_n = model.eff_pol_n_taylor(
+            sample=sample, **vector_AFM_params | vector_tapping_params
+        )
+        beta_out = model.refl_coef_qs_from_eff_pol_n(
+            alpha_eff_n=alpha_eff_n,
+            reject_subvacuum_eps_abs=True,
+            **vector_AFM_params | vector_tapping_params
+        )
+        eps_out = pysnom.sample.permitivitty(beta_out)
+
+        assert (np.abs(eps_out) >= 1).all()

@@ -53,6 +53,7 @@ from numpy.polynomial import Polynomial
 from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
 from .demodulate import demod
+from .sample import permitivitty
 
 
 def eff_pol_n(
@@ -426,6 +427,9 @@ def refl_coef_qs_from_eff_pol_n(
     n_trapz=None,
     n_tayl=None,
     beta_threshold=None,
+    reject_negative_eps_imag=False,
+    reject_subvacuum_eps_abs=False,
+    eps_env=None,
 ):
     r"""Return the quasistatic reflection coefficient corresponding to a
     particular effective polarizability, demodulated at higher harmonics,
@@ -468,6 +472,18 @@ def refl_coef_qs_from_eff_pol_n(
     beta_threshold : float
         The maximum amplitude of returned `beta` values determined to be
         valid.
+    reject_negative_eps_imag : bool
+        True if values of `beta` corresponding to bulk samples with
+        negative imaginary permitivitty should be rejected as invalid
+        results.
+    reject_subvacuum_eps_abs : bool
+        True if values of `beta` corresponding to bulk samples with
+        permitivitty whose magnitude is less than the vacuum permitivitty
+        (1.0) should be rejected as invalid results.
+    eps_env : array_like
+        Permitivitty of the environment. Used to calculate the sample
+        permitivitty when `reject_negative_eps_imag` or
+        `reject_subvacuum_eps_abs` are True.
 
     Returns
     -------
@@ -504,6 +520,7 @@ def refl_coef_qs_from_eff_pol_n(
     beta_threshold = (
         defaults.beta_threshold if beta_threshold is None else beta_threshold
     )
+    eps_env = defaults.eps_env if eps_env is None else eps_env
 
     j_taylor = _pad_for_broadcasting(
         np.arange(n_tayl), (z_tip, A_tip, n, alpha_eff_n, r_tip, alpha_sphere)
@@ -513,16 +530,33 @@ def refl_coef_qs_from_eff_pol_n(
     offset_coefs = np.where(j_taylor == 0, coefs - alpha_eff_n, coefs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coefs)
 
-    # Sort roots by abs value
-    all_roots = np.take_along_axis(all_roots, np.abs(all_roots).argsort(axis=0), axis=0)
+    # Identify valid solutions
+    valid = np.abs(all_roots) <= beta_threshold
+
+    eps = permitivitty(all_roots, eps_env)
+    if reject_negative_eps_imag:
+        valid &= eps.imag >= 0
+    if reject_subvacuum_eps_abs:
+        valid &= np.abs(eps) >= 1
+
+    # Sort roots by validity
+    all_roots = np.take_along_axis(all_roots, valid.argsort(axis=0), axis=0)
+    valid = np.take_along_axis(valid, valid.argsort(axis=0), axis=0)
 
     # Different numbers of solutions may be returned for different inputs
     # Here we remove any slices along the first axis that have no valid solutions
-    slice_contains_valid = (np.abs(all_roots) <= beta_threshold).any(
-        axis=tuple(range(1, np.ndim(all_roots)))
-    )
+    slice_contains_valid = valid.any(axis=tuple(range(1, np.ndim(all_roots))))
     unmasked_roots = all_roots[slice_contains_valid]
-    beta = np.ma.array(unmasked_roots, mask=np.abs(unmasked_roots) >= beta_threshold)
+    valid = valid[slice_contains_valid]
+
+    # Sort remaining roots by abs value
+    valid = np.take_along_axis(valid, np.abs(unmasked_roots).argsort(axis=0), axis=0)
+    unmasked_roots = np.take_along_axis(
+        unmasked_roots, np.abs(unmasked_roots).argsort(axis=0), axis=0
+    )
+
+    # Masked array with any remaining invalid results hidden by the mask
+    beta = np.ma.array(unmasked_roots, mask=~valid)
     return beta
 
 
