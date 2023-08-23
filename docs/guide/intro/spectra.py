@@ -5,10 +5,10 @@ from matplotlib.colors import Normalize
 import pysnom
 
 
-def eps_Lorentz(wavenumber, eps_inf, centre_wavenumber, strength, width):
+def eps_Lorentz(wavenumber, eps_inf, centre_wavenumber, strength, gamma):
     """Lorentzian oscillator dielectric function model."""
     return eps_inf + (strength * centre_wavenumber**2) / (
-        centre_wavenumber**2 - wavenumber**2 - 1j * width * wavenumber
+        centre_wavenumber**2 - wavenumber**2 - 1j * gamma * wavenumber
     )
 
 
@@ -30,7 +30,7 @@ k_vac = np.linspace(1680, 1800, 128) * 1e2  # Vacuum wavenumber
 method = "Mester"  # The FDM method to use
 
 # Semi-infinite superstrate and substrate
-eps_air = 1
+eps_air = 1.0
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
@@ -59,7 +59,7 @@ r_coef_Au = sample_Au.refl_coef(theta_in=theta_in)
 sigma_Au = (1 + c_r * r_coef_Au) ** 2 * alpha_eff_Au
 
 # Normalised complex scattering
-sigma_n = sigma_pmma / sigma_Au
+eta_n = sigma_pmma / sigma_Au
 
 # Plot output
 fig, axes = plt.subplots(nrows=2, sharex=True)
@@ -72,7 +72,7 @@ SM = plt.cm.ScalarMappable(
     cmap=plt.cm.Spectral_r, norm=Normalize(vmin=t_nm.min(), vmax=t_nm.max())
 )  # This maps thickness to colour
 
-for t, sigma in zip(t_nm, sigma_n):
+for t, sigma in zip(t_nm, eta_n):
     c = SM.to_rgba(t)
     axes[0].plot(k_per_cm, np.abs(sigma), c=c)
     axes[1].plot(k_per_cm, np.angle(sigma), c=c)
