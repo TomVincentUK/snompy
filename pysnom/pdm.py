@@ -56,7 +56,7 @@ from .demodulate import demod
 from .sample import permitivitty
 
 
-def eff_pol_n(sample, z_tip, A_tip, n, n_trapz=None, **kwargs):
+def eff_pol_n(sample, A_tip, n, z_tip=None, n_trapz=None, **kwargs):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk point dipole model.
 
@@ -66,13 +66,13 @@ def eff_pol_n(sample, z_tip, A_tip, n, n_trapz=None, **kwargs):
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.
-    z_tip : float
-        Height of the tip above the sample.
     A_tip : float
         The tapping amplitude of the AFM tip.
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
+    z_tip : float
+        Height of the tip above the sample.
     n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
@@ -125,6 +125,9 @@ def eff_pol_n(sample, z_tip, A_tip, n, n_trapz=None, **kwargs):
        2004, doi: 10.1098/rsta.2003.1347.
 
     """
+    # Set defaults
+    z_tip = defaults.z_tip if z_tip is None else z_tip
+
     # Set oscillation centre  so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
@@ -141,7 +144,7 @@ def eff_pol_n(sample, z_tip, A_tip, n, n_trapz=None, **kwargs):
     return alpha_eff_n
 
 
-def eff_pol(sample, z_tip, r_tip=None, eps_sphere=None, alpha_sphere=None):
+def eff_pol(sample, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None):
     r"""Return the effective probe-sample polarizability using the bulk
     point dipole model.
 
@@ -198,6 +201,7 @@ def eff_pol(sample, z_tip, r_tip=None, eps_sphere=None, alpha_sphere=None):
 
     """
     # Set defaults
+    z_tip = defaults.z_tip if z_tip is None else z_tip
     r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
 
     beta = sample.refl_coef_qs()
@@ -314,9 +318,9 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
 
 def eff_pol_n_taylor(
     sample,
-    z_tip,
     A_tip,
     n,
+    z_tip=None,
     r_tip=None,
     eps_sphere=None,
     alpha_sphere=None,
@@ -338,13 +342,13 @@ def eff_pol_n_taylor(
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.
-    z_tip : float
-        Height of the tip above the sample.
     A_tip : float
         The tapping amplitude of the AFM tip.
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
+    z_tip : float
+        Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
     eps_sphere : complex
@@ -386,6 +390,7 @@ def eff_pol_n_taylor(
     implemented here as :func:`taylor_coef`.
     """
     # Set defaults
+    z_tip = defaults.z_tip if z_tip is None else z_tip
     r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
 
@@ -401,10 +406,10 @@ def eff_pol_n_taylor(
 
 
 def refl_coef_qs_from_eff_pol_n(
-    z_tip,
     A_tip,
     n,
     alpha_eff_n,
+    z_tip=None,
     r_tip=None,
     eps_sphere=None,
     alpha_sphere=None,
@@ -421,8 +426,6 @@ def refl_coef_qs_from_eff_pol_n(
 
     Parameters
     ----------
-    z_tip : float
-        Height of the tip above the sample.
     A_tip : float
         The tapping amplitude of the AFM tip.
     n : int
@@ -431,6 +434,8 @@ def refl_coef_qs_from_eff_pol_n(
     alpha_eff_n : complex
         Effective polarizability of the tip and sample, demodulated at
         `n`.
+    z_tip : float
+        Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -499,6 +504,7 @@ def refl_coef_qs_from_eff_pol_n(
     values. Values which are invalid are masked.
     """
     # Set defaults
+    z_tip = defaults.z_tip if z_tip is None else z_tip
     r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
     beta_threshold = (
@@ -545,17 +551,17 @@ def refl_coef_qs_from_eff_pol_n(
 
 
 def refl_coef_qs_from_eff_pol(
-    z_tip, alpha_eff, r_tip=None, eps_sphere=None, alpha_sphere=None
+    alpha_eff, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None
 ):
     r"""Return the quasistatic reflection coefficient corresponding to a
     particular effective polarizability using the point dipole model.
 
     Parameters
     ----------
-    z_tip : float
-        Height of the tip above the sample.
     alpha_eff : complex
         Effective polarizability of the tip and sample.
+    z_tip : float
+        Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -617,6 +623,7 @@ def refl_coef_qs_from_eff_pol(
 
     """
     # Set defaults
+    z_tip = defaults.z_tip if z_tip is None else z_tip
     r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
 
     f_geom = geom_func(z_tip, r_tip, alpha_sphere)

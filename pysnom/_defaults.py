@@ -75,6 +75,7 @@ class Defaults:
     def __init__(
         self,
         eps_env=1 + 0j,
+        z_tip=0.0,
         r_tip=20e-9,
         L_tip=300e-9,
         g_factor=0.7 * np.exp(0.06j),
@@ -89,6 +90,7 @@ class Defaults:
         self.eps_env = eps_env
 
         # Tip-related properties
+        self.z_tip = z_tip
         self.r_tip = r_tip
         self.L_tip = L_tip
 

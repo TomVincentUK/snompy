@@ -20,7 +20,6 @@ def eps_Drude(wavenumber, eps_inf, plasma_frequency, gamma):
 
 
 # Set some experimental parameters
-z_tip = 0  # AFM tip height
 A_tip = 20e-9  # AFM tip tapping amplitude
 r_tip = 30e-9  # AFM tip radius of curvature
 L_tip = 350e-9  # Semi-major axis length of ellipsoid tip model
@@ -50,7 +49,6 @@ sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 # Measurement
 alpha_eff_pmma = pysnom.fdm.eff_pol_n(
     sample=sample_pmma,
-    z_tip=z_tip,
     A_tip=A_tip,
     n=n,
     r_tip=r_tip,
@@ -63,7 +61,6 @@ sigma_pmma = (1 + c_r * r_coef_pmma) ** 2 * alpha_eff_pmma
 # Gold reference
 alpha_eff_Au = pysnom.fdm.eff_pol_n(
     sample=sample_Au,
-    z_tip=z_tip,
     A_tip=A_tip,
     n=n,
     r_tip=r_tip,

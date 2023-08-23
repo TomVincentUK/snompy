@@ -175,7 +175,7 @@ We'll also create an array `eta_uncorr`, which will show the results if we didn'
 .. plot::
    :context:
 
-   >>> fdm_params = dict(z_tip=0, A_tip=20e-9, n=3)
+   >>> fdm_params = dict(A_tip=20e-9, n=3)
    >>> alpha_eff_si = pysnom.fdm.eff_pol_n(sample=si, **fdm_params)
    >>> alpha_eff_pmma_si = pysnom.fdm.eff_pol_n(
    ...     sample=pmma_si,

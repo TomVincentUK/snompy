@@ -13,15 +13,15 @@ sample = pysnom.bulk_sample(eps_sub=eps_Si)  # Sample object
 # Calculate the effective polarizability using FDM and PDM
 alpha_eff_fdm = pysnom.fdm.eff_pol_n(
     sample=sample,
-    z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
     n=harmonics,
+    z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
 )
 alpha_eff_pdm = pysnom.pdm.eff_pol_n(
     sample=sample,
-    z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
     n=harmonics,
+    z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
 )
 
 # Normalize to value at z_tip = 0
