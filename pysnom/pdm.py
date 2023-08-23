@@ -56,21 +56,16 @@ from .demodulate import demod
 from .sample import permitivitty
 
 
-def eff_pol_n(
-    z_tip,
-    A_tip,
-    n,
-    sample,
-    r_tip=None,
-    eps_sphere=None,
-    alpha_sphere=None,
-    n_trapz=None,
-):
+def eff_pol_n(sample, z_tip, A_tip, n, n_trapz=None, **kwargs):
     r"""Return the effective probe-sample polarizability, demodulated at
     higher harmonics, using the bulk point dipole model.
 
     Parameters
     ----------
+    sample : :class:`pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate. Sample must have only one interface for bulk
+        methods.
     z_tip : float
         Height of the tip above the sample.
     A_tip : float
@@ -78,23 +73,11 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : :class:`pysnom.sample.Sample`
-        Object representing a layered sample with a semi-infinite substrate
-        and superstrate. Sample must have only one interface for bulk
-        methods.
-    r_tip : float
-        Radius of curvature of the AFM tip.
-    eps_sphere : complex
-        Dielectric function of the sample. Used to calculate
-        `alpha_sphere`, and ignored if `alpha_sphere` is specified. If both
-        `eps_sphere` and `alpha_sphere` are None, the sphere is assumed to
-        be perfectly conducting.
-    alpha_sphere : complex
-        Polarizability of the conducting sphere used as a model for the AFM
-        tip.
     n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
+    **kwargs : dict, optional
+        Extra keyword arguments are passed to :func:`eff_pol`.
 
     Returns
     -------
@@ -145,30 +128,31 @@ def eff_pol_n(
     # Set oscillation centre  so AFM tip touches sample at z_tip = 0
     z_0 = z_tip + A_tip
 
-    alpha_eff = demod(
-        eff_pol,
+    alpha_eff_n = demod(
+        lambda x, **kwargs: eff_pol(z_tip=x, **kwargs),
         z_0,
         A_tip,
         n,
-        f_args=(sample, r_tip, eps_sphere, alpha_sphere),
         n_trapz=n_trapz,
+        sample=sample,
+        **kwargs
     )
 
-    return alpha_eff
+    return alpha_eff_n
 
 
-def eff_pol(z_tip, sample, r_tip=None, eps_sphere=None, alpha_sphere=None):
+def eff_pol(sample, z_tip, r_tip=None, eps_sphere=None, alpha_sphere=None):
     r"""Return the effective probe-sample polarizability using the bulk
     point dipole model.
 
     Parameters
     ----------
-    z_tip : float
-        Height of the tip above the sample.
     sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate. Sample must have only one interface for bulk
         methods.
+    z_tip : float
+        Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
     eps_sphere : complex
@@ -329,10 +313,10 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
 
 
 def eff_pol_n_taylor(
+    sample,
     z_tip,
     A_tip,
     n,
-    sample,
     r_tip=None,
     eps_sphere=None,
     alpha_sphere=None,
@@ -350,6 +334,10 @@ def eff_pol_n_taylor(
 
     Parameters
     ----------
+    sample : :class:`pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate. Sample must have only one interface for bulk
+        methods.
     z_tip : float
         Height of the tip above the sample.
     A_tip : float
@@ -357,10 +345,6 @@ def eff_pol_n_taylor(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : :class:`pysnom.sample.Sample`
-        Object representing a layered sample with a semi-infinite substrate
-        and superstrate. Sample must have only one interface for bulk
-        methods.
     r_tip : float
         Radius of curvature of the AFM tip.
     eps_sphere : complex

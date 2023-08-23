@@ -59,26 +59,15 @@ from .demodulate import demod
 from .sample import permitivitty
 
 
-def eff_pol_n(
-    z_tip,
-    A_tip,
-    n,
-    sample,
-    r_tip=None,
-    L_tip=None,
-    g_factor=None,
-    d_Q0=None,
-    d_Q1=None,
-    d_Qa=None,
-    n_lag=None,
-    method=None,
-    n_trapz=None,
-):
+def eff_pol_n(sample, z_tip, A_tip, n, n_trapz=None, **kwargs):
     r"""Return the effective probe-sample polarizability using the finite
     dipole model, demodulated at harmonics of the tapping frequency.
 
     Parameters
     ----------
+    sample : :class:`pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
     z_tip : float
         Height of the tip above the sample.
     A_tip : float
@@ -86,40 +75,11 @@ def eff_pol_n(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : :class:`pysnom.sample.Sample`
-        Object representing a layered sample with a semi-infinite substrate
-        and superstrate.
-    r_tip : float
-        Radius of curvature of the AFM tip.
-    L_tip : float
-        Semi-major axis length of the effective spheroid from the finite
-        dipole model.
-    g_factor : complex
-        A dimensionless approximation relating the magnitude of charge
-        induced in the AFM tip to the magnitude of the nearby charge which
-        induced it. A small imaginary component can be used to account for
-        phase shifts caused by the capacitive interaction of the tip and
-        sample.
-    d_Q0 : float
-        Depth of an induced charge 0 within the tip. Specified in units of
-        the tip radius.
-    d_Q1 : float
-        Depth of an induced charge 1 within the tip. Specified in units of
-        the tip radius.
-    d_Qa : float
-        Depth of a single representative charge within the tip. Specified
-        in units of the tip radius. Used by the Mester implementation of
-        the finite dipole model to calculate the effective quasistatic
-        reflection coefficient for the tip.
-    n_lag : int
-        The order of the Gauss-Laguerre integration used by the "Hauer" and
-        "Mester" methods.
-    method : {"bulk", "Hauer", "Mester"}
-        The method of the finite dipole model to use. See :func:`eff_pol`
-        for descriptions of the different methods.
     n_trapz : int
         The number of intervals used by :func:`pysnom.demodulate.demod` for
         the trapezium-method integration.
+    **kwargs : dict, optional
+        Extra keyword arguments are passed to :func:`eff_pol`.
 
     Returns
     -------
@@ -137,20 +97,21 @@ def eff_pol_n(
     z_0 = z_tip + A_tip
 
     alpha_eff_n = demod(
-        eff_pol,
+        lambda x, **kwargs: eff_pol(z_tip=x, **kwargs),
         z_0,
         A_tip,
         n,
-        f_args=(sample, r_tip, L_tip, g_factor, d_Q0, d_Q1, d_Qa, n_lag, method),
         n_trapz=n_trapz,
+        sample=sample,
+        **kwargs
     )
 
     return alpha_eff_n
 
 
 def eff_pol(
-    z_tip,
     sample,
+    z_tip,
     r_tip=None,
     L_tip=None,
     g_factor=None,
@@ -165,11 +126,11 @@ def eff_pol(
 
     Parameters
     ----------
-    z_tip : float
-        Height of the tip above the sample.
     sample : :class:`pysnom.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
+    z_tip : float
+        Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
@@ -572,10 +533,10 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
 
 
 def eff_pol_n_taylor(
+    sample,
     z_tip,
     A_tip,
     n,
-    sample,
     r_tip=None,
     L_tip=None,
     g_factor=None,
@@ -598,6 +559,9 @@ def eff_pol_n_taylor(
 
     Parameters
     ----------
+    sample : :class:`pysnom.sample.Sample`
+        Object representing a layered sample with a semi-infinite substrate
+        and superstrate.
     z_tip : float
         Height of the tip above the sample.
     A_tip : float
@@ -605,9 +569,6 @@ def eff_pol_n_taylor(
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    sample : :class:`pysnom.sample.Sample`
-        Object representing a layered sample with a semi-infinite substrate
-        and superstrate.
     r_tip : float
         Radius of curvature of the AFM tip.
     L_tip : float
