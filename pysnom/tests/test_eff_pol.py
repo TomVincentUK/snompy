@@ -20,14 +20,10 @@ class TestEffPol:
     # eff_pol
 
     @pytest.mark.parametrize("model, model_kwargs", model_and_kwargs)
-    def test_approach_curve_decays(
-        self, model, model_kwargs, scalar_sample_bulk, scalar_AFM_params
-    ):
+    def test_approach_curve_decays(self, model, model_kwargs, scalar_sample_bulk):
         alpha_eff = model.eff_pol(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | dict(z_tip=np.linspace(1, 100, 32) * 1e-9)
-            | model_kwargs
+            **dict(z_tip=np.linspace(1, 100, 32) * 1e-9) | model_kwargs
         )
         assert (np.diff(np.abs(alpha_eff), axis=-1) < 0).all()
 
@@ -50,17 +46,11 @@ class TestEffPol:
 
     @pytest.mark.parametrize("model, model_kwargs", model_and_kwargs)
     def test_approach_curve_n_decays(
-        self,
-        model,
-        model_kwargs,
-        scalar_sample_bulk,
-        scalar_AFM_params,
-        scalar_tapping_params,
+        self, model, model_kwargs, scalar_sample_bulk, scalar_tapping_params
     ):
         alpha_eff = model.eff_pol_n(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | scalar_tapping_params
+            **scalar_tapping_params
             | dict(z_tip=np.linspace(1, 100, 32) * 1e-9)
             | model_kwargs
         )
@@ -68,19 +58,11 @@ class TestEffPol:
 
     @pytest.mark.parametrize("model, model_kwargs", model_and_kwargs)
     def test_harmonics_decay(
-        self,
-        model,
-        model_kwargs,
-        scalar_sample_bulk,
-        scalar_AFM_params,
-        scalar_tapping_params,
+        self, model, model_kwargs, scalar_sample_bulk, scalar_tapping_params
     ):
         alpha_eff = model.eff_pol_n(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | scalar_tapping_params
-            | dict(n=np.arange(2, 10))
-            | model_kwargs
+            **scalar_tapping_params | dict(n=np.arange(2, 10)) | model_kwargs
         )
         assert (np.diff(np.abs(alpha_eff), axis=-1) < 0).all()
 
@@ -126,17 +108,11 @@ class TestEffPol:
 
     @pytest.mark.parametrize("model, model_kwargs", taylor_model_and_kwargs)
     def test_approach_curve_n_taylor_decays(
-        self,
-        model,
-        model_kwargs,
-        scalar_sample_bulk,
-        scalar_AFM_params,
-        scalar_tapping_params,
+        self, model, model_kwargs, scalar_sample_bulk, scalar_tapping_params
     ):
         alpha_eff = model.eff_pol_n_taylor(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | scalar_tapping_params
+            **scalar_tapping_params
             | dict(z_tip=np.linspace(1, 100, 32) * 1e-9)
             | model_kwargs
         )

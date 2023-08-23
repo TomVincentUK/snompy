@@ -48,15 +48,8 @@ def vector_sample_multi():
 
 
 @pytest.fixture
-def scalar_AFM_params():
-    return dict(z_tip=1e-9, r_tip=20e-9)
-
-
-@pytest.fixture
-def vector_AFM_params(scalar_AFM_params):
-    return scalar_AFM_params | dict(
-        z_tip=np.linspace(1, 100, 32)[:, np.newaxis, np.newaxis] * 1e-9
-    )
+def vector_AFM_params():
+    return dict(z_tip=np.linspace(0, 100, 32)[:, np.newaxis, np.newaxis] * 1e-9)
 
 
 @pytest.fixture

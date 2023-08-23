@@ -37,9 +37,7 @@ eps_Si = 11.7  # Si permitivitty in the mid-infrared
 eps_pmma = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
 t_pmma = np.geomspace(1, 35, 32) * 1e-9  # A range of thicknesses
 sample_pmma = pysnom.Sample(
-    eps_stack=(eps_air, eps_pmma, eps_Si),
-    t_stack=(t_pmma[:, np.newaxis],),
-    k_vac=k_vac,
+    eps_stack=(eps_air, eps_pmma, eps_Si), t_stack=(t_pmma[:, np.newaxis],), k_vac=k_vac
 )
 
 # Model of Au dielectric function from ref [2] below
@@ -48,24 +46,14 @@ sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 
 # Measurement
 alpha_eff_pmma = pysnom.fdm.eff_pol_n(
-    sample=sample_pmma,
-    A_tip=A_tip,
-    n=n,
-    r_tip=r_tip,
-    L_tip=L_tip,
-    method=method,
+    sample=sample_pmma, A_tip=A_tip, n=n, r_tip=r_tip, L_tip=L_tip, method=method
 )
 r_coef_pmma = sample_pmma.refl_coef(theta_in=theta_in)
 sigma_pmma = (1 + c_r * r_coef_pmma) ** 2 * alpha_eff_pmma
 
 # Gold reference
 alpha_eff_Au = pysnom.fdm.eff_pol_n(
-    sample=sample_Au,
-    A_tip=A_tip,
-    n=n,
-    r_tip=r_tip,
-    L_tip=L_tip,
-    method=method,
+    sample=sample_Au, A_tip=A_tip, n=n, r_tip=r_tip, L_tip=L_tip, method=method
 )
 r_coef_Au = sample_Au.refl_coef(theta_in=theta_in)
 sigma_Au = (1 + c_r * r_coef_Au) ** 2 * alpha_eff_Au
@@ -81,8 +69,7 @@ k_per_cm = k_vac * 1e-2
 t_nm = t_pmma * 1e9
 
 SM = plt.cm.ScalarMappable(
-    cmap=plt.cm.Spectral_r,
-    norm=Normalize(vmin=t_nm.min(), vmax=t_nm.max()),
+    cmap=plt.cm.Spectral_r, norm=Normalize(vmin=t_nm.min(), vmax=t_nm.max())
 )  # This maps thickness to colour
 
 for t, sigma in zip(t_nm, sigma_n):
