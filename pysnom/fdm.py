@@ -664,9 +664,9 @@ def eff_pol_n_taylor(
 
 
 def refl_coef_qs_from_eff_pol_n(
+    alpha_eff_n,
     A_tip,
     n,
-    alpha_eff_n,
     z_tip=None,
     r_tip=None,
     L_tip=None,
@@ -686,14 +686,14 @@ def refl_coef_qs_from_eff_pol_n(
 
     Parameters
     ----------
+    alpha_eff_n : complex
+        Effective polarizability of the tip and sample, demodulated at
+        `n`.
     A_tip : float
         The tapping amplitude of the AFM tip.
     n : int
         The harmonic of the AFM tip tapping frequency at which to
         demodulate.
-    alpha_eff_n : complex
-        Effective polarizability of the tip and sample, demodulated at
-        `n`.
     z_tip : float
         Height of the tip above the sample.
     r_tip : float
