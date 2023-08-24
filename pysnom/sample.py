@@ -201,7 +201,7 @@ class Sample:
             )
         return beta_total
 
-    def transfer_matrix(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+    def transfer_matrix(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the transfer matrix for the sample for incident light
         with a given wavenumber, in-plane momentum and polarization.
 
@@ -324,7 +324,7 @@ class Sample:
 
         return M
 
-    def refl_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+    def refl_coef(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the momentum-dependent Fresnel reflection coefficient
         for the sample, using the transfer matrix method.
 
@@ -360,7 +360,7 @@ class Sample:
         )
         return M[..., 1, 0] / M[..., 0, 0]
 
-    def trans_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+    def trans_coef(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the momentum-dependent Fresnel transmission coefficient
         for the sample, using the transfer matrix method.
 
