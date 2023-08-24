@@ -342,7 +342,7 @@ Now we know our arrays broadcast nicely, let's show the advantage of broadcastin
    ...     k_vac=wavenumber,
    ... )
    >>> theta_in = np.deg2rad(70)  # Incident angle of light
-   >>> r_p = pmma_si_varied.refl_coef(theta_in)
+   >>> r_p = pmma_si_varied.refl_coef(theta_in=theta_in)
    >>> r_p.shape
    (32, 128)
 

@@ -102,7 +102,7 @@ We'll need to define some experimental constants here:
    >>> import numpy as np
    >>> theta_in = np.deg2rad(60)  # Angle must be in radians
    >>> c_r = 0.9
-   >>> r_si = si.refl_coef(theta_in)
+   >>> r_si = si.refl_coef(theta_in=theta_in)
    >>> fff_si = (1 + c_r * r_si)**2  # Far-field factor
    >>> fff_si
    (1.173379279716862+0j)
@@ -147,7 +147,7 @@ Let's calculate our far-field factor:
 .. plot::
    :context:
 
-   >>> r_pmma_si = pmma_si.refl_coef(theta_in)
+   >>> r_pmma_si = pmma_si.refl_coef(theta_in=theta_in)
    >>> fff_pmma_si = (1 + c_r * r_pmma_si)**2
    >>> wavenumber.shape == r_pmma_si.shape == fff_pmma_si.shape
    True
