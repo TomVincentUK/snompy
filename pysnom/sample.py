@@ -207,15 +207,15 @@ class Sample:
 
         Parameters
         ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         theta_in : float
             Angle of the incident light to the surface normal in radians.
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         k_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
@@ -330,15 +330,15 @@ class Sample:
 
         Parameters
         ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         theta_in : float
             Angle of the incident light to the surface normal in radians.
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         k_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
@@ -366,15 +366,15 @@ class Sample:
 
         Parameters
         ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         theta_in : float
             Angle of the incident light to the surface normal in radians.
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         k_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
