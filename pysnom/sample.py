@@ -280,12 +280,15 @@ class Sample:
                     self.eps_stack[i]
                     * k_z_medium[i + 1]
                     / (self.eps_stack[i + 1] * k_z_medium[i])
-                    for i in range(len(self.beta_stack))
+                    for i in range(len(self.eps_stack) - 1)
                 ]
             )
         elif polarization == "s":
             trans_factor = np.stack(
-                [k_z_medium[i + 1] / k_z_medium[i] for i in range(len(self.beta_stack))]
+                [
+                    k_z_medium[i + 1] / k_z_medium[i]
+                    for i in range(len(self.eps_stack) - 1)
+                ]
             )
         else:
             raise ValueError("`polarization` must be 's' or 'p'")
