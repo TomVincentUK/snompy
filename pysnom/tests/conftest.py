@@ -11,7 +11,7 @@ def scalar_sample_bulk():
 
 @pytest.fixture
 def scalar_sample_multi():
-    return pysnom.Sample(eps_stack=(1, 2 + 1j, 10), t_stack=(50e-9,))
+    return pysnom.Sample(eps_stack=(1, 1.5, 2 + 1j, 10), t_stack=(20e-9, 50e-9))
 
 
 @pytest.fixture
@@ -32,6 +32,7 @@ def vector_sample_bulk():
 def vector_sample_multi():
     # Dispersive medium and different thicknesses
     eps_env = 1
+    eps_top = 1.5
     eps_substrate = 11.7
     eps_inf = 2
     osc_freq = 1738e2
@@ -41,9 +42,11 @@ def vector_sample_multi():
     eps_middle = eps_inf + (osc_strength * osc_freq**2) / (
         osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
     )  # Lorentzian oscillator
-    thickness = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
+    t_top = 20e-9
+    t_middle = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
     return pysnom.Sample(
-        eps_stack=(eps_env, eps_middle, eps_substrate), t_stack=(thickness,)
+        eps_stack=(eps_env, eps_top, eps_middle, eps_substrate),
+        t_stack=(t_top, t_middle),
     )
 
 
