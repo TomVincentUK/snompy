@@ -269,26 +269,41 @@ class Sample:
                 raise ValueError("Either `theta_in` or `q` must be None.")
 
         # Wavevector in each layer
-        k_z_medium = np.sqrt(self.eps_stack * k_vac**2 - q**2)
+        k_z_medium = np.stack(
+            [np.sqrt(eps * k_vac**2 - q**2) for eps in self.eps_stack]
+        )
 
         # Transmission matrix depends on polarization
         if polarization == "p":
-            trans_factor = (self.eps_stack[:-1] * k_z_medium[1:]) / (
-                self.eps_stack[1:] * k_z_medium[:-1]
+            trans_factor = np.stack(
+                [
+                    self.eps_stack[i]
+                    * k_z_medium[i + 1]
+                    / (self.eps_stack[i + 1] * k_z_medium[i])
+                    for i in range(len(self.eps_stack) - 1)
+                ]
             )
         elif polarization == "s":
-            trans_factor = k_z_medium[1:] / k_z_medium[:-1]
+            trans_factor = np.stack(
+                [
+                    k_z_medium[i + 1] / k_z_medium[i]
+                    for i in range(len(self.eps_stack) - 1)
+                ]
+            )
         else:
             raise ValueError("`polarization` must be 's' or 'p'")
+
         trans_matrices = (
             1 + np.array([[1, -1], [-1, 1]]) * trans_factor[..., np.newaxis, np.newaxis]
         ) / 2
 
-        # Calculate single output matrix
+        # Convert stack to single transfer matrix (accounting for propagation if needed)
         M = trans_matrices[0]
         if self.multilayer:
             # Optical path length of internal layers
-            prop_factor = k_z_medium[1:-1] * self.t_stack
+            prop_factor = np.array(
+                [k_z * t for k_z, t in zip(k_z_medium[1:-1], self.t_stack)]
+            )
 
             prop_matrices = np.exp(
                 np.array([[-1j, 0], [0, 1j]]) * prop_factor[..., np.newaxis, np.newaxis]
