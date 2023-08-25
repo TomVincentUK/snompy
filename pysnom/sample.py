@@ -193,13 +193,47 @@ class Sample:
             Quasistatic reflection coefficient of the sample.
 
         """
-        beta_total = self.beta_stack[0] * np.ones_like(q)
-        for i in range(self.t_stack.shape[0]):
-            layer_decay = np.exp(-2 * q * self.t_stack[i])
-            beta_total = (beta_total + self.beta_stack[i + 1] * layer_decay) / (
-                1 + beta_total * self.beta_stack[i + 1] * layer_decay
-            )
-        return beta_total
+        TMM = False
+        if TMM:
+            return self.refl_coef_qs_TMM(q)
+        else:
+            beta_total = self.beta_stack[0] * np.ones_like(q)
+            for i in range(self.t_stack.shape[0]):
+                layer_decay = np.exp(-2 * q * self.t_stack[i])
+                beta_total = (beta_total + self.beta_stack[i + 1] * layer_decay) / (
+                    1 + beta_total * self.beta_stack[i + 1] * layer_decay
+                )
+            return beta_total
+
+    def transfer_matrix_qs(self, q=0):
+        trans_factor = np.stack(
+            [
+                np.ones_like(q) * self.eps_stack[i] / (self.eps_stack[i + 1])
+                for i in range(len(self.eps_stack) - 1)
+            ]
+        )
+        trans_matrices = (
+            1 + np.array([[1, -1], [-1, 1]]) * trans_factor[..., np.newaxis, np.newaxis]
+        ) / 2
+
+        # Convert stack to single transfer matrix (accounting for propagation if needed)
+        M = trans_matrices[0]
+        if self.multilayer:
+            # Optical path length of internal layers
+            prop_factor = np.array([q * t for t in self.t_stack])
+
+            prop_matrices = np.exp(
+                np.array([[1, 0], [0, -1]]) * prop_factor[..., np.newaxis, np.newaxis]
+            ) * np.eye(2)
+
+            for T, P in zip(trans_matrices[1:], prop_matrices):
+                M = M @ P @ T
+
+        return M
+
+    def refl_coef_qs_TMM(self, q=0):
+        M = self.transfer_matrix_qs(q=q)
+        return M[..., 1, 0] / M[..., 0, 0]
 
     def transfer_matrix(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the transfer matrix for the sample for incident light
@@ -346,7 +380,7 @@ class Sample:
 
         """
         M = self.transfer_matrix(
-            theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
+            q=q, theta_in=theta_in, k_vac=k_vac, polarization=polarization
         )
         return M[..., 1, 0] / M[..., 0, 0]
 
@@ -382,7 +416,7 @@ class Sample:
 
         """
         M = self.transfer_matrix(
-            theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
+            q=q, theta_in=theta_in, k_vac=k_vac, polarization=polarization
         )
         return 1 / M[..., 0, 0]
 
