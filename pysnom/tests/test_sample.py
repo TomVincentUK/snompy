@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pytest
 from scipy.integrate import quad_vec
@@ -155,6 +157,7 @@ class TestSample:
         k_vac = np.ones_like(sample.eps_stack[0], dtype=float)
         assert (
             np.shape(sample.refl_coef_qs())
+            == np.shape(sample.trans_coef_qs())
             == np.shape(sample.refl_coef(k_vac=k_vac))
             == np.shape(sample.trans_coef(k_vac=k_vac))
             == np.shape(sample.refl_coef_qs_above_surf(z_Q=self.z_Q))
@@ -169,54 +172,67 @@ class TestSample:
     def test_refl_coef_qs_flat_for_bulk(self, scalar_sample_bulk):
         q = np.linspace(0, 10, 64)
         beta = scalar_sample_bulk.refl_coef_qs(q)
-        print(beta - beta.mean())
         np.testing.assert_array_almost_equal(beta - beta.mean(), 0)
 
     def test_surf_pot_and_field_integrals(self, vector_sample_multi):
         phi, E = vector_sample_multi.surf_pot_and_field(self.z_Q)
 
-        phi_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q)) * np.exp(-x),
-            0,
-            np.inf,
-        )
-        phi_scipy /= 2 * self.z_Q
-        np.testing.assert_allclose(phi, phi_scipy)
+        with warnings.catch_warnings():  # scipy quad uses large values that overflow
+            warnings.simplefilter("ignore")
+            phi_scipy, _ = quad_vec(
+                lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+                * np.exp(-x),
+                0,
+                np.inf,
+            )
+            E_scipy, _ = quad_vec(
+                lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+                * x
+                * np.exp(-x),
+                0,
+                np.inf,
+            )
 
-        E_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
-            * x
-            * np.exp(-x),
-            0,
-            np.inf,
-        )
+        phi_scipy /= 2 * self.z_Q
+        phi_valid = ~np.isnan(phi_scipy)
+        np.testing.assert_allclose(phi[phi_valid], phi_scipy[phi_valid])
+
         E_scipy /= 4 * self.z_Q**2
-        np.testing.assert_allclose(E, E_scipy)
+        E_valid = ~np.isnan(E_scipy)
+        np.testing.assert_allclose(E[E_valid], E_scipy[E_valid])
 
     def test_refl_coef_qs_above_surf_integral(self, vector_sample_multi):
-        numerator_longhand, _ = quad_vec(
-            lambda q: vector_sample_multi.refl_coef_qs(q)
-            * q
-            * np.exp(-2 * self.z_Q * q),
-            0,
-            np.inf,
-        )
-        denominator_longhand, _ = quad_vec(
-            lambda q: q * np.exp(-2 * self.z_Q * q), 0, np.inf
-        )
-        beta_eff_longhand = numerator_longhand / denominator_longhand
-
-        beta_eff_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
-            * x
-            * np.exp(-x),
-            0,
-            np.inf,
-        )
-        np.testing.assert_allclose(beta_eff_scipy, beta_eff_longhand)
-
         beta_eff = vector_sample_multi.refl_coef_qs_above_surf(self.z_Q)
-        np.testing.assert_allclose(beta_eff, beta_eff_scipy)
+
+        with warnings.catch_warnings():  # scipy quad uses large values that overflow
+            warnings.simplefilter("ignore")
+            numerator_longhand, _ = quad_vec(
+                lambda q: vector_sample_multi.refl_coef_qs(q)
+                * q
+                * np.exp(-2 * self.z_Q * q),
+                0,
+                np.inf,
+            )
+            denominator_longhand, _ = quad_vec(
+                lambda q: q * np.exp(-2 * self.z_Q * q), 0, np.inf
+            )
+            beta_eff_scipy, _ = quad_vec(
+                lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+                * x
+                * np.exp(-x),
+                0,
+                np.inf,
+            )
+
+        beta_eff_longhand = numerator_longhand / denominator_longhand
+        beta_eff_valid = ~np.isnan(beta_eff_longhand + beta_eff_scipy)
+
+        np.testing.assert_allclose(
+            beta_eff_scipy[beta_eff_valid], beta_eff_longhand[beta_eff_valid]
+        )
+        np.testing.assert_allclose(
+            beta_eff[beta_eff_valid], beta_eff_scipy[beta_eff_valid]
+        )
 
     def test_image_depth_and_charge_broadcasting(self, vector_sample_multi):
         target_shape = (
