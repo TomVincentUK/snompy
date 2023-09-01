@@ -83,8 +83,8 @@ class Defaults:
         g_factor=0.7 * np.exp(0.06j),
         d_Q1=0.5,
         d_Qa=1.4,
-        n_trapz=64,
-        n_lag=64,
+        n_trapz=32,
+        n_lag=32,
         n_tayl=16,
         beta_threshold=1.01,
     ):

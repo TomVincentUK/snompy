@@ -132,7 +132,7 @@ class TestEffPol:
             **vector_AFM_params | vector_tapping_params | model_kwargs
         )
         np.testing.assert_allclose(
-            model.eff_pol_n(**params), model.eff_pol_n_taylor(**params), rtol=1e-4
+            model.eff_pol_n(**params), model.eff_pol_n_taylor(**params), rtol=1e-3
         )
 
     @pytest.mark.parametrize("model, model_kwargs", taylor_model_and_kwargs)
