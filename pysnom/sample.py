@@ -172,49 +172,13 @@ class Sample:
         return self._eps_env if self.eps_stack is None else self.eps_stack[0]
 
     @property
+    def n_layers(self):
+        return self._eps_stack.shape[0]
+
+    @property
     def multilayer(self):
         # True if more than one interface
-        return self._t_stack.shape[0] > 0
-
-    def refl_coef_qs(self, q=0.0):
-        """Return the momentum-dependent quasistatic reflection coefficient
-        for the sample.
-
-        Parameters
-        ----------
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
-
-        Returns
-        -------
-        beta : complex
-            Quasistatic reflection coefficient of the sample.
-
-        """
-        M = self.transfer_matrix_qs(q=q)
-        return M[..., 1, 0] / M[..., 0, 0]
-
-    def trans_coef_qs(self, q=0.0):
-        """Return the momentum-dependent quasistatic transmission
-        coefficient for the sample.
-
-        Parameters
-        ----------
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
-
-        Returns
-        -------
-        beta_total : complex
-            Quasistatic reflection coefficient of the sample.
-
-        """
-        M = self.transfer_matrix_qs(q=q)
-        return 1 / M[..., 0, 0]
+        return self.n_layers > 2
 
     def transfer_matrix_qs(self, q=0.0):
         """Return the transfer matrix for the sample in the quasistatic
@@ -266,6 +230,46 @@ class Sample:
             M = M * np.ones_like(q)[..., np.newaxis, np.newaxis]
 
         return M
+
+    def refl_coef_qs(self, q=0.0):
+        """Return the momentum-dependent quasistatic reflection coefficient
+        for the sample.
+
+        Parameters
+        ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+
+        Returns
+        -------
+        beta : complex
+            Quasistatic reflection coefficient of the sample.
+
+        """
+        M = self.transfer_matrix_qs(q=q)
+        return M[..., 1, 0] / M[..., 0, 0]
+
+    def trans_coef_qs(self, q=0.0):
+        """Return the momentum-dependent quasistatic transmission
+        coefficient for the sample.
+
+        Parameters
+        ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+
+        Returns
+        -------
+        t_qs : complex
+            Quasistatic transmission coefficient of the sample.
+
+        """
+        M = self.transfer_matrix_qs(q=q)
+        return 1 / M[..., 0, 0]
 
     def transfer_matrix(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the transfer matrix for the sample for incident light
@@ -346,15 +350,12 @@ class Sample:
                     self.eps_stack[i]
                     * k_z_medium[i + 1]
                     / (self.eps_stack[i + 1] * k_z_medium[i])
-                    for i in range(len(self.eps_stack) - 1)
+                    for i in range(self.n_layers - 1)
                 ]
             )
         elif polarization == "s":
             trans_factor = np.stack(
-                [
-                    k_z_medium[i + 1] / k_z_medium[i]
-                    for i in range(len(self.eps_stack) - 1)
-                ]
+                [k_z_medium[i + 1] / k_z_medium[i] for i in range(self.n_layers - 1)]
             )
         else:
             raise ValueError("`polarization` must be 's' or 'p'")
@@ -443,8 +444,8 @@ class Sample:
 
         Returns
         -------
-        t_qs : complex
-            Quasistatic transmission coefficient of the sample.
+        t : complex
+            Fresnel transmission coefficient of the sample.
 
         """
         M = self.transfer_matrix(
