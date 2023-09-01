@@ -35,6 +35,9 @@ from numpy.polynomial.laguerre import laggauss
 from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
 
+# Maximum floating point argument to np.exp that doesn't overflow
+_MAX_EXP_ARG = np.log(np.finfo(float).max)
+
 
 class Sample:
     r"""A class representing a layered sample with a semi-infinite
@@ -193,7 +196,7 @@ class Sample:
 
         Returns
         -------
-        M : complex
+        M_qs : complex
             The quasistatic transfer matrix of the sample.
 
         Notes
@@ -215,21 +218,23 @@ class Sample:
         ) / 2
 
         # Convert stack to single transfer matrix (accounting for propagation if needed)
-        M = trans_matrices[0]
+        M_qs = trans_matrices[0]
         if self.multilayer:
             # Optical path length of internal layers
             prop_factor = np.array([q * t for t in self.t_stack])
 
+            # Avoid overflow by clipping (there's probably a more elegant way)
+            prop_factor = np.clip(prop_factor, -_MAX_EXP_ARG, _MAX_EXP_ARG)
             prop_matrices = np.exp(
                 np.array([[1, 0], [0, -1]]) * prop_factor[..., np.newaxis, np.newaxis]
             ) * np.eye(2)
 
             for T, P in zip(trans_matrices[1:], prop_matrices):
-                M = M @ P @ T
+                M_qs = M_qs @ P @ T
         else:
-            M = M * np.ones_like(q)[..., np.newaxis, np.newaxis]
+            M_qs = M_qs * np.ones_like(q)[..., np.newaxis, np.newaxis]
 
-        return M
+        return M_qs
 
     def refl_coef_qs(self, q=0.0):
         """Return the momentum-dependent quasistatic reflection coefficient
