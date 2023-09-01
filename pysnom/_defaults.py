@@ -16,6 +16,8 @@ class Defaults:
 
     Tip-related
     -----------
+    z_tip : float, default 0
+        Height of the tip above the sample.
     r_tip : float, default 20e-9
         Radius of curvature of the AFM tip.
     L_tip : float, default 300e-9
@@ -55,8 +57,8 @@ class Defaults:
         The number of intervals to use for the trapezium-method
         integration used by `pysnom.demodulate.demod`.
 
-    :math:`q` integral-related
-    --------------------------
+    Momentum integral-related
+    -------------------------
     n_lag : int, default 64
         The order of the Laguerre polynomial approximation used for
         integrating exponentially-weighted, semi-definite integrals.
@@ -75,13 +77,14 @@ class Defaults:
     def __init__(
         self,
         eps_env=1 + 0j,
+        z_tip=0.0,
         r_tip=20e-9,
         L_tip=300e-9,
         g_factor=0.7 * np.exp(0.06j),
         d_Q1=0.5,
         d_Qa=1.4,
-        n_trapz=64,
-        n_lag=64,
+        n_trapz=32,
+        n_lag=32,
         n_tayl=16,
         beta_threshold=1.01,
     ):
@@ -89,6 +92,7 @@ class Defaults:
         self.eps_env = eps_env
 
         # Tip-related properties
+        self.z_tip = z_tip
         self.r_tip = r_tip
         self.L_tip = L_tip
 

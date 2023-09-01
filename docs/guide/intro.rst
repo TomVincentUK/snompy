@@ -3,35 +3,18 @@
 Introduction
 ============
 
-The main purpose of ``pysnom`` is to provide functions to calculate the
-effective polarizability, :math:`\alpha_{eff}`, of a SNOM tip and a sample,
-which can be used to predict contrast in SNOM measurements.
+The main purpose of ``pysnom`` is to provide functions to calculate the effective polarizability, :math:`\alpha_{eff}`, of a SNOM tip and a sample, which can be used to predict contrast in SNOM measurements.
 
-Below on this page are some example scripts, showing idiomatic usage of
-``pysnom``.
-If you already know how the finite dipole model (FDM) or point dipole model
-(PDM) works, these might be enough to get started with this package.
-You can also refer to the detailed explanations of the functions used in
-the :doc:`../API/index`.
-The rest of this guide will take you through the workings of the two
-models, and also give tips on how the models can be used to help analyse
-SNOM data.
-
-The examples in this guide rely heavily on ``numpy``, a Python package for
-eficient numerical computation, which should be installed automatically
-when you install ``pysnom``.
-To follow along, it might also be helpful to install ``matplotlib``, a
-Python package for data visualisation, and ``scipy``, a Python package for
-scientific computation.
-
-.. LINKS TO PACKAGES ?
+Below on this page are some example scripts, showing idiomatic usage of ``pysnom``.
+If you already know how the finite dipole model (FDM) or point dipole model (PDM) works, these might be enough to get started with this package.
+You can also refer to the detailed explanations of the functions used in the :doc:`../API/index`.
+The rest of this guide will take you through the workings of the two models, and also give tips on how the models can be used to help analyse SNOM data.
 
 Installation
 ------------
 
-Currently, this project is still in development, and not yet public. So to
-install ``pysnom`` you'll need to clone the git repository to your
-local environment then install in development mode like:
+Currently, this project is still in development, and not yet public.
+So to install ``pysnom`` you'll need to clone the git repository to your local environment then install in development mode like:
 
 .. code-block:: bash
 
@@ -39,61 +22,61 @@ local environment then install in development mode like:
    cd pysnom
    pip install -e .
 
-When the project goes public, I'll upload it to PyPI. When I do, the
-installation should look like:
+When the project goes public, I'll upload it to PyPI.
+When I do, the installation should look like:
 
 .. code-block:: bash
 
    pip install pysnom
 
-Eventually, I'll also look into adding it to ``conda-forge``, so it can be
-installed like:
+Eventually, I'll also look into adding it to ``conda-forge``, so it can be installed like:
 
 .. code-block:: bash
 
    conda install -c conda-forge pysnom
 
+Useful third-party packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The examples in this guide rely heavily on ``numpy``, a Python package for eficient numerical computation, which should be installed automatically when you install ``pysnom``.
+To follow along, it might also be helpful to install ``matplotlib``, a Python package for data visualisation, and ``scipy``, a Python package for scientific computation.
+These can be installed like
+
+.. code-block:: bash
+
+   pip install matplotlib scipy
+
+or for ``conda`` users:
+
+.. code-block:: bash
+
+   conda install -c conda-forge matplotlib scipy
 
 Usage examples
 --------------
 
-The examples on this page are intended to give a taste of what ``pysnom``
-can do, as well as to model idiomatic use of the package.
-We've deliberately left out detailed explanations from this section, so
-don't worry if you don't understand what's going on here yet!
-The following pages of this guide should take you through the concepts
-needed to understand these scripts.
+The examples on this page are intended to give a taste of what ``pysnom`` can do, as well as to model idiomatic use of the package.
+We've deliberately left out detailed explanations from this section, so don't worry if you don't understand what's going on here yet!
+The following pages of this guide should take you through the concepts needed to understand these scripts.
 
 Approach curve on silicon
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example uses both the FDM and PDM  to calculate the decay of the SNOM
-amplitude, :math:`s_n \propto \alpha_{eff, n}`, for different demodulation
-harmonics, :math:`n` as the SNOM tip is moved in the :math:`z` direction,
-away from a sample of bulk silicon.
+This example uses both the FDM and PDM  to calculate the decay of the SNOM amplitude, :math:`s_n \propto \alpha_{eff, n}`, for different demodulation harmonics, :math:`n` as the SNOM tip is moved in the :math:`z` direction, away from a sample of bulk silicon.
 
 .. plot:: guide/intro/approach.py
    :align: center
 
-This shows the expected result: that higher order demodulation leads to a
-faster decay of the SNOM signal (*i.e.* stronger surface confinement).
-It also shows the quantitative difference between approach curves
-calculated with the point dipole model (PDM) and finite dipole model (FDM).
-
 Thickness-dependent PMMA spectra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example uses the multilayer FDM to simulate a SNOM spectrum from a
-thin layer of poly(methyl methacrylate) (PMMA) on silicon, for different
-thicknesses of PMMA, and normalises the signal to a reference spectrum
-taken from bulk gold.
+This more involved example uses the a multilayer FDM to simulate a SNOM spectrum from a thin layer of `poly(methyl methacrylate) <https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)>`_ (PMMA) on silicon, for different thicknesses of PMMA, and normalises the signal to a reference spectrum taken from bulk gold.
+It also includes the effects of the far-field reflection coefficient of the sample on the observed SNOM spectra.
 
 .. plot:: guide/intro/spectra.py
    :align: center
 
-(The dielectric function of PMMA in the above example was based on
-reference [1]_, and the dielectric function of gold was taken from
-reference [2]_).
+(The dielectric function of PMMA in the above example was based on reference [1]_, and the dielectric function of gold was taken from reference [2]_).
 
 
 References

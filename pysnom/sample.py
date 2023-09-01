@@ -27,13 +27,19 @@ Functions
     refl_coef_qs_single
     permitivitty
 """
+import functools
 import warnings
 
 import numpy as np
-from numpy.polynomial.laguerre import laggauss
 
 from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
+
+# Cache common functions to speed up execution
+laggauss = functools.cache(np.polynomial.laguerre.laggauss)
+
+# Maximum floating point argument to np.exp that doesn't overflow
+_MAX_EXP_ARG = np.log(np.finfo(float).max)
 
 
 class Sample:
@@ -127,7 +133,7 @@ class Sample:
         if val is None:
             self._t_stack = np.array([])
         else:
-            self._t_stack = np.asarray(np.broadcast_arrays(*val))
+            self._t_stack = np.asanyarray(np.broadcast_arrays(*val))
 
         # Check inputs make sense
         self._check_layers_valid()
@@ -148,7 +154,7 @@ class Sample:
 
     @eps_stack.setter
     def eps_stack(self, val):
-        self._eps_stack = np.asarray(np.broadcast_arrays(*val), dtype=complex)
+        self._eps_stack = np.asanyarray(np.broadcast_arrays(*val), dtype=complex)
 
         # Check inputs make sense
         self._check_layers_valid()
@@ -161,7 +167,7 @@ class Sample:
     @beta_stack.setter
     def beta_stack(self, val):
         # Calculate eps_stack from beta assuming first eps is 1
-        beta = np.asarray(np.broadcast_arrays(*val))
+        beta = np.asanyarray(np.broadcast_arrays(*val))
         eps_stack = np.ones([beta.shape[0] + 1, *beta.shape[1:]], dtype=complex)
         eps_stack[1:] = np.cumprod(permitivitty(beta), axis=0)
         eps_stack *= self.eps_env
@@ -172,57 +178,129 @@ class Sample:
         return self._eps_env if self.eps_stack is None else self.eps_stack[0]
 
     @property
+    def n_layers(self):
+        return self._eps_stack.shape[0]
+
+    @property
     def multilayer(self):
         # True if more than one interface
-        return self._t_stack.shape[0] > 0
+        return self.n_layers > 2
 
-    def refl_coef_qs(self, q=0):
+    def transfer_matrix_qs(self, q=0.0):
+        """Return the transfer matrix for the sample in the quasistatic
+        limit.
+
+        Parameters
+        ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+
+        Returns
+        -------
+        M_qs : complex
+            The quasistatic transfer matrix of the sample.
+
+        Notes
+        -----
+        This implementation of the transfer matrix method is based on the
+        description given in reference [1]_.
+
+        References
+        ----------
+        .. [1] T. Zhan, X. Shi, Y. Dai, X. Liu, and J. Zi, “Transfer matrix
+           method for optics in graphene layers,” J. Phys. Condens. Matter,
+           vol. 25, no. 21, p. 215301, May 2013,
+           doi: 10.1088/0953-8984/25/21/215301.
+
+        """
+        trans_factor = self.eps_stack[:-1] / self.eps_stack[1:]
+        trans_matrices = (
+            1 + np.array([[1, -1], [-1, 1]]) * trans_factor[..., np.newaxis, np.newaxis]
+        ) / 2
+
+        # Convert stack to single transfer matrix (accounting for propagation if needed)
+        M_qs = trans_matrices[0]
+        if self.multilayer:
+            # Optical path length of internal layers
+            prop_factor = np.array([q * t for t in self.t_stack])
+
+            # Avoid overflow by clipping (there's probably a more elegant way)
+            prop_factor = np.clip(prop_factor, -_MAX_EXP_ARG, _MAX_EXP_ARG)
+            prop_matrices = np.exp(
+                np.array([1, 0]) * prop_factor[..., np.newaxis, np.newaxis]
+            ) * np.eye(2)
+
+            for T, P in zip(trans_matrices[1:], prop_matrices):
+                M_qs = M_qs @ P @ T
+        else:
+            M_qs = M_qs * np.ones_like(q)[..., np.newaxis, np.newaxis]
+
+        return M_qs
+
+    def refl_coef_qs(self, q=0.0):
         """Return the momentum-dependent quasistatic reflection coefficient
         for the sample.
 
         Parameters
         ----------
-        q : float or array_like
+        q : float, default 0.0
             In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `beta_stack[i, ...]` and
-            `t_stack[i, ...]`.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
 
         Returns
         -------
-        beta_total : complex
+        beta : complex
             Quasistatic reflection coefficient of the sample.
 
         """
-        beta_total = self.beta_stack[0] * np.ones_like(q)
-        for i in range(self.t_stack.shape[0]):
-            layer_decay = np.exp(-2 * q * self.t_stack[i])
-            beta_total = (beta_total + self.beta_stack[i + 1] * layer_decay) / (
-                1 + beta_total * self.beta_stack[i + 1] * layer_decay
-            )
-        return beta_total
+        M = self.transfer_matrix_qs(q=q)
+        return M[..., 1, 0] / M[..., 0, 0]
 
-    def transfer_matrix(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+    def trans_coef_qs(self, q=0.0):
+        """Return the momentum-dependent quasistatic transmission
+        coefficient for the sample.
+
+        Parameters
+        ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
+
+        Returns
+        -------
+        t_qs : complex
+            Quasistatic transmission coefficient of the sample.
+
+        """
+        M = self.transfer_matrix_qs(q=q)
+        return 1 / M[..., 0, 0]
+
+    def transfer_matrix(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the transfer matrix for the sample for incident light
         with a given wavenumber, in-plane momentum and polarization.
 
         Parameters
         ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         theta_in : float
             Angle of the incident light to the surface normal in radians.
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         k_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
             matrix method. Should be broadcastable with all
             `eps_stack[i, ...]`.
         polarization: {"p", "s"}
-            The polarisation of the incident light. "p" for parallel to the
+            The polarization of the incident light. "p" for parallel to the
             plane of incidence, and "s" for perpendicular (from the German
             word *senkrecht*).
 
@@ -244,20 +322,24 @@ class Sample:
            doi: 10.1088/0953-8984/25/21/215301.
 
         """
+        # Check k_vac given for multilayer samples (at init or function call)
         if k_vac is None:
             if self.k_vac is None:
-                raise ValueError("`k_vac` must not be None.")
+                if self.multilayer:
+                    raise ValueError("`k_vac` must not be None for multilayer samples.")
+                else:
+                    k_vac = 1  # k_vac has no effect for bulk samples
             else:
                 k_vac = self.k_vac
         else:
-            k_vac = np.asarray(k_vac)
+            k_vac = np.asanyarray(k_vac)
 
         # Get q from theta in if needed
         if theta_in is None:
             if q is None:
                 q = 0
             else:
-                q = np.asarray(q)
+                q = np.asanyarray(q)
         else:
             if q is None:
                 q = k_vac * np.sin(np.abs(theta_in))
@@ -265,7 +347,9 @@ class Sample:
                 raise ValueError("Either `theta_in` or `q` must be None.")
 
         # Wavevector in each layer
-        k_z_medium = np.sqrt(self.eps_stack * k_vac**2 - q**2)
+        k_z_medium = np.stack(
+            [np.sqrt(eps * k_vac**2 - q**2) for eps in self.eps_stack]
+        )
 
         # Transmission matrix depends on polarization
         if polarization == "p":
@@ -274,72 +358,59 @@ class Sample:
                     self.eps_stack[i]
                     * k_z_medium[i + 1]
                     / (self.eps_stack[i + 1] * k_z_medium[i])
-                    for i in range(len(self.beta_stack))
+                    for i in range(self.n_layers - 1)
                 ]
             )
         elif polarization == "s":
             trans_factor = np.stack(
-                [k_z_medium[i + 1] / k_z_medium[i] for i in range(len(self.beta_stack))]
+                [k_z_medium[i + 1] / k_z_medium[i] for i in range(self.n_layers - 1)]
             )
         else:
             raise ValueError("`polarization` must be 's' or 'p'")
 
-        # Optical path length of internal layers
-        path_length = np.array(
-            [k_z * t for k_z, t in zip(k_z_medium[1:-1], self.t_stack)]
-        )
+        trans_matrices = (
+            1 + np.array([[1, -1], [-1, 1]]) * trans_factor[..., np.newaxis, np.newaxis]
+        ) / 2
 
-        # Transition and propagation matrices
-        trans_stack = np.moveaxis(
-            np.array(
-                [
-                    [1 + trans_factor, 1 - trans_factor],
-                    [1 - trans_factor, 1 + trans_factor],
-                ]
+        # Convert stack to single transfer matrix (accounting for propagation if needed)
+        M = trans_matrices[0]
+        if self.multilayer:
+            # Optical path length of internal layers
+            prop_factor = np.array(
+                [k_z * t for k_z, t in zip(k_z_medium[1:-1], self.t_stack)]
             )
-            / 2,
-            (0, 1),
-            (-2, -1),
-        )
-        prop_stack = np.moveaxis(
-            np.array(
-                [
-                    [np.exp(-1j * path_length), np.zeros_like(path_length)],
-                    [np.zeros_like(path_length), np.exp(1j * path_length)],
-                ]
-            ),
-            (0, 1),
-            (-2, -1),
-        )
 
-        M = trans_stack[0]
-        for T, P in zip(trans_stack[1:], prop_stack):
-            M = M @ P @ T
+            prop_matrices = np.exp(
+                np.array([-1j, 1j]) * prop_factor[..., np.newaxis, np.newaxis]
+            ) * np.eye(2)
+
+            for T, P in zip(trans_matrices[1:], prop_matrices):
+                M = M @ P @ T
 
         return M
 
-    def refl_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+    def refl_coef(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the momentum-dependent Fresnel reflection coefficient
         for the sample, using the transfer matrix method.
 
         Parameters
         ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         theta_in : float
             Angle of the incident light to the surface normal in radians.
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         k_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
             matrix method. Should be broadcastable with all
             `eps_stack[i, ...]`.
         polarization: {"p", "s"}
-            The polarisation of the incident light. "p" for parallel to the
+            The polarization of the incident light. "p" for parallel to the
             plane of incidence, and "s" for perpendicular (from the German
             word *senkrecht*).
 
@@ -350,32 +421,32 @@ class Sample:
 
         """
         M = self.transfer_matrix(
-            theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
+            q=q, theta_in=theta_in, k_vac=k_vac, polarization=polarization
         )
         return M[..., 1, 0] / M[..., 0, 0]
 
-    def trans_coef(self, theta_in=None, q=None, k_vac=None, polarization="p"):
+    def trans_coef(self, q=None, theta_in=None, k_vac=None, polarization="p"):
         """Return the momentum-dependent Fresnel transmission coefficient
         for the sample, using the transfer matrix method.
 
         Parameters
         ----------
+        q : float, default 0.0
+            In-plane electromagnetic wave momentum.
+            Must be broadcastable with all `eps_stack[i, ...]` and
+            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         theta_in : float
             Angle of the incident light to the surface normal in radians.
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        q : float, default 0.0
-            In-plane electromagnetic wave momentum.
-            Must be broadcastable with all `eps_stack[i, ...]` and
-            `t_stack[i, ...]`. Either `q` or `theta_in` must be None.
         k_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
             matrix method. Should be broadcastable with all
             `eps_stack[i, ...]`.
         polarization: {"p", "s"}
-            The polarisation of the incident light. "p" for parallel to the
+            The polarization of the incident light. "p" for parallel to the
             plane of incidence, and "s" for perpendicular (from the German
             word *senkrecht*).
 
@@ -386,7 +457,7 @@ class Sample:
 
         """
         M = self.transfer_matrix(
-            theta_in=theta_in, q=q, k_vac=k_vac, polarization=polarization
+            q=q, theta_in=theta_in, k_vac=k_vac, polarization=polarization
         )
         return 1 / M[..., 0, 0]
 
@@ -516,7 +587,7 @@ class Sample:
             _pad_for_broadcasting(a, (self.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
         ]
 
-        q = x_lag / np.asarray(2 * z_Q)
+        q = x_lag / np.asanyarray(2 * z_Q)
 
         beta_q = self.refl_coef_qs(q)
 
@@ -651,7 +722,7 @@ class Sample:
             _pad_for_broadcasting(a, (self.refl_coef_qs(z_Q),)) for a in laggauss(n_lag)
         ]
 
-        q = x_lag / np.asarray(2 * z_Q)
+        q = x_lag / np.asanyarray(2 * z_Q)
 
         beta_q = self.refl_coef_qs(q)
 
@@ -807,8 +878,8 @@ def refl_coef_qs_single(eps_i, eps_j):
           [ 0.5,  0. ]])
 
     """
-    eps_i = np.asarray(eps_i)
-    eps_j = np.asarray(eps_j)
+    eps_i = np.asanyarray(eps_i)
+    eps_j = np.asanyarray(eps_j)
     return (eps_j - eps_i) / (eps_j + eps_i)
 
 
@@ -838,6 +909,6 @@ def permitivitty(beta, eps_i=1 + 0j):
         The inverse of this function.
 
     """
-    beta = np.asarray(beta)
-    eps_i = np.asarray(eps_i)
+    beta = np.asanyarray(beta)
+    eps_i = np.asanyarray(eps_i)
     return eps_i * (1 + beta) / (1 - beta)

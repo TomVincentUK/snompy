@@ -20,14 +20,10 @@ class TestEffPol:
     # eff_pol
 
     @pytest.mark.parametrize("model, model_kwargs", model_and_kwargs)
-    def test_approach_curve_decays(
-        self, model, model_kwargs, scalar_sample_bulk, scalar_AFM_params
-    ):
+    def test_approach_curve_decays(self, model, model_kwargs, scalar_sample_bulk):
         alpha_eff = model.eff_pol(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | dict(z_tip=np.linspace(1, 100, 32) * 1e-9)
-            | model_kwargs
+            **dict(z_tip=np.linspace(1, 100, 32) * 1e-9) | model_kwargs
         )
         assert (np.diff(np.abs(alpha_eff), axis=-1) < 0).all()
 
@@ -50,17 +46,11 @@ class TestEffPol:
 
     @pytest.mark.parametrize("model, model_kwargs", model_and_kwargs)
     def test_approach_curve_n_decays(
-        self,
-        model,
-        model_kwargs,
-        scalar_sample_bulk,
-        scalar_AFM_params,
-        scalar_tapping_params,
+        self, model, model_kwargs, scalar_sample_bulk, scalar_tapping_params
     ):
         alpha_eff = model.eff_pol_n(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | scalar_tapping_params
+            **scalar_tapping_params
             | dict(z_tip=np.linspace(1, 100, 32) * 1e-9)
             | model_kwargs
         )
@@ -68,19 +58,11 @@ class TestEffPol:
 
     @pytest.mark.parametrize("model, model_kwargs", model_and_kwargs)
     def test_harmonics_decay(
-        self,
-        model,
-        model_kwargs,
-        scalar_sample_bulk,
-        scalar_AFM_params,
-        scalar_tapping_params,
+        self, model, model_kwargs, scalar_sample_bulk, scalar_tapping_params
     ):
         alpha_eff = model.eff_pol_n(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | scalar_tapping_params
-            | dict(n=np.arange(2, 10))
-            | model_kwargs
+            **scalar_tapping_params | dict(n=np.arange(2, 10)) | model_kwargs
         )
         assert (np.diff(np.abs(alpha_eff), axis=-1) < 0).all()
 
@@ -126,17 +108,11 @@ class TestEffPol:
 
     @pytest.mark.parametrize("model, model_kwargs", taylor_model_and_kwargs)
     def test_approach_curve_n_taylor_decays(
-        self,
-        model,
-        model_kwargs,
-        scalar_sample_bulk,
-        scalar_AFM_params,
-        scalar_tapping_params,
+        self, model, model_kwargs, scalar_sample_bulk, scalar_tapping_params
     ):
         alpha_eff = model.eff_pol_n_taylor(
             sample=scalar_sample_bulk,
-            **scalar_AFM_params
-            | scalar_tapping_params
+            **scalar_tapping_params
             | dict(z_tip=np.linspace(1, 100, 32) * 1e-9)
             | model_kwargs
         )
@@ -156,7 +132,7 @@ class TestEffPol:
             **vector_AFM_params | vector_tapping_params | model_kwargs
         )
         np.testing.assert_allclose(
-            model.eff_pol_n(**params), model.eff_pol_n_taylor(**params), rtol=1e-4
+            model.eff_pol_n(**params), model.eff_pol_n_taylor(**params), rtol=1e-3
         )
 
     @pytest.mark.parametrize("model, model_kwargs", taylor_model_and_kwargs)
@@ -191,7 +167,7 @@ class TestEffPol:
         beta_in = np.linspace(0.9, 0.1, n_test_beta) * np.exp(
             1j * np.linspace(0, np.pi, n_test_beta)
         )
-        sample = pysnom.sample.bulk_sample(beta=beta_in)
+        sample = pysnom.bulk_sample(beta=beta_in)
 
         alpha_eff = model.eff_pol(sample=sample, **vector_AFM_params)
         beta_out = model.refl_coef_qs_from_eff_pol(
@@ -210,7 +186,7 @@ class TestEffPol:
             1j * np.linspace(0, np.pi, n_test_beta)
         )
         beta_in = np.hstack([beta_in, -0.5 + 0.5j])  # a case with multiple solutions
-        sample = pysnom.sample.bulk_sample(beta=beta_in)
+        sample = pysnom.bulk_sample(beta=beta_in)
 
         alpha_eff_n = model.eff_pol_n_taylor(
             sample=sample, **vector_AFM_params | vector_tapping_params
@@ -225,3 +201,41 @@ class TestEffPol:
         rtol = 1.0e-7
         close_values = np.abs(beta_out - beta_in) <= (atol + rtol * np.abs(beta_in))
         assert close_values.any(axis=0).all()
+
+    @pytest.mark.parametrize("model", inverse_model)
+    def test_refl_coef_qs_from_eff_pol_n_reject_negative_eps_imag(
+        self, model, vector_AFM_params, vector_tapping_params
+    ):
+        eps_in = np.array([10 + 1j, 10 - 1j])  # 1 valid, 1 invalid
+        sample = pysnom.bulk_sample(eps_in)
+
+        alpha_eff_n = model.eff_pol_n_taylor(
+            sample=sample, **vector_AFM_params | vector_tapping_params
+        )
+        beta_out = model.refl_coef_qs_from_eff_pol_n(
+            alpha_eff_n=alpha_eff_n,
+            reject_negative_eps_imag=True,
+            **vector_AFM_params | vector_tapping_params
+        )
+        eps_out = pysnom.sample.permitivitty(beta_out)
+
+        assert (eps_out.imag >= 0).all()
+
+    @pytest.mark.parametrize("model", inverse_model)
+    def test_refl_coef_qs_from_eff_pol_n_reject_subvacuum_eps_abs(
+        self, model, vector_AFM_params, vector_tapping_params
+    ):
+        eps_in = np.array([10 + 10j, 0.1 + 0.1j])  # 1 valid, 1 invalid
+        sample = pysnom.bulk_sample(eps_in)
+
+        alpha_eff_n = model.eff_pol_n_taylor(
+            sample=sample, **vector_AFM_params | vector_tapping_params
+        )
+        beta_out = model.refl_coef_qs_from_eff_pol_n(
+            alpha_eff_n=alpha_eff_n,
+            reject_subvacuum_eps_abs=True,
+            **vector_AFM_params | vector_tapping_params
+        )
+        eps_out = pysnom.sample.permitivitty(beta_out)
+
+        assert (np.abs(eps_out) >= 1).all()

@@ -5,10 +5,10 @@ from matplotlib.colors import Normalize
 import pysnom
 
 
-def eps_Lorentz(wavenumber, eps_inf, centre_wavenumber, strength, width):
+def eps_Lorentz(wavenumber, eps_inf, centre_wavenumber, strength, gamma):
     """Lorentzian oscillator dielectric function model."""
     return eps_inf + (strength * centre_wavenumber**2) / (
-        centre_wavenumber**2 - wavenumber**2 - 1j * width * wavenumber
+        centre_wavenumber**2 - wavenumber**2 - 1j * gamma * wavenumber
     )
 
 
@@ -20,75 +20,59 @@ def eps_Drude(wavenumber, eps_inf, plasma_frequency, gamma):
 
 
 # Set some experimental parameters
-z_tip = 0e-9  # AFM tip height
 A_tip = 20e-9  # AFM tip tapping amplitude
 r_tip = 30e-9  # AFM tip radius of curvature
 L_tip = 350e-9  # Semi-major axis length of ellipsoid tip model
-n = 4  # Harmonic for demodulation
+n = 3  # Harmonic for demodulation
 theta_in = np.deg2rad(60)  # Light angle of incidence
 c_r = 0.3  # Experimental weighting factor
 k_vac = np.linspace(1680, 1800, 128) * 1e2  # Vacuum wavenumber
 method = "Mester"  # The FDM method to use
 
 # Semi-infinite superstrate and substrate
-eps_air = 1
+eps_air = 1.0
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
-eps_PMMA = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
-PMMA_thickness = np.geomspace(1, 35, 32) * 1e-9
-sample_PMMA = pysnom.sample.Sample(
-    eps_stack=(eps_air, eps_PMMA, eps_Si),
-    t_stack=(PMMA_thickness[:, np.newaxis],),
-    k_vac=k_vac,
+eps_pmma = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
+t_pmma = np.geomspace(1, 35, 32) * 1e-9  # A range of thicknesses
+sample_pmma = pysnom.Sample(
+    eps_stack=(eps_air, eps_pmma, eps_Si), t_stack=(t_pmma[:, np.newaxis],), k_vac=k_vac
 )
 
 # Model of Au dielectric function from ref [2] below
 eps_Au = eps_Drude(k_vac, 1, 7.25e6, 2.16e4)
-sample_Au = pysnom.sample.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
+sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 
 # Measurement
-alpha_eff_PMMA = pysnom.fdm.eff_pol_n(
-    z_tip=z_tip,
-    A_tip=A_tip,
-    n=n,
-    sample=sample_PMMA,
-    r_tip=r_tip,
-    L_tip=L_tip,
-    method=method,
+alpha_eff_pmma = pysnom.fdm.eff_pol_n(
+    sample=sample_pmma, A_tip=A_tip, n=n, r_tip=r_tip, L_tip=L_tip, method=method
 )
-r_PMMA = sample_PMMA.refl_coef(theta_in=theta_in)
-sigma_PMMA = (1 + c_r * r_PMMA) ** 2 * alpha_eff_PMMA
+r_coef_pmma = sample_pmma.refl_coef(theta_in=theta_in)
+sigma_pmma = (1 + c_r * r_coef_pmma) ** 2 * alpha_eff_pmma
 
 # Gold reference
 alpha_eff_Au = pysnom.fdm.eff_pol_n(
-    z_tip=z_tip,
-    A_tip=A_tip,
-    n=n,
-    sample=sample_Au,
-    r_tip=r_tip,
-    L_tip=L_tip,
-    method=method,
+    sample=sample_Au, A_tip=A_tip, n=n, r_tip=r_tip, L_tip=L_tip, method=method
 )
-r_Au = sample_Au.refl_coef(theta_in=theta_in)
-sigma_Au = (1 + c_r * r_Au) ** 2 * alpha_eff_Au
+r_coef_Au = sample_Au.refl_coef(theta_in=theta_in)
+sigma_Au = (1 + c_r * r_coef_Au) ** 2 * alpha_eff_Au
 
 # Normalised complex scattering
-sigma_n = sigma_PMMA / sigma_Au
+eta_n = sigma_pmma / sigma_Au
 
 # Plot output
 fig, axes = plt.subplots(nrows=2, sharex=True)
 
 # For neater plotting
 k_per_cm = k_vac * 1e-2
-thickness_nm = PMMA_thickness * 1e9
+t_nm = t_pmma * 1e9
 
 SM = plt.cm.ScalarMappable(
-    cmap=plt.cm.Spectral_r,
-    norm=Normalize(vmin=thickness_nm.min(), vmax=thickness_nm.max()),
+    cmap=plt.cm.Spectral_r, norm=Normalize(vmin=t_nm.min(), vmax=t_nm.max())
 )  # This maps thickness to colour
 
-for t, sigma in zip(thickness_nm, sigma_n):
+for t, sigma in zip(t_nm, eta_n):
     c = SM.to_rgba(t)
     axes[0].plot(k_per_cm, np.abs(sigma), c=c)
     axes[1].plot(k_per_cm, np.angle(sigma), c=c)

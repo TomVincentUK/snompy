@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pytest
 from scipy.integrate import quad_vec
@@ -18,7 +20,7 @@ class TestSample:
             "along the first axis.",
         ]
     )
-    k_vac_None_error = "`k_vac` must not be None."
+    k_vac_None_error = "`k_vac` must not be None for multilayer samples."
     theta_q_error = "Either `theta_in` or `q` must be None."
     polarization_error = "`polarization` must be 's' or 'p'"
 
@@ -44,28 +46,33 @@ class TestSample:
     # Input tests
     def test_error_when_no_eps_or_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            pysnom.sample.Sample()
+            pysnom.Sample()
 
     def test_error_when_both_eps_and_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            pysnom.sample.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
+            pysnom.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
 
     def test_error_when_eps_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            pysnom.sample.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
+            pysnom.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
 
     def test_error_when_beta_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            pysnom.sample.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
+            pysnom.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
 
-    def test_transfer_matrix_errors_when_no_k_vac(self):
+    def test_transfer_matrix_no_errors_when_bulk_no_k_vac(self):
         eps_sub = 10
+        no_k_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
+        no_k_at_init.refl_coef()
+
+    def test_transfer_matrix_errors_when_multilayer_no_k_vac(self):
+        sample_params = dict(eps_stack=(1, 2, 10), t_stack=(50e-9,))
         k_vac = 1.0
         # No error when k_vac specified at init or function call
-        k_at_init = pysnom.sample.bulk_sample(eps_sub=eps_sub, k_vac=k_vac)
+        k_at_init = pysnom.Sample(k_vac=k_vac, **sample_params)
         k_at_init.refl_coef()
 
-        no_k_at_init = pysnom.sample.bulk_sample(eps_sub=eps_sub)
+        no_k_at_init = pysnom.Sample(**sample_params)
         no_k_at_init.refl_coef(k_vac=k_vac)
 
         # Error with no k_vac
@@ -73,7 +80,7 @@ class TestSample:
             no_k_at_init.refl_coef()
 
     def test_transfer_matrix_errors_when_theta_and_q(self):
-        sample = pysnom.sample.bulk_sample(eps_sub=10, k_vac=1.0)
+        sample = pysnom.bulk_sample(eps_sub=10, k_vac=1.0)
         q = theta_in = 0.0
 
         # No error when theta_in or q specified separately
@@ -85,7 +92,7 @@ class TestSample:
             sample.transfer_matrix(q=q, theta_in=theta_in)
 
     def test_transfer_matrix_errors_for_unknown_polarization(self):
-        sample = pysnom.sample.bulk_sample(eps_sub=10, k_vac=1.0)
+        sample = pysnom.bulk_sample(eps_sub=10, k_vac=1.0)
         # No error for "p" or "s"
         sample.transfer_matrix(polarization="p")
         sample.transfer_matrix(polarization="s")
@@ -105,28 +112,26 @@ class TestSample:
                 ]
             ),
         ):
-            pysnom.sample.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
+            pysnom.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
 
     # Behaviour tests
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.sample.Sample(
+        sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         assert sample.multilayer == (np.shape(sample.t_stack)[0] > 0)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_eps_beta_conversion_reversible(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.sample.Sample(
+        sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         if eps_stack is not None:
-            from_beta = pysnom.sample.Sample(
-                beta_stack=sample.beta_stack, t_stack=t_stack
-            )
+            from_beta = pysnom.Sample(beta_stack=sample.beta_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_beta.eps_stack)
         if beta_stack is not None:
-            from_eps = pysnom.sample.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
+            from_eps = pysnom.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_eps.eps_stack)
 
     @pytest.mark.parametrize("eps_i", np.linspace(0.9, 1.1, 3))
@@ -146,12 +151,13 @@ class TestSample:
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_outputs_correct_shape(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.sample.Sample(
+        sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         k_vac = np.ones_like(sample.eps_stack[0], dtype=float)
         assert (
             np.shape(sample.refl_coef_qs())
+            == np.shape(sample.trans_coef_qs())
             == np.shape(sample.refl_coef(k_vac=k_vac))
             == np.shape(sample.trans_coef(k_vac=k_vac))
             == np.shape(sample.refl_coef_qs_above_surf(z_Q=self.z_Q))
@@ -166,54 +172,67 @@ class TestSample:
     def test_refl_coef_qs_flat_for_bulk(self, scalar_sample_bulk):
         q = np.linspace(0, 10, 64)
         beta = scalar_sample_bulk.refl_coef_qs(q)
-        print(beta - beta.mean())
         np.testing.assert_array_almost_equal(beta - beta.mean(), 0)
 
     def test_surf_pot_and_field_integrals(self, vector_sample_multi):
         phi, E = vector_sample_multi.surf_pot_and_field(self.z_Q)
 
-        phi_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q)) * np.exp(-x),
-            0,
-            np.inf,
-        )
-        phi_scipy /= 2 * self.z_Q
-        np.testing.assert_allclose(phi, phi_scipy)
+        with warnings.catch_warnings():  # scipy quad uses large values that overflow
+            warnings.simplefilter("ignore")
+            phi_scipy, _ = quad_vec(
+                lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+                * np.exp(-x),
+                0,
+                np.inf,
+            )
+            E_scipy, _ = quad_vec(
+                lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+                * x
+                * np.exp(-x),
+                0,
+                np.inf,
+            )
 
-        E_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
-            * x
-            * np.exp(-x),
-            0,
-            np.inf,
-        )
+        phi_scipy /= 2 * self.z_Q
+        phi_valid = ~np.isnan(phi_scipy)
+        np.testing.assert_allclose(phi[phi_valid], phi_scipy[phi_valid])
+
         E_scipy /= 4 * self.z_Q**2
-        np.testing.assert_allclose(E, E_scipy)
+        E_valid = ~np.isnan(E_scipy)
+        np.testing.assert_allclose(E[E_valid], E_scipy[E_valid])
 
     def test_refl_coef_qs_above_surf_integral(self, vector_sample_multi):
-        numerator_longhand, _ = quad_vec(
-            lambda q: vector_sample_multi.refl_coef_qs(q)
-            * q
-            * np.exp(-2 * self.z_Q * q),
-            0,
-            np.inf,
-        )
-        denominator_longhand, _ = quad_vec(
-            lambda q: q * np.exp(-2 * self.z_Q * q), 0, np.inf
-        )
-        beta_eff_longhand = numerator_longhand / denominator_longhand
-
-        beta_eff_scipy, _ = quad_vec(
-            lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
-            * x
-            * np.exp(-x),
-            0,
-            np.inf,
-        )
-        np.testing.assert_allclose(beta_eff_scipy, beta_eff_longhand)
-
         beta_eff = vector_sample_multi.refl_coef_qs_above_surf(self.z_Q)
-        np.testing.assert_allclose(beta_eff, beta_eff_scipy)
+
+        with warnings.catch_warnings():  # scipy quad uses large values that overflow
+            warnings.simplefilter("ignore")
+            numerator_longhand, _ = quad_vec(
+                lambda q: vector_sample_multi.refl_coef_qs(q)
+                * q
+                * np.exp(-2 * self.z_Q * q),
+                0,
+                np.inf,
+            )
+            denominator_longhand, _ = quad_vec(
+                lambda q: q * np.exp(-2 * self.z_Q * q), 0, np.inf
+            )
+            beta_eff_scipy, _ = quad_vec(
+                lambda x: vector_sample_multi.refl_coef_qs(x / (2 * self.z_Q))
+                * x
+                * np.exp(-x),
+                0,
+                np.inf,
+            )
+
+        beta_eff_longhand = numerator_longhand / denominator_longhand
+        beta_eff_valid = ~np.isnan(beta_eff_longhand + beta_eff_scipy)
+
+        np.testing.assert_allclose(
+            beta_eff_scipy[beta_eff_valid], beta_eff_longhand[beta_eff_valid]
+        )
+        np.testing.assert_allclose(
+            beta_eff[beta_eff_valid], beta_eff_scipy[beta_eff_valid]
+        )
 
     def test_image_depth_and_charge_broadcasting(self, vector_sample_multi):
         target_shape = (

@@ -1,15 +1,9 @@
-.. _bulk_fdm:
+.. _fdm:
 
-Bulk finite dipole model
-========================
+The finite dipole model
+=======================
 
-The finite dipole model (FDM) is one method for estimating the effective
-polarizability of an atomic force microscope (AFM) tip and a sample.
-This can be used to predict scattering in scanning near-field optical
-microscopy (SNOM) measurements, as described on the page :ref:`scattering`.
-
-On this page we introduce the FDM for bulk samples and give examples
-showing how the bulk FDM is implemented in ``pysnom``.
+DESCRIBE THIS PAGE
 
 Ellipsoid model of an AFM tip
 -----------------------------
@@ -32,7 +26,7 @@ surface nearby) to a vertical electric field.
 The image below shows the vertical component of the electric field response
 of an ellipsoid to a vertical :math:`E_{in}`.
 
-.. image:: bulk_fdm/dipole_field.svg
+.. image:: fdm/dipole_field.svg
    :align: center
 
 We can see that the resulting field looks like that of a dipole formed by
@@ -43,7 +37,7 @@ This dipole, which we call :math:`p_0`, is what gives the finite dipole
 model its name.
 The word finite here refers to the fact that the dipole has a finite
 length, and is used to contrast with the *point* dipole model
-(:ref:`PDM <bulk_pdm>`), an earlier model for the effective polarizability.
+(:ref:`PDM <pdm>`), an earlier model for the effective polarizability.
 The position of the two charges are found at distances
 
 .. math::
@@ -82,7 +76,7 @@ The image below shows the various induced charges, counter charges, and
 image charges which are used in the FDM to model the tip-sample
 interaction.
 
-.. image:: bulk_fdm/fdm.svg
+.. image:: fdm/fdm.svg
    :align: center
 
 We can model the electric field response of the sample to the charge
@@ -157,8 +151,7 @@ They are given by the formula
    {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
 
 where :math:`g \approx 0.7` is an empirical factor that describes how much
-of the induced charge is relevant for the near-field interaction (see
-`Parameters`_ for more details on how this factor affects the results).
+of the induced charge is relevant for the near-field interaction.
 In ``pysnom``, equation :eq:`f_i_bulk` is provided by the function
 :func:`pysnom.fdm.bulk.geom_func`.
 
@@ -196,7 +189,7 @@ by the demodulated near-field scattering coefficient
 .. math::
    :label: fdm_scattering
 
-   \sigma_{scat, n} \propto \alpha_{eff, n},
+   \sigma_n \propto \alpha_{eff, n},
 
 with amplitude and phase
 
@@ -204,19 +197,14 @@ with amplitude and phase
    :label: fdm_amp_and_phase
 
    \begin{align*}
-      s_n &= |\sigma_{scat, n}|, \ \text{and}\\
-      \phi_n &= \arg(\sigma_{scat, n}).
+      s_n &= |\sigma_n|, \ \text{and}\\
+      \phi_n &= \arg(\sigma_n).
    \end{align*}
 
 This is explained in detail on the dedicated page :ref:`demodulation`.
 
 In ``pysnom``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
 function :func:`pysnom.fdm.bulk.eff_pol_n`.
-
-Parameters
-----------
-
-[Explanations of parameters (perhaps with graphs)?]
 
 References
 ----------
