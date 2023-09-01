@@ -27,13 +27,16 @@ Functions
     refl_coef_qs_single
     permitivitty
 """
+import functools
 import warnings
 
 import numpy as np
-from numpy.polynomial.laguerre import laggauss
 
 from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
+
+# Cache common functions to speed up execution
+laggauss = functools.cache(np.polynomial.laguerre.laggauss)
 
 # Maximum floating point argument to np.exp that doesn't overflow
 _MAX_EXP_ARG = np.log(np.finfo(float).max)
