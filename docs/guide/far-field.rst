@@ -122,9 +122,13 @@ First let's create a model for the permitivitty (based loosely on [2]_):
    :context:
 
    >>> wavenumber = np.linspace(1680, 1800, 128) * 1e2  # In units of m^-1
-   >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 14e-3, 20e2
-   >>> eps_pmma = eps_inf + (strength * centre_wavenumber**2) / (
-   ...     centre_wavenumber**2 - wavenumber**2 - 1j * width * wavenumber
+   >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 4.2e8, 20e2
+   >>> eps_pmma = pysnom.sample.lorentz_perm(
+   ...     wavenumber,
+   ...     k_j=centre_wavenumber,
+   ...     gamma_j=width,
+   ...     A_j=strength,
+   ...     eps_inf=eps_inf
    ... )
 
 Now we can create our sample.
