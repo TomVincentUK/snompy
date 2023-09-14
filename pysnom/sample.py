@@ -26,6 +26,8 @@ Functions
     bulk_sample
     refl_coef_qs_single
     permitivitty
+    lorentz_perm
+    drude_perm
 """
 import functools
 import warnings
@@ -901,7 +903,7 @@ def permitivitty(beta, eps_i=1 + 0j):
     Returns
     -------
     eps_j : complex
-        Dielectric function of material j.
+        Permitivitty of material j.
 
     See also
     --------
@@ -912,3 +914,78 @@ def permitivitty(beta, eps_i=1 + 0j):
     beta = np.asanyarray(beta)
     eps_i = np.asanyarray(eps_i)
     return eps_i * (1 + beta) / (1 - beta)
+
+
+def lorentz_perm(k_vac, k_j, gamma_j, A_j=None, k_plasma=None, f_j=1.0, eps_inf=1.0):
+    """Return permittivity as a function of wavenumber using a single
+    Lorentzian oscillator model.
+
+    This function returns
+     `eps_inf + A_j / (k_j**2 - k_vac**2 - 1j * gamma_j * k_vac)`, where
+     `A_j = f_j * k_plasma**2`.
+
+    Parameters
+    ----------
+    k_vac : float
+        Vacuuum wavenumber of incident light.
+    k_j : float
+        Centre wavenumber of the oscillator.
+    gamma_j : float
+        Width, or damping frequency, of the oscillator (equivalent to the
+        reciprocal of the relaxation time).
+    A_j : float
+        Amplitude of the oscillator, equivalent to `f_j * k_plasma**2`. As
+        this term accounts for the plasma frequency, either `A_j` or
+        `k_plasma` must be None.
+    k_plasma : float
+        Plasma wavenumber (wavenumber corresponding to the plasma
+        frequency) of the sample. Either `A_j` or `k_plasma` must be None.
+    f_j : float, default 1.0
+        Dimensionless constant that modifies the oscillation amplitude when
+        used in combination with `k_plasma`.
+    eps_inf : float, default 1.0
+        High frequency permitivitty of the sample.
+
+    Returns
+    -------
+    eps : complex
+        Permitivitty.
+
+    """
+    if A_j is None:
+        if k_plasma is None:
+            raise ValueError("`A_j` and `k_plasma` cannot both be None")
+        else:
+            A_j = f_j * k_plasma**2
+    elif k_plasma is not None:
+        raise ValueError("Either `A_j` or `k_plasma` must be None")
+
+    return eps_inf + A_j / (k_j**2 - k_vac**2 - 1j * gamma_j * k_vac)
+
+
+def drude_perm(k_vac, k_plasma, gamma, eps_inf=1.0):
+    """Return permittivity as a function of wavenumber using a Drude model.
+
+    This function returns
+     `eps_inf - k_plasma**2 / (k_vac**2 + 1j * gamma_j * k_vac)`.
+
+    Parameters
+    ----------
+    k_vac : float
+        Vacuuum wavenumber of incident light.
+    k_plasma : float
+        Plasma wavenumber (wavenumber corresponding to the plasma
+        frequency) of the sample.
+    gamma : float
+        Damping frequency of the sample (equivalent to the reciprocal of
+        the relaxation time).
+    eps_inf : float, default 1.0
+        High frequency permitivitty of the sample.
+
+    Returns
+    -------
+    eps : complex
+        Permitivitty.
+
+    """
+    return lorentz_perm(k_vac, k_j=0, gamma_j=gamma, k_plasma=k_plasma, eps_inf=eps_inf)

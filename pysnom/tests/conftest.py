@@ -17,14 +17,13 @@ def scalar_sample_multi():
 @pytest.fixture
 def vector_sample_bulk():
     # Dispersive medium
-    eps_inf = 2
-    osc_freq = 1738e2
-    osc_width = 20e2
-    osc_strength = 14e-3
-    wavenumber = np.linspace(1680, 1780, 128) * 1e2
-    eps_substrate = eps_inf + (osc_strength * osc_freq**2) / (
-        osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
-    )  # Lorentzian oscillator
+    eps_substrate = pysnom.sample.lorentz_perm(
+        k_vac=np.linspace(1680, 1780, 128) * 1e2,
+        k_j=1738e2,
+        gamma_j=20e2,
+        A_j=14e-3,
+        eps_inf=2,
+    )
     return pysnom.bulk_sample(eps_substrate)
 
 
@@ -34,14 +33,13 @@ def vector_sample_multi():
     eps_env = 1
     eps_top = 1.5
     eps_substrate = 11.7
-    eps_inf = 2
-    osc_freq = 1738e2
-    osc_width = 20e2
-    osc_strength = 14e-3
-    wavenumber = np.linspace(1680, 1780, 128) * 1e2
-    eps_middle = eps_inf + (osc_strength * osc_freq**2) / (
-        osc_freq**2 - wavenumber**2 - 1j * osc_width * wavenumber
-    )  # Lorentzian oscillator
+    eps_middle = pysnom.sample.lorentz_perm(
+        k_vac=np.linspace(1680, 1780, 128) * 1e2,
+        k_j=1738e2,
+        gamma_j=20e2,
+        A_j=14e-3,
+        eps_inf=2,
+    )
     t_top = 20e-9
     t_middle = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
     return pysnom.Sample(

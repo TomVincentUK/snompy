@@ -240,3 +240,21 @@ class TestSample:
         ).shape
         z_image, beta_image = vector_sample_multi.image_depth_and_charge(self.z_Q)
         assert z_image.shape == beta_image.shape == target_shape
+
+    def test_lorentz_perm_A_j_and_k_plasma_errors(self):
+        with pytest.raises(
+            ValueError, match="`A_j` and `k_plasma` cannot both be None"
+        ):
+            pysnom.sample.lorentz_perm(1, 1, 1)
+        with pytest.raises(ValueError, match="Either `A_j` or `k_plasma` must be None"):
+            pysnom.sample.lorentz_perm(1, 1, 1, A_j=1, k_plasma=1)
+
+    def test_drude_perm_is_case_of_lorentz_perm(self):
+        k_vac = np.linspace(1000, 2000, 128) * 1e2
+        k_plasma = 10000e2
+        gamma = 1000e2
+        eps_drude = pysnom.sample.drude_perm(k_vac, k_plasma=k_plasma, gamma=gamma)
+        eps_lorentz = pysnom.sample.lorentz_perm(
+            k_vac, k_j=0, k_plasma=k_plasma, gamma_j=gamma
+        )
+        np.testing.assert_allclose(eps_drude, eps_lorentz)

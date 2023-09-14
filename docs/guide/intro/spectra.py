@@ -4,21 +4,6 @@ from matplotlib.colors import Normalize
 
 import pysnom
 
-
-def eps_Lorentz(wavenumber, eps_inf, centre_wavenumber, strength, gamma):
-    """Lorentzian oscillator dielectric function model."""
-    return eps_inf + (strength * centre_wavenumber**2) / (
-        centre_wavenumber**2 - wavenumber**2 - 1j * gamma * wavenumber
-    )
-
-
-def eps_Drude(wavenumber, eps_inf, plasma_frequency, gamma):
-    """Drude dielectric function model."""
-    return eps_inf - (plasma_frequency**2) / (
-        wavenumber**2 + 1j * gamma * wavenumber
-    )
-
-
 # Set some experimental parameters
 A_tip = 20e-9  # AFM tip tapping amplitude
 r_tip = 30e-9  # AFM tip radius of curvature
@@ -34,14 +19,16 @@ eps_air = 1.0
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
-eps_pmma = eps_Lorentz(k_vac, 2, 1738e2, 14e-3, 20e2)
+eps_pmma = pysnom.sample.lorentz_perm(
+    k_vac, k_j=1738e2, gamma_j=20e2, A_j=4.2e8, eps_inf=2
+)
 t_pmma = np.geomspace(1, 35, 32) * 1e-9  # A range of thicknesses
 sample_pmma = pysnom.Sample(
     eps_stack=(eps_air, eps_pmma, eps_Si), t_stack=(t_pmma[:, np.newaxis],), k_vac=k_vac
 )
 
 # Model of Au dielectric function from ref [2] below
-eps_Au = eps_Drude(k_vac, 1, 7.25e6, 2.16e4)
+eps_Au = pysnom.sample.drude_perm(k_vac, k_plasma=7.25e6, gamma=2.16e4)
 sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, k_vac=k_vac)
 
 # Measurement
