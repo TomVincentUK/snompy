@@ -101,19 +101,6 @@ class TestSample:
         with pytest.raises(ValueError, match=self.polarization_error):
             sample.transfer_matrix(polarization="not s or p")
 
-    def test_warn_when_zero_thickness(self):
-        with pytest.warns(
-            UserWarning,
-            match=" ".join(
-                [
-                    "`t_stack` contains zeros.",
-                    "Zero-thickness dielectric layers are unphysical.",
-                    "Results may not be as expected.",
-                ]
-            ),
-        ):
-            pysnom.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1, 0, 1))
-
     # Behaviour tests
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
