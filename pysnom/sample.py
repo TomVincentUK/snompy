@@ -30,7 +30,6 @@ Functions
     drude_perm
 """
 import functools
-import warnings
 
 import numpy as np
 
@@ -139,16 +138,6 @@ class Sample:
 
         # Check inputs make sense
         self._check_layers_valid()
-        if (self._t_stack == 0).any():
-            warnings.warn(
-                " ".join(
-                    [
-                        "`t_stack` contains zeros.",
-                        "Zero-thickness dielectric layers are unphysical.",
-                        "Results may not be as expected.",
-                    ]
-                )
-            )
 
     @property
     def eps_stack(self):
