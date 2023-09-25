@@ -53,13 +53,13 @@ class Defaults:
 
     Demodulation-related
     --------------------
-    n_trapz : int, default 64
+    n_trapz : int, default 32
         The number of intervals to use for the trapezium-method
         integration used by `pysnom.demodulate.demod`.
 
     Momentum integral-related
     -------------------------
-    n_lag : int, default 64
+    n_lag : int, default 32
         The order of the Laguerre polynomial approximation used for
         integrating exponentially-weighted, semi-definite integrals.
 
