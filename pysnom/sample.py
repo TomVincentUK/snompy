@@ -220,7 +220,7 @@ class Sample:
             # Avoid overflow by clipping (there's probably a more elegant way)
             prop_factor = np.clip(prop_factor, -_MAX_EXP_ARG, _MAX_EXP_ARG)
             prop_matrices = np.exp(
-                np.array([1, 0]) * prop_factor[..., np.newaxis, np.newaxis]
+                np.array([1, -1]) * prop_factor[..., np.newaxis, np.newaxis]
             ) * np.eye(2)
 
             for T, P in zip(trans_matrices[1:], prop_matrices):
