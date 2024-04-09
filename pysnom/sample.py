@@ -29,6 +29,7 @@ Functions
     lorentz_perm
     drude_perm
 """
+
 import functools
 
 import numpy as np

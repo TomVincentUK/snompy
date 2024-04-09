@@ -14,24 +14,18 @@ Installation
 ------------
 
 Currently, this project is still in development, and not yet public.
-So to install ``pysnom`` you'll need to clone the git repository to your local environment then install in development mode like:
-
-.. code-block:: bash
+So to install ``pysnom`` you'll need to clone the git repository to your local environment then install in development mode like::
 
    git clone https://github.com/TomVincentUK/pysnom.git
    cd pysnom
    pip install -e .
 
 When the project goes public, I'll upload it to PyPI.
-When I do, the installation should look like:
-
-.. code-block:: bash
+When I do, the installation should look like::
 
    pip install pysnom
 
-Eventually, I'll also look into adding it to ``conda-forge``, so it can be installed like:
-
-.. code-block:: bash
+Eventually, I'll also look into adding it to ``conda-forge``, so it can be installed like::
 
    conda install -c conda-forge pysnom
 
@@ -40,15 +34,11 @@ Useful third-party packages
 
 The examples in this guide rely heavily on ``numpy``, a Python package for eficient numerical computation, which should be installed automatically when you install ``pysnom``.
 To follow along, it might also be helpful to install ``matplotlib``, a Python package for data visualisation, and ``scipy``, a Python package for scientific computation.
-These can be installed like
-
-.. code-block:: bash
+These can be installed like::
 
    pip install matplotlib scipy
 
-or for ``conda`` users:
-
-.. code-block:: bash
+or for ``conda`` users::
 
    conda install -c conda-forge matplotlib scipy
 
