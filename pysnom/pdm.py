@@ -47,6 +47,7 @@ most cases you shouldn't need to call these functions directly.
     eff_pol_n_taylor
 
 """
+
 import numpy as np
 from numpy.polynomial import Polynomial
 
