@@ -3,7 +3,7 @@ import math
 from cycler import cycler
 
 project = "pysnom"
-copyright = "2023, COPYRIGHT HOLDERS"
+copyright = "2024, Tom Vincent"
 author = "Tom Vincent"
 
 extensions = [
