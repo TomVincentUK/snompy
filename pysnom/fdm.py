@@ -181,40 +181,36 @@ def eff_pol(
 
     .. math::
 
-        \alpha_{eff} = 1 + \frac
-            {\beta_0 f_{geom, 0}(z_{tip}, r_{tip}, L_{tip}, g)}
-            {2 (1 - \beta_1 f_{geom, 1}(z_{tip}, r_{tip}, L_{tip}, g))}
+        \alpha_{eff} = 1 + \frac{\beta_0 f_0}{2 (1 - \beta_1 f_1)}
 
-    where :math:`\alpha_{eff}` is `\alpha_eff`, :math:`z_{tip}` is `z_tip`,
-    :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
-    is `g_factor`.
+    where :math:`\alpha_{eff}` is `\alpha_eff`.
 
-    The definitions of :math:`\beta_i` and :math:`f_{geom, i}` depend on
-    the FDM method used, and are described below.
+    The definitions of :math:`\beta_j` and :math:`f_j` depend on the FDM
+    method used, and are described below.
 
     Method "bulk" is the bulk Hauer method given in reference [1]_. Here,
     :math:`\beta_0 = \beta_1 = \beta`, the momentum independent quasistatic
     reflection coefficient of the sample, which is calculated from
     :func:`pysnom.sample.Sample.refl_coef_qs` (with argument `q = 0`).
-    :math:`f_{geom, i}` is given by :func:`geom_func`, with arguments
-    `(z_tip, d_Qi, r_tip, L_tip, g_factor)` where `d_Qi` is given by
-    `d_Q0`, `d_Q1` for :math:`i = 0, 1`.
+    :math:`f_j` is given by :func:`geom_func`, with arguments `z_tip`,
+    `d_Q0` or `d_Q1` (for the numerator or denominator), `r_tip`, `L_tip`,
+    and `g_factor`.
 
     Method "Hauer" is the multilayer Hauer method given in reference [1]_.
-    Here, :math:`\beta_i`, is the relative charge of an image of charge
-    :math:`Q_i` below the sample at depth :math:`z_{Q'i}` below the
-    surface. :math:`\beta_i` and :math:`d_{z'i}` are calculated from
+    Here, :math:`\beta_j`, is the relative charge of an image of charge
+    :math:`Q_j` below the sample at depth :math:`d_{Q_j'}` below the
+    surface. :math:`\beta_j` and :math:`d_{Q_j'}` are calculated from
     :func:`pysnom.sample.Sample.image_depth_and_charge`.
-    :math:`f_{geom, i}` is given by :func:`geom_func_multi`, with arguments
-    `(z_tip, z_im_i, r_tip, L_tip, g_factor)` where `z_im_i` is given by
-    :math:`d_{z'i}` for :math:`i = 0, 1`.
+    :math:`f_j` is given by :func:`geom_func_multi`, with arguments
+    `z_tip`, `d_image` (:math:`d_{Q_j'}`), `r_tip`, `L_tip`, and
+    `g_factor`.
 
     Method "Mester" is described in reference [2]_. Here
     :math:`\beta_0 = \beta_1 = \overline{\beta}`, the effective reflection
     coefficient for a test charge :math:`Q_a`, evaluated at the position of
     the charge itself, which is calculated from
     :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`. The definition of
-    :math:`f_{geom, i}` is the same as for the bulk Hauer method.
+    :math:`f_j` is the same as for the bulk Hauer method.
 
 
     References
@@ -302,16 +298,16 @@ def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
 
     .. math::
 
-        f_{geom, i} =
+        f_j =
         \left(
-            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_{Qi}}{2 L_{tip}}
+            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_{Q_j}}{2 L_{tip}}
         \right)
         \frac{\ln{\left(
-            \frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_{Qi}}
+            \frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_{Q_j}}
         \right)}}
         {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z_{tip}` is `z_tip`, :math:`d_{Qi}` is `d_Q`,
+    where :math:`z_{tip}` is `z_tip`, :math:`d_{Q_j}` is `d_Q`,
     :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
     is `g_factor`. This is given as equation (2) in reference [1]_.
 
@@ -365,17 +361,17 @@ def geom_func_multi(z_tip, d_image, r_tip, L_tip, g_factor):
 
     .. math::
 
-        f_{geom, i} =
+        f_j =
         \left(
-            g - \frac{r_{tip} + z_{tip} + z_{Q'i}}{2 L_{tip}}
+            g - \frac{r_{tip} + z_{tip} + d_{Q_j'}}{2 L_{tip}}
         \right)
         \frac{\ln{\left(
-            \frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 z_{Q'i}}
+            \frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{Q_j'}}
         \right)}
         }
         {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z_{tip}` is `z_tip`, :math:`z_{Q'i}` is `d_image`,
+    where :math:`z_{tip}` is `z_tip`, :math:`d_{Q_j'}` is `d_image`,
     :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
     is `g_factor`. This is given as equation (11) in reference [1]_.
 
@@ -440,10 +436,10 @@ def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
 
     .. math::
 
-        f_{t} = f_{geom, 0} f_{geom, 1}^{j-1}
+        f_{t} = f_0 f_1^{j-1}
 
     where :math:`f_{t}` is `f_t`, :math:`j` is `j_taylor`,
-    and :math:`f_{geom, i}` is a function encapsulating the geometric
+    and :math:`f_j` is a function encapsulating the geometric
     properties of the tip-sample system, implemented here as
     :func:`geom_func`.
 
@@ -507,7 +503,7 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
 
     .. math::
 
-        a_j =
+        a_{j,n} =
         \begin{cases}
             1, & \text{if  $j = 0$, $n = 0$}\\
             0, & \text{if  $j = 0$, $n \neq 0$}\\
@@ -626,9 +622,9 @@ def eff_pol_n_taylor(
     use :func:`eff_pol_n`
 
     This function implements
-    :math:`\alpha_{eff, n} = \sum_{j=0}^{J} a_j \beta^j`, where
+    :math:`\alpha_{eff, n} = \sum_{j=0}^{J} a_{j,n} \beta^j`, where
     :math:`\beta` is `beta`, :math:`j` is the index of the Taylor series,
-    :math:`J` is `n_tayl` and :math:`a_j` is the Taylor coefficient,
+    :math:`J` is `n_tayl` and :math:`a_{j,n}` is the Taylor coefficient,
     implemented here as :func:`taylor_coef`.
     """
     # Set defaults
@@ -751,11 +747,11 @@ def refl_coef_qs_from_eff_pol_n(
     This function is valid only `alpha_eff_n` values corresponding to`beta`
     magnitudes less than around 1.
 
-    This function solves, for :math:`\beta`,
-    :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_j \beta^j`, where
-    :math:`\delta` is the Dirac delta function :math:`\beta` is `beta`,
-    :math:`j` is the index of the Taylor series, :math:`J` is
-    `n_tayl` and :math:`a_j` is the Taylor coefficient, implemented
+    This function solves, for :math:`\beta`:
+    :math:`\alpha_{eff, n} = \delta(n) + \sum_{j=1}^{J} a_{j, n} \beta^j`,
+    where :math:`\delta` is the Dirac delta function :math:`\beta` is
+    `beta`, :math:`j` is the index of the Taylor series, :math:`J` is
+    `n_tayl` and :math:`a_{j,n}` is the Taylor coefficient, implemented
     here as :func:`taylor_coef`.
 
     There may be multiple possible solutions (or none) for different
@@ -844,14 +840,6 @@ def refl_coef_qs_from_eff_pol(
     d_Q1 : float
         Depth of an induced charge 1 within the tip. Specified in units of
         the tip radius.
-    n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
-        the trapezium-method integration.
-    n_tayl : int
-        Maximum power index for the Taylor series in `beta`.
-    beta_threshold : float
-        The maximum amplitude of returned `beta` values determined to be
-        valid.
 
     Returns
     -------
@@ -871,13 +859,13 @@ def refl_coef_qs_from_eff_pol(
 
         \beta = \frac
             {2 (\alpha_{eff} - 1)}
-            {f_{geom, 0} + 2 f_{geom, 1} (\alpha_{eff} - 1)}
+            {f_0 + 2 f_1 (\alpha_{eff} - 1)}
 
-    where :math:`\alpha_{eff}` is `\alpha_eff`, and :math:`f_{geom, i}` is
+    where :math:`\alpha_{eff}` is `\alpha_eff`, and :math:`f_j` is
     a function encapsulating the FDM geometry, taken from reference [1]_.
-    Here it is given by :func:`geom_func`, with arguments
-    `(z_tip, d_Qi, r_tip, L_tip, g_factor)` where `d_Qi` is replaced by
-    `d_Q0`, `d_Q1` for :math:`i = 0, 1`.
+    Here it is given by :func:`geom_func`, with arguments `z_tip`, `d_Q0`
+    or `d_Q1` (for  :math:`f_0` or :math:`f_1`), `r_tip`, `L_tip`, and
+    `g_factor`
 
     References
     ----------

@@ -103,16 +103,17 @@ def eff_pol_n(sample, A_tip, n, z_tip=None, n_trapz=None, **kwargs):
     :math:`\alpha_{eff}`, as described in reference [1]_. The function
     :math:`\alpha_{eff}` is implemented here as :func:`eff_pol`.
 
-    If `eps_sphere` is specified it is used to calculate `alpha_sphere`
+    If `eps_tip` is specified it is used to calculate `alpha_tip`
     according to
 
     .. math ::
 
-        \alpha_{t} = 4 \pi r_{tip}^3 \frac{\varepsilon_t - 1}{\varepsilon_t + 2}
+        \alpha_{tip} = 4 \pi r_{tip}^3
+        \frac{\varepsilon_{tip} - 1}{\varepsilon_{tip} + 2}
 
-    where :math:`\alpha_{t}` is `alpha_sphere`, :math:`r_{tip}` is `r_tip` and
-    :math:`\varepsilon_t` is `eps_t`, which is given as equation (3.1) in
-    reference [2]_.
+    where :math:`\alpha_{tip}` is `alpha_tip`, :math:`r_{tip}` is
+    `r_tip` and :math:`\varepsilon_{tip}` is `eps_tip`, which is given as
+    equation (3.1) in reference [2]_.
 
     References
     ----------
@@ -145,7 +146,7 @@ def eff_pol_n(sample, A_tip, n, z_tip=None, n_trapz=None, **kwargs):
     return alpha_eff_n
 
 
-def eff_pol(sample, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None):
+def eff_pol(sample, z_tip=None, r_tip=None, eps_tip=None, alpha_tip=None):
     r"""Return the effective probe-sample polarizability using the bulk
     point dipole model.
 
@@ -159,12 +160,12 @@ def eff_pol(sample, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None):
         Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
-    eps_sphere : complex
-        Dielectric function of the sample. Used to calculate
-        `alpha_sphere`, and ignored if `alpha_sphere` is specified. If both
-        `eps_sphere` and `alpha_sphere` are None, the sphere is assumed to
-        be perfectly conducting.
-    alpha_sphere : complex
+    eps_tip : complex
+        Dielectric function of the tip. Used to calculate `alpha_tip`, and
+        ignored if `alpha_tip` is specified. If both `eps_tip` and
+        `alpha_tip` are None, the model sphere is assumed to be perfectly
+        conducting.
+    alpha_tip : complex
         Polarizability of the conducting sphere used as a model for the AFM
         tip.
 
@@ -185,10 +186,10 @@ def eff_pol(sample, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None):
 
     .. math::
 
-        \alpha_{eff} = \frac{\alpha_t}{1 - f_{geom} \beta}
+        \alpha_{eff} = \frac{\alpha_{tip}}{1 - f \beta}
 
-    where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\alpha_{t}` is
-    `alpha_sphere`, :math:`\beta` is `beta`, and :math:`f_{geom}` is a
+    where :math:`\alpha_{eff}` is `alpha_eff`, :math:`\alpha_{tip}` is
+    `alpha_tip`, :math:`\beta` is `beta`, and :math:`f` is a
     function encapsulating various geometric properties of the tip-sample
     system, implemented here as :func:`pysnom.pdm.geom_func`.
     This is given as equation (14) in reference [1]_.
@@ -203,15 +204,15 @@ def eff_pol(sample, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None):
     """
     # Set defaults
     z_tip = defaults.z_tip if z_tip is None else z_tip
-    r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
+    r_tip, alpha_tip = defaults._pdm_defaults(r_tip, eps_tip, alpha_tip)
 
     beta = sample.refl_coef_qs()
-    f_geom = geom_func(z_tip, r_tip, alpha_sphere)
+    f_geom = geom_func(z_tip, r_tip, alpha_tip)
 
-    return alpha_sphere / (1 - f_geom * beta)
+    return alpha_tip / (1 - f_geom * beta)
 
 
-def geom_func(z_tip, r_tip, alpha_sphere):
+def geom_func(z_tip, r_tip, alpha_tip):
     r"""Return a complex number that encapsulates various geometric
     properties of the tip-sample system for bulk point dipole model.
 
@@ -221,7 +222,7 @@ def geom_func(z_tip, r_tip, alpha_sphere):
         Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
-    alpha_sphere : complex
+    alpha_tip : complex
         Polarizability of the conducting sphere used as a model for the AFM
         tip.
 
@@ -237,10 +238,10 @@ def geom_func(z_tip, r_tip, alpha_sphere):
 
     .. math::
 
-        f_{geom} = \frac{\alpha_{sphere}}{16 \pi (r_{tip} + z_{tip})^3}
+        f = \frac{\alpha_{tip}}{16 \pi (r_{tip} + z_{tip})^3}
 
     where :math:`z_{tip}` is `z_tip`, :math:`r_{tip}` is `r_tip`, and
-    :math:`\alpha_{sphere}` is `alpha_sphere`. This is adapted from
+    :math:`\alpha_{tip}` is `alpha_tip`. This is adapted from
     equation (14) of reference [1]_.
 
     References
@@ -250,10 +251,10 @@ def geom_func(z_tip, r_tip, alpha_sphere):
        near-field optical microscopy,” Opt. Express, vol. 15, no. 14,
        p. 8550, 2007, doi: 10.1364/oe.15.008550.
     """
-    return alpha_sphere / (16 * np.pi * (r_tip + z_tip) ** 3)
+    return alpha_tip / (16 * np.pi * (r_tip + z_tip) ** 3)
 
 
-def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
+def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_tip, n_trapz):
     r"""Return the coefficient for the power of reflection coefficient used
     by the Taylor series representation of the bulk PDM.
 
@@ -271,7 +272,7 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
         demodulate.
     r_tip : float
         Radius of curvature of the AFM tip.
-    alpha_sphere : complex
+    alpha_tip : complex
         Polarizability of the conducting sphere used as a model for the AFM
         tip.
     n_trapz : int
@@ -295,10 +296,10 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
 
     .. math::
 
-        a_j = \hat{F_n}[f_{geom}^j],
+        a_j = \hat{F_n}[f^j],
 
-    where :math:`\hat{F_n}[f_{geom}(j)]` is the :math:`n^{th}` Fourier
-    coefficient of the function :math:`f_{geom}^j`, and :math:`f_{geom}`
+    where :math:`\hat{F_n}[f(j)]` is the :math:`n^{th}` Fourier
+    coefficient of the function :math:`f^j`, and :math:`f`
     is implemented here as :func:`geom_func`.
 
     """
@@ -306,12 +307,12 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz):
     z_0 = z_tip + A_tip
 
     a_j = demod(
-        lambda z, j_taylor, r_tip, alpha_sphere: geom_func(z, r_tip, alpha_sphere)
+        lambda z, j_taylor, r_tip, alpha_tip: geom_func(z, r_tip, alpha_tip)
         ** j_taylor,
         z_0,
         A_tip,
         n,
-        f_args=(j_taylor, r_tip, alpha_sphere),
+        f_args=(j_taylor, r_tip, alpha_tip),
         n_trapz=n_trapz,
     )
     return a_j
@@ -323,8 +324,8 @@ def eff_pol_n_taylor(
     n,
     z_tip=None,
     r_tip=None,
-    eps_sphere=None,
-    alpha_sphere=None,
+    eps_tip=None,
+    alpha_tip=None,
     n_trapz=None,
     n_tayl=None,
 ):
@@ -352,12 +353,12 @@ def eff_pol_n_taylor(
         Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
-    eps_sphere : complex
+    eps_tip : complex
         Dielectric function of the sample. Used to calculate
-        `alpha_sphere`, and ignored if `alpha_sphere` is specified. If both
-        `eps_sphere` and `alpha_sphere` are None, the sphere is assumed to
+        `alpha_tip`, and ignored if `alpha_tip` is specified. If both
+        `eps_tip` and `alpha_tip` are None, the sphere is assumed to
         be perfectly conducting.
-    alpha_sphere : complex
+    alpha_tip : complex
         Polarizability of the conducting sphere used as a model for the AFM
         tip.
     n_trapz : int
@@ -392,16 +393,16 @@ def eff_pol_n_taylor(
     """
     # Set defaults
     z_tip = defaults.z_tip if z_tip is None else z_tip
-    r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
+    r_tip, alpha_tip = defaults._pdm_defaults(r_tip, eps_tip, alpha_tip)
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
 
     beta = sample.refl_coef_qs()
 
     j_taylor = _pad_for_broadcasting(
-        np.arange(n_tayl), (z_tip, A_tip, n, beta, r_tip, alpha_sphere)
+        np.arange(n_tayl), (z_tip, A_tip, n, beta, r_tip, alpha_tip)
     )
 
-    coefs = taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz)
+    coefs = taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_tip, n_trapz)
     alpha_eff = np.sum(coefs * beta**j_taylor, axis=0)
     return alpha_eff
 
@@ -412,8 +413,8 @@ def refl_coef_qs_from_eff_pol_n(
     n,
     z_tip=None,
     r_tip=None,
-    eps_sphere=None,
-    alpha_sphere=None,
+    eps_tip=None,
+    alpha_tip=None,
     n_trapz=None,
     n_tayl=None,
     beta_threshold=None,
@@ -506,7 +507,7 @@ def refl_coef_qs_from_eff_pol_n(
     """
     # Set defaults
     z_tip = defaults.z_tip if z_tip is None else z_tip
-    r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
+    r_tip, alpha_tip = defaults._pdm_defaults(r_tip, eps_tip, alpha_tip)
     n_tayl = defaults.n_tayl if n_tayl is None else n_tayl
     beta_threshold = (
         defaults.beta_threshold if beta_threshold is None else beta_threshold
@@ -514,9 +515,9 @@ def refl_coef_qs_from_eff_pol_n(
     eps_env = defaults.eps_env if eps_env is None else eps_env
 
     j_taylor = _pad_for_broadcasting(
-        np.arange(n_tayl), (z_tip, A_tip, n, alpha_eff_n, r_tip, alpha_sphere)
+        np.arange(n_tayl), (z_tip, A_tip, n, alpha_eff_n, r_tip, alpha_tip)
     )
-    coefs = taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_sphere, n_trapz)
+    coefs = taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, alpha_tip, n_trapz)
 
     offset_coefs = np.where(j_taylor == 0, coefs - alpha_eff_n, coefs)
     all_roots = np.apply_along_axis(lambda c: Polynomial(c).roots(), 0, offset_coefs)
@@ -552,7 +553,7 @@ def refl_coef_qs_from_eff_pol_n(
 
 
 def refl_coef_qs_from_eff_pol(
-    alpha_eff, z_tip=None, r_tip=None, eps_sphere=None, alpha_sphere=None
+    alpha_eff, z_tip=None, r_tip=None, eps_tip=None, alpha_tip=None
 ):
     r"""Return the quasistatic reflection coefficient corresponding to a
     particular effective polarizability using the point dipole model.
@@ -565,29 +566,14 @@ def refl_coef_qs_from_eff_pol(
         Height of the tip above the sample.
     r_tip : float
         Radius of curvature of the AFM tip.
-    L_tip : float
-        Semi-major axis length of the effective spheroid from the finite
-        dipole model.
-    g_factor : complex
-        A dimensionless approximation relating the magnitude of charge
-        induced in the AFM tip to the magnitude of the nearby charge which
-        induced it. A small imaginary component can be used to account for
-        phase shifts caused by the capacitive interaction of the tip and
-        sample.
-    d_Q0 : float
-        Depth of an induced charge 0 within the tip. Specified in units of
-        the tip radius.
-    d_Q1 : float
-        Depth of an induced charge 1 within the tip. Specified in units of
-        the tip radius.
-    n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
-        the trapezium-method integration.
-    n_tayl : int
-        Maximum power index for the Taylor series in `beta`.
-    beta_threshold : float
-        The maximum amplitude of returned `beta` values determined to be
-        valid.
+    eps_tip : complex
+        Dielectric function of the sample. Used to calculate
+        `alpha_tip`, and ignored if `alpha_tip` is specified. If both
+        `eps_tip` and `alpha_tip` are None, the sphere is assumed to
+        be perfectly conducting.
+    alpha_tip : complex
+        Polarizability of the conducting sphere used as a model for the AFM
+        tip.
 
     Returns
     -------
@@ -605,30 +591,26 @@ def refl_coef_qs_from_eff_pol(
 
     .. math::
 
-        \beta = \frac
-            {2 (\alpha_{eff} - 1)}
-            {f_{geom, 0} + 2 f_{geom, 1} (\alpha_{eff} - 1)}
+        \beta = \frac{(\alpha_{eff} - \alpha_{tip})}{f \alpha_{eff}}
 
-    where :math:`\alpha_{eff}` is `\alpha_eff`, and :math:`f_{geom, i}` is
-    a function encapsulating the FDM geometry, taken from reference [1]_.
-    Here it is given by :func:`geom_func`, with arguments
-    `(z_tip, d_Qi, r_tip, L_tip, g_factor)` where `d_Qi` is replaced by
-    `d_Q0`, `d_Q1` for :math:`i = 0, 1`.
+    where :math:`\alpha_{eff}` is `alpha_eff`, and :math:`f` is a function
+    encapsulating the PDM geometry, taken from reference [1]_.
+    Here it is given by :func:`geom_func`.
 
     References
     ----------
-    .. [1] B. Hauer, A. P. Engelhardt, and T. Taubner, “Quasi-analytical
-       model for scattering infrared near-field microscopy on layered
-       systems,” Opt. Express, vol. 20, no. 12, p. 13173, Jun. 2012,
-       doi: 10.1364/OE.20.013173.
+    .. [1] A. Cvitkovic, N. Ocelic, and R. Hillenbrand, “Analytical model
+       for quantitative prediction of material contrasts in scattering-type
+       near-field optical microscopy,” Opt. Express, vol. 15, no. 14,
+       p. 8550, 2007, doi: 10.1364/oe.15.008550.
 
     """
     # Set defaults
     z_tip = defaults.z_tip if z_tip is None else z_tip
-    r_tip, alpha_sphere = defaults._pdm_defaults(r_tip, eps_sphere, alpha_sphere)
+    r_tip, alpha_tip = defaults._pdm_defaults(r_tip, eps_tip, alpha_tip)
 
-    f_geom = geom_func(z_tip, r_tip, alpha_sphere)
+    f_geom = geom_func(z_tip, r_tip, alpha_tip)
 
-    beta = (alpha_eff - alpha_sphere) / (f_geom * alpha_eff)
+    beta = (alpha_eff - alpha_tip) / (f_geom * alpha_eff)
 
     return beta
