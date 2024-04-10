@@ -185,24 +185,24 @@ def eff_pol(
 
     where :math:`\alpha_{eff}` is `\alpha_eff`.
 
-    The definitions of :math:`\beta_i` and :math:`f_i` depend on the FDM
+    The definitions of :math:`\beta_j` and :math:`f_j` depend on the FDM
     method used, and are described below.
 
     Method "bulk" is the bulk Hauer method given in reference [1]_. Here,
     :math:`\beta_0 = \beta_1 = \beta`, the momentum independent quasistatic
     reflection coefficient of the sample, which is calculated from
     :func:`pysnom.sample.Sample.refl_coef_qs` (with argument `q = 0`).
-    :math:`f_i` is given by :func:`geom_func`, with arguments `z_tip`,
+    :math:`f_j` is given by :func:`geom_func`, with arguments `z_tip`,
     `d_Q0` or `d_Q1` (for the numerator or denominator), `r_tip`, `L_tip`,
     and `g_factor`.
 
     Method "Hauer" is the multilayer Hauer method given in reference [1]_.
-    Here, :math:`\beta_i`, is the relative charge of an image of charge
-    :math:`Q_i` below the sample at depth :math:`d_{Q_i'}` below the
-    surface. :math:`\beta_i` and :math:`d_{Q_i'}` are calculated from
+    Here, :math:`\beta_j`, is the relative charge of an image of charge
+    :math:`Q_j` below the sample at depth :math:`d_{Q_j'}` below the
+    surface. :math:`\beta_j` and :math:`d_{Q_j'}` are calculated from
     :func:`pysnom.sample.Sample.image_depth_and_charge`.
-    :math:`f_i` is given by :func:`geom_func_multi`, with arguments
-    `z_tip`, `d_image` (:math:`d_{Q_i'}`), `r_tip`, `L_tip`, and
+    :math:`f_j` is given by :func:`geom_func_multi`, with arguments
+    `z_tip`, `d_image` (:math:`d_{Q_j'}`), `r_tip`, `L_tip`, and
     `g_factor`.
 
     Method "Mester" is described in reference [2]_. Here
@@ -210,7 +210,7 @@ def eff_pol(
     coefficient for a test charge :math:`Q_a`, evaluated at the position of
     the charge itself, which is calculated from
     :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`. The definition of
-    :math:`f_i` is the same as for the bulk Hauer method.
+    :math:`f_j` is the same as for the bulk Hauer method.
 
 
     References
@@ -298,16 +298,16 @@ def geom_func(z_tip, d_Q, r_tip, L_tip, g_factor):
 
     .. math::
 
-        f_i =
+        f_j =
         \left(
-            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_{Q_i}}{2 L_{tip}}
+            g - \frac{r_{tip} + 2 z_{tip} + r_{tip} d_{Q_j}}{2 L_{tip}}
         \right)
         \frac{\ln{\left(
-            \frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_{Q_i}}
+            \frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 r_{tip} d_{Q_j}}
         \right)}}
         {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z_{tip}` is `z_tip`, :math:`d_{Q_i}` is `d_Q`,
+    where :math:`z_{tip}` is `z_tip`, :math:`d_{Q_j}` is `d_Q`,
     :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
     is `g_factor`. This is given as equation (2) in reference [1]_.
 
@@ -361,17 +361,17 @@ def geom_func_multi(z_tip, d_image, r_tip, L_tip, g_factor):
 
     .. math::
 
-        f_i =
+        f_j =
         \left(
-            g - \frac{r_{tip} + z_{tip} + d_{Q_i'}}{2 L_{tip}}
+            g - \frac{r_{tip} + z_{tip} + d_{Q_j'}}{2 L_{tip}}
         \right)
         \frac{\ln{\left(
-            \frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{Q_i'}}
+            \frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{Q_j'}}
         \right)}
         }
         {\ln{\left(\frac{4 L_{tip}}{r_{tip}}\right)}}
 
-    where :math:`z_{tip}` is `z_tip`, :math:`d_{Q_i'}` is `d_image`,
+    where :math:`z_{tip}` is `z_tip`, :math:`d_{Q_j'}` is `d_image`,
     :math:`r_{tip}` is `r_tip`, :math:`L_{tip}` is `L_tip`, and :math:`g`
     is `g_factor`. This is given as equation (11) in reference [1]_.
 
@@ -439,7 +439,7 @@ def geom_func_taylor(z_tip, j_taylor, r_tip, L_tip, g_factor, d_Q0, d_Q1):
         f_{t} = f_0 f_1^{j-1}
 
     where :math:`f_{t}` is `f_t`, :math:`j` is `j_taylor`,
-    and :math:`f_i` is a function encapsulating the geometric
+    and :math:`f_j` is a function encapsulating the geometric
     properties of the tip-sample system, implemented here as
     :func:`geom_func`.
 
@@ -861,7 +861,7 @@ def refl_coef_qs_from_eff_pol(
             {2 (\alpha_{eff} - 1)}
             {f_0 + 2 f_1 (\alpha_{eff} - 1)}
 
-    where :math:`\alpha_{eff}` is `\alpha_eff`, and :math:`f_i` is
+    where :math:`\alpha_{eff}` is `\alpha_eff`, and :math:`f_j` is
     a function encapsulating the FDM geometry, taken from reference [1]_.
     Here it is given by :func:`geom_func`, with arguments `z_tip`, `d_Q0`
     or `d_Q1` (for  :math:`f_0` or :math:`f_1`), `r_tip`, `L_tip`, and
