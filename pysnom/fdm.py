@@ -840,14 +840,6 @@ def refl_coef_qs_from_eff_pol(
     d_Q1 : float
         Depth of an induced charge 1 within the tip. Specified in units of
         the tip radius.
-    n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
-        the trapezium-method integration.
-    n_tayl : int
-        Maximum power index for the Taylor series in `beta`.
-    beta_threshold : float
-        The maximum amplitude of returned `beta` values determined to be
-        valid.
 
     Returns
     -------
