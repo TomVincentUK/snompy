@@ -3,7 +3,9 @@
 The finite dipole model
 =======================
 
-DESCRIBE THIS PAGE
+In ``pysnom``, there are three different implementations of the finite dipole model (FDM): the *bulk* implementation, the *Hauer* implementation and the *Mester* implementation.
+This page gives a description of each one, with a particular focus on the derivation of the bulk FDM, from which the other implementations are derived.
+
 
 Deriving the bulk FDM
 ---------------------
