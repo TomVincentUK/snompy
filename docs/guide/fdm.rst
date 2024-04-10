@@ -5,8 +5,11 @@ The finite dipole model
 
 DESCRIBE THIS PAGE
 
+Deriving the bulk FDM
+---------------------
+
 Ellipsoid model of an AFM tip
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first step in the FDM is to represent the AFM tip by a perfectly
 conducting ellipsoid.
@@ -43,11 +46,17 @@ The position of the two charges are found at distances
 .. math::
    :label: z_q0_pos
 
-   d_{Q0} \approx \frac{1.31 L_{tip} r_{tip}}{L_{tip} + 2 r_{tip}}
+   z_{Q_0} \approx \frac{1.31 L_{tip} r_{tip}}{L_{tip} + 2 r_{tip}} \left(= d_{Q_0} r_{tip} \right)
 
 from the ends of the ellipsoid, where :math:`r_{tip}` is the radius of curvature
 at the pointy end, and :math:`L_{tip}` is the semi-major axis length (the
 distance from the ellipsoid centre to the pointy end).
+
+.. hint::
+   :class: toggle
+
+   For the depths of charges inside the end of the tip, it is often convenient to specify them in terms of the tip radius.
+   We use the symbols :math:`d_{Q_j}` in  this documentation to represent :math:`z_{Q_j}` in units of the tip radius.
 
 The strength of the electric dipole moment can be related to the charges
 and their separation as
@@ -55,10 +64,10 @@ and their separation as
 .. math::
    :label: p_0
 
-   p_0 = 2 (L_{tip} - d_{Q0}) Q_0 \quad (\approx 2 L_{tip} Q_0, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
+   p_0 = 2 (L_{tip} - z_{Q_0}) Q_0 \quad (\approx 2 L_{tip} Q_0, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
 Tip-sample interaction
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Now let's consider what happens when we move our model AFM tip close to a
 sample's surface, with a tip-sample separation of :math:`z_{tip}`.
@@ -80,12 +89,12 @@ interaction.
    :align: center
 
 We can model the electric field response of the sample to the charge
-:math:`Q_0`, at a height of :math:`z_{tip} + d_{Q0}`, using
+:math:`Q_0`, at a height of :math:`z_{tip} + z_{Q_0}`, using
 the
 `method of image charges <https://en.wikipedia.org/wiki/Method_of_image_charges>`_.
 
-This means we can add a fictitious image charge, :math:`Q'_0 = -\beta Q_0`,
-at a depth of :math:`z_{tip} + d_{Q0}` below the surface.
+This means we can add a fictitious image charge, :math:`Q_0' = -\beta Q_0`,
+at a depth of :math:`z_{tip} + z_{Q_0}` below the surface.
 Here, :math:`\beta` is the quasistatic  reflection coefficient of the
 surface, given by
 
@@ -103,14 +112,14 @@ where :math:`\varepsilon_{env}` is the permitivitty of thee nvironment
 In ``pysnom``, equation :eq:`beta` is provided by the function
 :func:`pysnom.sample.Sample.refl_coef_qs`.
 
-The charge :math:`Q'_0` acts back on the tip and induces a further
+The charge :math:`Q_0'` acts back on the tip and induces a further
 polarization, which we can model as another point charge :math:`Q_1`, at a
-distance :math:`d_{Q1} \approx r_{tip} / 2` away from the end of the tip.
+distance :math:`z_{Q_1} \approx r_{tip} / 2` away from the end of the tip.
 
 .. hint::
    :class: toggle
 
-   Modelling the response of the tip to :math:`Q'_0` as a single point
+   Modelling the response of the tip to :math:`Q_0'` as a single point
    charge is just an approximation.
    In reality, the polarization induced in the tip has a complicated charge
    distribution which is quite tricky to calculate [1]_.
@@ -121,7 +130,7 @@ distance :math:`d_{Q1} \approx r_{tip} / 2` away from the end of the tip.
 With the addition of :math:`Q_1`, we need to add some more charges to our
 model:
 the sample response to :math:`Q_1` can be represented by another image
-charge, :math:`Q'_1 = \beta Q_1`, at a depth of :math:`z_{tip} + d_{Q1}` below
+charge, :math:`Q_1' = \beta Q_1`, at a depth of :math:`z_{tip} + z_{Q_1}` below
 the surface;
 and, for conservation of charge within the tip, :math:`Q_1` must have a
 counter charge :math:`-Q_1`, which is situated in the centre of the
@@ -139,20 +148,20 @@ itself [2]_, as
 (neglecting the influence of the :math:`-Q_1` charge as it's far from the
 sample).
 
-Here, the parameters :math:`f_i` account for the geometrical features of
+Here, the parameters :math:`f_j` account for the geometrical features of
 the tip, and the positions of the charges within them.
 They are given by the formula
 
 .. math::
-   :label: f_i_bulk
+   :label: f_j_bulk
 
-   f_i = \left(g - \frac{r_{tip} + 2 z_{tip} + d_{Qi}}{2 L_{tip}} \right)
-   \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 d_{Qi}}\right)}
+   f_j = \left(g - \frac{r_{tip} + 2 z_{tip} + z_{Q_j}}{2 L_{tip}} \right)
+   \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 4 z_{tip} + 2 z_{Q_j}}\right)}
    {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
 
 where :math:`g \approx 0.7` is an empirical factor that describes how much
 of the induced charge is relevant for the near-field interaction.
-In ``pysnom``, equation :eq:`f_i_bulk` is provided by the function
+In ``pysnom``, equation :eq:`f_j_bulk` is provided by the function
 :func:`pysnom.fdm.bulk.geom_func`.
 
 The charges :math:`Q_1` and :math:`-Q_1` form another dipole
@@ -160,7 +169,7 @@ The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 .. math::
    :label: p_1
 
-   p_1 = (L_{tip} - d_{Q1}) Q_1 \quad (\approx L_{tip} Q_1, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
+   p_1 = (L_{tip} - z_{Q_1}) Q_1 \quad (\approx L_{tip} Q_1, \ \mathrm{for} \ r_{tip} \ll L_{tip}).
 
 The effective polarizability of the tip and sample can then be found from
 the total induced dipole, as
@@ -175,7 +184,85 @@ the total induced dipole, as
    \propto 1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}.
 
 In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
-:func:`pysnom.bulk.eff_pol`.
+:func:`pysnom.fdm.eff_pol`, with the argument `method="bulk"`.
+
+Extending to multilayer samples
+-------------------------------
+
+The Hauer method
+^^^^^^^^^^^^^^^^
+
+Hauer *et al.* proposed a method to extend the FDM to multilayer samples [2]_.
+In this method, the response of the multilayer sample to a charge :math:`Q_j` is modelled with a single image charge :math:`Q_j'={\beta}_{j} Q_j` at a depth :math:`d_{Q_j'}` below the sample surface.
+
+The effective depth and reflection coefficient for the charge are chosen to be those that preserve the normal electric field :math:`E_z` and potential :math:`\phi` at the surface of the sample using :func:`pysnom.sample.Sample.image_depth_and_charge`, as:
+
+.. math::
+   :label: hauer_bcs
+
+    \begin{aligned}
+        d_{Q_j'}    & = \left|\frac{\left.{\phi}\right|_{z=0}}{\left.E_z\right|_{z=0}}\right| - z_{Q_j}, \quad \mathrm{and} \\
+        {\beta}_{j} & = \frac{\left(\left.{\phi}\right|_{z=0}\right)^2}{\left.E_z\right|_{z=0}}
+    \end{aligned}
+
+The potential and field can be calculated using :func:`pysnom.sample.Sample.surf_pot_and_field`, from:
+
+.. math::
+   :label: phi_E
+
+    \begin{aligned}
+        \left.{\phi}\right|_{z=0} & = \int_0^{\infty} \beta(q) e^{-2 z_{Q_j} q} dq, \quad \mathrm{and} \\
+        \left.E_z\right|_{z=0}       & = \int_0^{\infty} \beta(q) q e^{-2 z_{Q_j} q} dq
+    \end{aligned}
+
+Here :math:`q` is the in-plane momentum of light, and :math:`\beta(q)` is the effective quasistatic reflection coefficient for the surface, calculated using :func:`pysnom.sample.Sample.refl_coef_qs`.
+
+These values can then be inserted into a modified version of equation :eq:`eff_pol_bulk_fdm`, as:
+
+.. math::
+   :label: hauer
+
+   \alpha_{eff}
+   \propto 1 + \frac{f_0 \beta_0}{2 (1 - f_1 \beta_1)}.
+
+The geometry function is also modified in this case to become:
+
+.. math::
+   :label: f_j_multi
+
+   f_j = \left(g - \frac{r_{tip} + z_{tip} + d_{Q_j'}}{2 L_{tip}} \right)
+   \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{Q_j'}}\right)}
+   {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
+
+In ``pysnom``, equation :eq:`hauer` is provided by the function
+:func:`pysnom.fdm.eff_pol`, with the argument `method="Hauer"`.
+
+The Mester method
+^^^^^^^^^^^^^^^^^
+
+Mester *et al.* proposed another multilayer FDM method [3]_.
+
+In this implementation, the geometry function used is the same as for the bulk FDM method, however an alternative expression for the quasistatic reflection coefficient is used, which is derived from the ratio of the fields at the height of the probe:
+
+.. math::
+   :label: beta_mester
+
+    \overline{\beta} = \frac{\int_0^{\infty} \beta(q) q e^{-2 z_{Q_a} q} dq}{\int_0^{\infty} q e^{-2 z_{Q_a} q} dq}
+
+
+The height :math:`z_{Q_a}` here is the height of a single representative test charge :math:`Q_a`, whose position within the tip is chosen empirically.
+Equation :eq:`beta_mester` is implemented in ``pysnom`` as :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`.
+
+This can then be inserted into another modified version of equation :eq:`eff_pol_bulk_fdm`, as:
+
+.. math::
+   :label: mester
+
+   \alpha_{eff}
+   \propto 1 + \frac{f_0 \overline{\beta}}{2 (1 - f_1 \overline{\beta})}.
+
+In ``pysnom``, equation :eq:`mester` is provided by the function
+:func:`pysnom.fdm.eff_pol`, with the argument `method="Mester"`.
 
 Demodulating the FDM
 --------------------
@@ -216,3 +303,7 @@ References
    for scattering infrared near-field microscopy on layered systems,” Opt.
    Express, vol. 20, no. 12, p. 13173, Jun. 2012,
    doi: 10.1364/OE.20.013173.
+.. [3] L. Mester, A. A. Govyadinov, S. Chen, M. Goikoetxea, and R.
+   Hillenbrand, “Subsurface chemical nanoidentification by nano-FTIR
+   spectroscopy,” Nat. Commun., vol. 11, no. 1, p. 3359, Dec. 2020,
+   doi: 10.1038/s41467-020-17034-6.
