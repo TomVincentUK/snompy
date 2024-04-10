@@ -153,8 +153,8 @@ Naming conventions
 
 * Any maths symbols used in the documentation should apply consistently across all functions, and should be added to a "List of symbols" page.
   They should match the symbols used commonly in the literature, except for cases where there are naming conflicts between different authors, and cases where the meaning can be made more clear.
-  For example :math:`d_{Q1}` instead of :math:`W_1` for the depth of charge :math:`Q_1` within the tip.
+  For example :math:`d_{Q_1'}` instead of :math:`X_1` for the depth of image charge :math:`Q_1'` below the sample.
 
-* Proper nouns should be uncapitalised in variable and function names.
+* Proper nouns should be uncapitalized in variable and function names.
   For example `eff_pol_n_taylor` and `n_lag`, instead of `eff_pol_n_bulk_Taylor` and `n_Lag`, named after Taylor and Laguerre.
   (Classes should be CapWords as per `PEP 8 <https://peps.python.org/pep-0008/#naming-conventions>`_).
