@@ -4,6 +4,7 @@ Introduction
 ============
 
 The main purpose of ``pysnom`` is to provide functions to calculate the effective polarizability, :math:`\alpha_{eff}`, of a SNOM tip and a sample, which can be used to predict contrast in SNOM measurements.
+It also contains other useful features for SNOM modelling, such as an implementation of the transfer matrix method for calculating far-field reflection coefficients of multilayer samples, and code for simulating lock-in amplifier demodulation of arbitrary functions.
 
 Below on this page are some example scripts, showing idiomatic usage of ``pysnom``.
 If you already know how the finite dipole model (FDM) or point dipole model (PDM) works, these might be enough to get started with this package.

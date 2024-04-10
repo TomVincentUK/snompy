@@ -1,23 +1,18 @@
 pysnom
 ======
-A Python package for modelling contrast in scanning near-field optical microscopy measurements.
 
-Tasks / issues
---------------
-* Main documentation:
+A Python package for modelling scanning near-field optical microscopy measurements.
 
-  * Finish rules for coding and docs style to development.
+Overview
+--------
+The main purpose of ``pysnom`` is to provide functions to calculate the effective polarizability, of a SNOM tip and a sample, which can be used to predict contrast in SNOM measurements.
+It also contains other useful features for SNOM modelling, such as an implementation of the transfer matrix method for calculating far-field reflection coefficients of multilayer samples, and code for simulating lock-in amplifier demodulation of arbitrary functions.
 
-  * Add a wishlist to development (e.g. Lightning-rod model).
+Cite us
+-------
+When we release this package, we'll accompany it with a paper showcasing its use.
+I'll add a reference to that paper here and ask people to cite it if they use the code.
 
-* Finish/rewrite narrative documentation:
-
-  * Go through all examples and update them to use the new API
-
-  * Go through all symbols and make sure they match API (including in diagrams)
-
-  * Add captions and alt text to all docs figures
-
-  * Remove pointless PDM/FDM switch
-
-  * Check where you can remove your working (leave details in API rather than guide)
+Acknowledgements
+----------------
+``pysnom`` was supported by ...

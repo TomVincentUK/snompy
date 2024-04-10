@@ -1,6 +1,6 @@
 pysnom
 ======
-A Python package for modelling contrast in scanning near-field optical microscopy measurements.
+A Python package for modelling scanning near-field optical microscopy measurements.
 
 .. toctree::
    :maxdepth: 1
