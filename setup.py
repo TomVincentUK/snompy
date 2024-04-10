@@ -12,10 +12,10 @@ setuptools.setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     author="Tom Vincent",
-    author_email="tom.vincent@manchester.ac.uk",
+    author_email="TomVincentCode@gmail.com",
     description=(
-        "A Python package for modelling contrast in scanning near-field "
-        "optical microscopy measurements."
+        "A Python package for modelling scanning near-field optical "
+        "microscopy measurements."
     ),
     long_description=long_description,
     long_description_content_type="text/x-rst",
@@ -23,7 +23,8 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
-    ],  # TO ADD: LICENSE
-    python_requires=">=3.9",
+        "License :: OSI Approved :: MIT License",
+    ],
+    python_requires=">=3.10",
     install_requires=requirements,
 )
