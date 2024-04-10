@@ -32,7 +32,7 @@ A Python package for modelling contrast in scanning near-field optical microscop
       API reference
       ^^^^^^^^^^^^^
 
-      Here you can find a detailed  guide to the functions in ``pysnom``.
+      Here you can find a detailed guide to the functions in ``pysnom``.
       You might want to check the user guide first if you're a new user.
 
     .. grid-item-card::
