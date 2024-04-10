@@ -164,7 +164,7 @@ They are given by the formula
 where :math:`g \approx 0.7` is an empirical factor that describes how much
 of the induced charge is relevant for the near-field interaction.
 In ``pysnom``, equation :eq:`f_j_bulk` is provided by the function
-:func:`pysnom.fdm.bulk.geom_func`.
+:func:`pysnom.fdm.geom_func`.
 
 The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 
@@ -293,7 +293,7 @@ with amplitude and phase
 This is explained in detail on the dedicated page :ref:`demodulation`.
 
 In ``pysnom``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
-function :func:`pysnom.fdm.bulk.eff_pol_n`.
+function :func:`pysnom.fdm.eff_pol_n`.
 
 References
 ----------
