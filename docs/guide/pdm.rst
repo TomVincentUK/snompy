@@ -15,7 +15,7 @@ In the PDM, the tip is first modelled as a dielectric sphere whose response to e
    :align: center
 
 The effective polarizability is then derived from the interaction with that dipole and an image dipole.
-In ``pysnom`` it can calculated using :func:`pysnom.pdm.eff_pol`, which implements:
+In ``pysnom`` it can be calculated using :func:`pysnom.pdm.eff_pol`, which implements:
 
 .. math::
    :label: pdm
