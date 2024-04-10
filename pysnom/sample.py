@@ -525,33 +525,33 @@ class Sample:
 
         .. math::
 
-            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{n=1}^N w_n f(x_n),
+            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{j=1}^J w_j f(x_j),
 
-        where :math:`x_n` is the :math:`n^{th}` root of the Laguerre
+        where :math:`x_j` is the :math:`j^{th}` root of the Laguerre
         polynomial
 
         .. math::
 
-            L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
+            L_J(x) = \sum_{j=0}^{J} {J \choose j} \frac{(-1)^j}{j!} x^j,
 
-        and :math:`w_n` is a weight given by
+        and :math:`w_j` is a weight given by
 
         .. math::
 
-            w_n = \frac{x_n}{\left((N + 1) L_{N+1}(x_n) \right)^2}.
+            w_j = \frac{x_j}{\left((J + 1) L_{J + 1}(x_j) \right)^2}.
 
         The integral can therefore be approximated by the sum
 
         .. math::
 
             \overline{\beta} \approx
-            \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
+            \sum_{j=1}^J w_j \beta\left(\frac{x_j}{2 z_Q}\right) x_j.
 
 
 
-        The choice of :math:`N`, defined in this function as `n_lag`,
+        The choice of :math:`J`, defined in this function as `n_lag`,
         will affect the accuracy of the approximation, with higher
-        :math:`N` values leading to more accurate evaluation of the
+        :math:`J` values leading to more accurate evaluation of the
         integrals.
 
         In this function the Laguerre weights and roots are found using
@@ -655,20 +655,20 @@ class Sample:
 
         .. math::
 
-            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{n=1}^N w_n f(x_n),
+            \int_0^{\infty} e^{-x} f(x) dx \approx \sum_{j=1}^J w_j f(x_j),
 
-        where :math:`x_n` is the :math:`n^{th}` root of the Laguerre
+        where :math:`x_j` is the :math:`j^{th}` root of the Laguerre
         polynomial
 
         .. math::
 
-            L_N(x) = \sum_{n=0}^{N} {N \choose n} \frac{(-1)^n}{n!} x^n,
+            L_J(x) = \sum_{j=0}^{J} {J \choose j} \frac{(-1)^j}{j!} x^j,
 
-        and :math:`w_n` is a weight given by
+        and :math:`w_j` is a weight given by
 
         .. math::
 
-            w_n = \frac{x_n}{\left((N + 1) L_{N+1}(x_n) \right)^2}.
+            w_j = \frac{x_j}{\left((J + 1) L_{J + 1}(x_j) \right)^2}.
 
         The integrals can therefore be approximated by the sums
 
@@ -677,16 +677,16 @@ class Sample:
             \begin{align*}
                 \phi \rvert_{z=0}
                 & \approx \frac{1}{2 z_Q}
-                \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right),
+                \sum_{j=1}^J w_j \beta\left(\frac{x_j}{2 z_Q}\right),
                 \ \text{and}\\
                 E_z \rvert_{z=0}
                 & \approx \frac{1}{4 z_Q^2}
-                \sum_{n=1}^N w_n \beta\left(\frac{x_n}{2 z_Q}\right) x_n.
+                \sum_{j=1}^J w_j \beta\left(\frac{x_j}{2 z_Q}\right) x_j.
             \end{align*}
 
-        The choice of :math:`N`, defined in this function as `n_lag`,
+        The choice of :math:`J`, defined in this function as `n_lag`,
         will affect the accuracy of the approximation, with higher
-        :math:`N` values leading to more accurate evaluation of the
+        :math:`J` values leading to more accurate evaluation of the
         integrals.
 
         In this function the Laguerre weights and roots are found using
@@ -759,7 +759,7 @@ class Sample:
 
         .. math::
 
-            z_{image} = \left|
+            d_{image} = \left|
                 \frac{\phi \rvert_{z=0}}{E_z \rvert_{z=0}}
             \right| - z_Q,
 
@@ -774,9 +774,10 @@ class Sample:
 
         where :math:`\phi` is the electric potential, and :math:`E_z` is
         the vertical component of the electric field. These are based on
-        equations (9) and (10) from reference [1]_. The depth :math:`z_Q`
-        is converted to a real number by taking the absolute value of the
-        :math:`\phi`-:math:`E_z` ratio, as described in reference [2]_.
+        equations (9) and (10) from reference [1]_. The depth
+        :math:`d_{image}` is forced to be a real number by taking the
+        absolute value of the :math:`\phi`-:math:`E_z` ratio, as described
+        in reference [2]_.
 
         References
         ----------
