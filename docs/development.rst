@@ -22,27 +22,31 @@ If you're new to this process, or you need a little more guidance, you can follo
 1. Set up a local copy of the repository
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Go to the `pysnom repository <https://github.com/TomVincentUK/pysnom>`_
+* **Fork the repository.**
+  Go to the `pysnom repository <https://github.com/TomVincentUK/pysnom>`_
   and click the "fork" button to create your own copy of the project.
 
-* Open a terminal in the directory where you'd like the project to be stored, then clone the project to your local computer::
+* **Clone the repository.**
+  Open a terminal in the directory where you'd like the project to be stored, then clone the project to your local computer::
 
     git clone https://github.com/your-username/pysnom.git
 
-* Change the directory to your newly created local repository::
+* **Link your local copy to the main repository.**
+  Change the directory to your newly created local repository::
 
     cd pysnom
 
-* Add the upstream repository::
+  Now, add the upstream repository::
 
     git remote add upstream https://github.com/TomVincentUK/pysnom.git
 
-* Now, ``git remote -v`` will show two remote repositories named:
+  Then, ``git remote -v`` will show two remote repositories named:
 
     - ``upstream``, which refers to the ``pysnom`` repository
     - ``origin``, which refers to your personal fork
 
-* Make sure your local repository is up-to-date, by pulling the latest changes from upstream, including tags::
+* **Update your repository.**
+  Make sure your local repository is up-to-date, by pulling the latest changes from upstream, including tags::
 
     git checkout main
     git pull upstream main --tags
@@ -50,17 +54,20 @@ If you're new to this process, or you need a little more guidance, you can follo
 2. Configure your Python environment for development
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* We recommend starting with a clean Python environment or virtual environment, to make sure that none of your existing Python packages interfere with ``pysnom``.
+* **Create a fresh environment.**
+  We recommend starting with a clean Python environment or virtual environment, to make sure that none of your existing Python packages interfere with ``pysnom``.
   It's common to use tools like `venv <https://docs.python.org/3/library/venv.html>`_ or `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands>`_ to do this.
 
-* In your clean environment, navigate to the pysnom repository and install pysnom and its dependencies to your Python environment::
+* **Install pysnom.**
+  In your clean environment, navigate to the pysnom repository and install pysnom and its dependencies to your Python environment::
 
     pip install -e .
 
   This command tells `pip` to install ``pysnom`` using the `setup.py` file in the repository's root directory.
   The `-e` flag means it will be installed in development mode, so that changes to the code will show up straight away.
 
-* We like to keep a consistent and readable coding style, so we use the package ``black`` to format our code, ``isort`` to sort the order of imports, and ``flake8`` to check our code is consistent with the `PEP 8 <https://peps.python.org/pep-0008/>`_ style guide.
+* **Set up formatting tools.**
+  We like to keep a consistent and readable coding style, so we use the package ``black`` to format our code, ``isort`` to sort the order of imports, and ``flake8`` to check our code is consistent with the `PEP 8 <https://peps.python.org/pep-0008/>`_ style guide.
   Your code will be automatically rejected unless it's formatted correctly, so we recommend installing these tools on your own computer to check before you submit.
   We also support ``pre-commit`` which automatically checks your code for you when you make a git commit.
   To install these you can type::
@@ -71,7 +78,8 @@ If you're new to this process, or you need a little more guidance, you can follo
   The `-r` flag here tells `pip` to install new packages from a requirements file.
   You might also want to set up your text editor to automatically format your code when you save.
 
-* On top of format checks, ``pysnom`` also has a suite of tests which run using ``pytest`` to check everything is working.
+* **Set up testing.**
+  On top of format checks, ``pysnom`` also has a suite of tests which run using ``pytest`` to check everything is working.
   Your contributions won't be accepted unless all the tests pass, so we recommend that you setup your environment so you can run the tests on your own computer before you submit your changes::
 
     pip install -r requirements_test.txt
@@ -81,8 +89,10 @@ If you're new to this process, or you need a little more guidance, you can follo
     pytest
 
   This should run the tests, which should all pass successfully.
+  It will also report the proportion of code lines executed during the tests, which should ideally be 100%.
 
-* All the features in ``pysnom`` should be documented, so if your edit adds a new feature, or changes how other users will interact with the package, we ask that you also add changes to the documentation to explain it.
+* **Set up documentation tools.**
+  All the features in ``pysnom`` should be documented, so if your edit adds a new feature, or changes how other users will interact with the package, we ask that you also add changes to the documentation to explain it.
   To do this we recommend building the documentation on your own computer.
   We use the package ``sphinx`` to build our documentation.
   You can install this like::
@@ -108,100 +118,66 @@ If you're new to this process, or you need a little more guidance, you can follo
 
 * **Create tests first.**
   All features in ``pysnom`` should be tested to check they work, so we encourage using `test-driven development <https://en.wikipedia.org/wiki/Test-driven_development>`_.
-  This means the first step when adding a new feature should usually be to create a test (or several) which will only pass when the new feature works correctly.
+  This means the first step when adding a new feature should usually be to create at least one test which will only pass when the new feature works correctly.
   Your new test should be added to the existing test suite in `./pysnom/tests`.
   You can find out how to write good tests by following the `pytest documentation <https://pytest.org/>`_.
-  Once your test is created, run the test suite by typing
+  Once your test is created, run the test suite by typing::
 
     pytest
 
   This should produce at least one failed test.
   Now you can write your new feature so it passes the test.
 
+  .. hint::
+
+      Some types of changes won't require new tests, such as optimizations of existing routines, or changes that only affect documentation.
+
 * **Add your changes to the package.**
   Make sure that you document your changes by adding or editing docstrings, and if needed, by making changes to the user guide in `./docs/guide`.
+  As well as following `PEP 8`_, your code should follow the guidelines in the :ref:`style guide <style_guide>` below.
 
-* **Make your final checks**
-  If your changes are successful, you should be able to run the test suite with no errors.
+* **Make your final checks.**
+  If your changes are successful, when you run the test suite there should be no errors, and 100% test coverage.
   Also check that all your code is formatted correctly (this should be done automatically when you commit your changes if you installed ``pre-commit`` as above), and that any changes are documented.
-  Then you should be ready to submit your contribution.
-
+  Then you should be ready to submit to the main repository.
 
 
 4. Submit your contribution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Push your changes back to your fork on GitHub::
+* **Push your changes back to your fork on GitHub**::
 
     git push origin adding-fancy-new-snom-model
 
-* Enter your GitHub username and password (repeat contributors or advanced users can remove this step by connecting to GitHub with SSH).
+  Then enter your GitHub username and password (repeat contributors or advanced users can remove this step by connecting to GitHub with SSH).
 
-* Go to GitHub. The new branch will show up with a green Pull Request button. Make sure the title and message are clear, concise, and self-explanatory. Then click the button to submit it.
+* **Make a pull request.**
+  Go to GitHub.
+  The new branch will show up with a green Pull Request button.
+  Make sure the title and message are clear, concise, and self-explanatory.
+  Then click the button to submit it.
 
 5. Review process
 ^^^^^^^^^^^^^^^^^
 
-* The pysnom team will review your pull request.
-    If it fits the scope of the project, makes a meaningful contribution, and doesn't break any existing functionality, we will approve it.
-    (If you're interested in becoming a team member, feel free to send us a message and we'll be happy to discuss).
+* **Automatic tests.**
+  When you make a pull request, GitHub will run tests to check your code formatting, and it will also run the suite of tests on different operating systems using several versions of Python.
 
-* To update your pull request, make your changes on your local repository, commit, **run tests, and only if they succeed** push to your fork.
-    As soon as those changes are pushed up (to the same branch as before) the pull request will update automatically.
-    If you have no idea how to fix the test failures, you may push your changes anyway and ask for help in a pull request comment.
+  If a test fails, you can find out why by clicking on the "failed" icon (red cross) and inspecting the build and test log.
+  To update your pull request, make your changes on your local repository, commit, then push to your fork.
+  As soon as those changes are pushed up (to the same branch as before) the pull request will update automatically.
 
-* Various continuous integration (CI) services are triggered after each pull request
-    update to build the code, run unit tests, measure code coverage and check
-    coding style of your branch.
-    The CI tests must pass before your pull request can be merged. If CI fails, you can find out why by clicking on the "failed" icon (red cross) and inspecting the build and test log.
-    To avoid overuse and waste of this resource, :ref:`test your work<testing>` locally before committing.
+  The tests must pass for us to merge your changes, so we recommend checking on your own computer before submitting a pull request.
 
-* A pull request must be **approved** by at least one pysnom team member before merging.
-    Approval means the team member has carefully reviewed the changes, and the pull request is ready for merging.
+* **The pysnom team will review your pull request**.
+  A pull request must be approved by at least one pysnom team member before merging.
+  If it fits the scope of the project, makes a meaningful contribution, and doesn't break any existing functionality, we will approve it.
+  (If you're interested in becoming a team member, feel free to send us a message and we'll be happy to discuss).
 
-.. _testing:
-
-Testing
--------
-
-This project has a suite of tests which run to ensure any changes introduced will not break the intended functionality of the package.
-We use the package ``pytest`` to automatically run these tests.
-To run the suite you will need to install the testing dependencies with::
-
-   pip install -r requirements_test.txt
-
-You can then run the tests by entering::
-
-   pytest
-
-.. _documentation:
-
-Documentation
--------------
-
-This project uses ``sphinx`` for narrative documentation, and to automatically generate API documentation from docstrings.
-To contribute to the documentation you will need to install the necessary dependencies with::
-
-   pip install -r docs/requirements_dev.txt
-
-You can then build the documentation like::
-
-   sphinx-autobuild docs docs/_build/html
+.. _style_guide:
 
 Style guide
 -----------
-
-.. _source_code_checks:
-
-Source code checks
-^^^^^^^^^^^^^^^^^^
-
-This project uses ``black`` to format code, ``isort`` to organise imports, and ``flake8`` for linting.
-We also support ``pre-commit`` to ensure these have been run.
-To configure your local environment please install these development dependencies and set up the commit hooks like::
-
-   pip install -r requirements_dev.txt
-   pre-commit install
 
 Naming conventions
 ^^^^^^^^^^^^^^^^^^
