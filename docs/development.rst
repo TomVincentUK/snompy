@@ -97,7 +97,7 @@ If you're new to this process, or you need a little more guidance, you can follo
   We use the package ``sphinx`` to build our documentation.
   You can install this like::
 
-    pip install -r docs/requirements_dev.txt
+    pip install -r docs/requirements_docs.txt
 
   You can then build the documentation by typing::
 
