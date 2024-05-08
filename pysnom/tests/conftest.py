@@ -18,8 +18,8 @@ def scalar_sample_multi():
 def vector_sample_bulk():
     # Dispersive medium
     eps_substrate = pysnom.sample.lorentz_perm(
-        k_vac=np.linspace(1680, 1780, 128) * 1e2,
-        k_j=1738e2,
+        nu_vac=np.linspace(1680, 1780, 128) * 1e2,
+        nu_j=1738e2,
         gamma_j=20e2,
         A_j=14e-3,
         eps_inf=2,
@@ -34,8 +34,8 @@ def vector_sample_multi():
     eps_top = 1.5
     eps_substrate = 11.7
     eps_middle = pysnom.sample.lorentz_perm(
-        k_vac=np.linspace(1680, 1780, 128) * 1e2,
-        k_j=1738e2,
+        nu_vac=np.linspace(1680, 1780, 128) * 1e2,
+        nu_j=1738e2,
         gamma_j=20e2,
         A_j=14e-3,
         eps_inf=2,

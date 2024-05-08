@@ -73,7 +73,7 @@ class Sample:
         Dielectric function of the environment (equivalent to
         `eps_stack[0]`). This is used to calculate `eps_stack` from
         `beta_stack` if needed.
-    k_vac : float
+    nu_vac : float
         Vacuuum wavenumber of incident light in inverse meters. Used to
         calculate far-field reflection coefficients via the transfer matrix
         method. Should be broadcastable with all `eps_stack[i, ...]`.
@@ -100,7 +100,7 @@ class Sample:
     """
 
     def __init__(
-        self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=None, k_vac=None
+        self, eps_stack=None, beta_stack=None, t_stack=None, eps_env=None, nu_vac=None
     ):
         # Check input validity
         if (eps_stack is None) == (beta_stack is None):
@@ -124,7 +124,7 @@ class Sample:
             self.eps_stack = eps_stack
         elif beta_stack is not None:
             self.beta_stack = beta_stack
-        self.k_vac = None if k_vac is None else np.array(k_vac)
+        self.nu_vac = None if nu_vac is None else np.array(nu_vac)
 
     @property
     def t_stack(self):
@@ -271,7 +271,7 @@ class Sample:
         M = self.transfer_matrix_qs(q=q)
         return 1 / M[..., 0, 0]
 
-    def transfer_matrix(self, q=None, theta_in=None, k_vac=None, polarization="p"):
+    def transfer_matrix(self, q=None, theta_in=None, nu_vac=None, polarization="p"):
         """Return the transfer matrix for the sample for incident light
         with a given wavenumber, in-plane momentum and polarization.
 
@@ -286,7 +286,7 @@ class Sample:
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        k_vac : float
+        nu_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
             matrix method. Should be broadcastable with all
@@ -314,17 +314,19 @@ class Sample:
            doi: 10.1088/0953-8984/25/21/215301.
 
         """
-        # Check k_vac given for multilayer samples (at init or function call)
-        if k_vac is None:
-            if self.k_vac is None:
+        # Check nu_vac given for multilayer samples (at init or function call)
+        if nu_vac is None:
+            if self.nu_vac is None:
                 if self.multilayer:
-                    raise ValueError("`k_vac` must not be None for multilayer samples.")
+                    raise ValueError(
+                        "`nu_vac` must not be None for multilayer samples."
+                    )
                 else:
-                    k_vac = 1  # k_vac has no effect for bulk samples
+                    nu_vac = 1  # nu_vac has no effect for bulk samples
             else:
-                k_vac = self.k_vac
+                nu_vac = self.nu_vac
         else:
-            k_vac = np.asanyarray(k_vac)
+            nu_vac = np.asanyarray(nu_vac)
 
         # Get q from theta in if needed
         if theta_in is None:
@@ -334,13 +336,13 @@ class Sample:
                 q = np.asanyarray(q)
         else:
             if q is None:
-                q = k_vac * np.sin(np.abs(theta_in))
+                q = nu_vac * np.sin(np.abs(theta_in))
             else:
                 raise ValueError("Either `theta_in` or `q` must be None.")
 
         # Wavevector in each layer
-        k_z_medium = np.stack(
-            [np.sqrt(eps * k_vac**2 - q**2) for eps in self.eps_stack]
+        nu_z_medium = np.stack(
+            [np.sqrt(eps * nu_vac**2 - q**2) for eps in self.eps_stack]
         )
 
         # Transmission matrix depends on polarization
@@ -348,14 +350,14 @@ class Sample:
             trans_factor = np.stack(
                 [
                     self.eps_stack[i]
-                    * k_z_medium[i + 1]
-                    / (self.eps_stack[i + 1] * k_z_medium[i])
+                    * nu_z_medium[i + 1]
+                    / (self.eps_stack[i + 1] * nu_z_medium[i])
                     for i in range(self.n_layers - 1)
                 ]
             )
         elif polarization == "s":
             trans_factor = np.stack(
-                [k_z_medium[i + 1] / k_z_medium[i] for i in range(self.n_layers - 1)]
+                [nu_z_medium[i + 1] / nu_z_medium[i] for i in range(self.n_layers - 1)]
             )
         else:
             raise ValueError("`polarization` must be 's' or 'p'")
@@ -369,7 +371,7 @@ class Sample:
         if self.multilayer:
             # Optical path length of internal layers
             prop_factor = np.array(
-                [k_z * t for k_z, t in zip(k_z_medium[1:-1], self.t_stack)]
+                [nu_z * t for nu_z, t in zip(nu_z_medium[1:-1], self.t_stack)]
             )
 
             prop_matrices = np.exp(
@@ -381,7 +383,7 @@ class Sample:
 
         return M
 
-    def refl_coef(self, q=None, theta_in=None, k_vac=None, polarization="p"):
+    def refl_coef(self, q=None, theta_in=None, nu_vac=None, polarization="p"):
         """Return the momentum-dependent Fresnel reflection coefficient
         for the sample, using the transfer matrix method.
 
@@ -396,7 +398,7 @@ class Sample:
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        k_vac : float
+        nu_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
             matrix method. Should be broadcastable with all
@@ -413,11 +415,11 @@ class Sample:
 
         """
         M = self.transfer_matrix(
-            q=q, theta_in=theta_in, k_vac=k_vac, polarization=polarization
+            q=q, theta_in=theta_in, nu_vac=nu_vac, polarization=polarization
         )
         return M[..., 1, 0] / M[..., 0, 0]
 
-    def trans_coef(self, q=None, theta_in=None, k_vac=None, polarization="p"):
+    def trans_coef(self, q=None, theta_in=None, nu_vac=None, polarization="p"):
         """Return the momentum-dependent Fresnel transmission coefficient
         for the sample, using the transfer matrix method.
 
@@ -432,7 +434,7 @@ class Sample:
             Must be broadcastable with all `eps_stack[i, ...]` and
             `t_stack[i, ...]`. Used to calculate `q`. Either `q` or
             `theta_in` must be None.
-        k_vac : float
+        nu_vac : float
             Vacuuum wavenumber of incident light in inverse meters. Used to
             calculate far-field reflection coefficients via the transfer
             matrix method. Should be broadcastable with all
@@ -449,7 +451,7 @@ class Sample:
 
         """
         M = self.transfer_matrix(
-            q=q, theta_in=theta_in, k_vac=k_vac, polarization=polarization
+            q=q, theta_in=theta_in, nu_vac=nu_vac, polarization=polarization
         )
         return 1 / M[..., 0, 0]
 
@@ -907,33 +909,33 @@ def permitivitty(beta, eps_i=1 + 0j):
     return eps_i * (1 + beta) / (1 - beta)
 
 
-def lorentz_perm(k_vac, k_j, gamma_j, A_j=None, k_plasma=None, f_j=1.0, eps_inf=1.0):
+def lorentz_perm(nu_vac, nu_j, gamma_j, A_j=None, nu_plasma=None, f_j=1.0, eps_inf=1.0):
     """Return permittivity as a function of wavenumber using a single
     Lorentzian oscillator model.
 
     This function returns
-     `eps_inf + A_j / (k_j**2 - k_vac**2 - 1j * gamma_j * k_vac)`, where
-     `A_j = f_j * k_plasma**2`.
+     `eps_inf + A_j / (nu_j**2 - nu_vac**2 - 1j * gamma_j * nu_vac)`, where
+     `A_j = f_j * nu_plasma**2`.
 
     Parameters
     ----------
-    k_vac : float
+    nu_vac : float
         Vacuuum wavenumber of incident light.
-    k_j : float
+    nu_j : float
         Centre wavenumber of the oscillator.
     gamma_j : float
         Width, or damping frequency, of the oscillator (equivalent to the
         reciprocal of the relaxation time).
     A_j : float
-        Amplitude of the oscillator, equivalent to `f_j * k_plasma**2`. As
+        Amplitude of the oscillator, equivalent to `f_j * nu_plasma**2`. As
         this term accounts for the plasma frequency, either `A_j` or
-        `k_plasma` must be None.
-    k_plasma : float
+        `nu_plasma` must be None.
+    nu_plasma : float
         Plasma wavenumber (wavenumber corresponding to the plasma
-        frequency) of the sample. Either `A_j` or `k_plasma` must be None.
+        frequency) of the sample. Either `A_j` or `nu_plasma` must be None.
     f_j : float, default 1.0
         Dimensionless constant that modifies the oscillation amplitude when
-        used in combination with `k_plasma`.
+        used in combination with `nu_plasma`.
     eps_inf : float, default 1.0
         High frequency permitivitty of the sample.
 
@@ -944,27 +946,27 @@ def lorentz_perm(k_vac, k_j, gamma_j, A_j=None, k_plasma=None, f_j=1.0, eps_inf=
 
     """
     if A_j is None:
-        if k_plasma is None:
-            raise ValueError("`A_j` and `k_plasma` cannot both be None")
+        if nu_plasma is None:
+            raise ValueError("`A_j` and `nu_plasma` cannot both be None")
         else:
-            A_j = f_j * k_plasma**2
-    elif k_plasma is not None:
-        raise ValueError("Either `A_j` or `k_plasma` must be None")
+            A_j = f_j * nu_plasma**2
+    elif nu_plasma is not None:
+        raise ValueError("Either `A_j` or `nu_plasma` must be None")
 
-    return eps_inf + A_j / (k_j**2 - k_vac**2 - 1j * gamma_j * k_vac)
+    return eps_inf + A_j / (nu_j**2 - nu_vac**2 - 1j * gamma_j * nu_vac)
 
 
-def drude_perm(k_vac, k_plasma, gamma, eps_inf=1.0):
+def drude_perm(nu_vac, nu_plasma, gamma, eps_inf=1.0):
     """Return permittivity as a function of wavenumber using a Drude model.
 
     This function returns
-     `eps_inf - k_plasma**2 / (k_vac**2 + 1j * gamma_j * k_vac)`.
+     `eps_inf - nu_plasma**2 / (nu_vac**2 + 1j * gamma_j * nu_vac)`.
 
     Parameters
     ----------
-    k_vac : float
+    nu_vac : float
         Vacuuum wavenumber of incident light.
-    k_plasma : float
+    nu_plasma : float
         Plasma wavenumber (wavenumber corresponding to the plasma
         frequency) of the sample.
     gamma : float
@@ -979,4 +981,6 @@ def drude_perm(k_vac, k_plasma, gamma, eps_inf=1.0):
         Permitivitty.
 
     """
-    return lorentz_perm(k_vac, k_j=0, gamma_j=gamma, k_plasma=k_plasma, eps_inf=eps_inf)
+    return lorentz_perm(
+        nu_vac, nu_j=0, gamma_j=gamma, nu_plasma=nu_plasma, eps_inf=eps_inf
+    )

@@ -20,7 +20,7 @@ class TestSample:
             "along the first axis.",
         ]
     )
-    k_vac_None_error = "`k_vac` must not be None for multilayer samples."
+    nu_vac_None_error = "`nu_vac` must not be None for multilayer samples."
     theta_q_error = "Either `theta_in` or `q` must be None."
     polarization_error = "`polarization` must be 's' or 'p'"
 
@@ -60,27 +60,27 @@ class TestSample:
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
             pysnom.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
 
-    def test_transfer_matrix_no_errors_when_bulk_no_k_vac(self):
+    def test_transfer_matrix_no_errors_when_bulk_no_nu_vac(self):
         eps_sub = 10
-        no_k_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
-        no_k_at_init.refl_coef()
+        no_nu_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
+        no_nu_at_init.refl_coef()
 
-    def test_transfer_matrix_errors_when_multilayer_no_k_vac(self):
+    def test_transfer_matrix_errors_when_multilayer_no_nu_vac(self):
         sample_params = dict(eps_stack=(1, 2, 10), t_stack=(50e-9,))
-        k_vac = 1.0
-        # No error when k_vac specified at init or function call
-        k_at_init = pysnom.Sample(k_vac=k_vac, **sample_params)
-        k_at_init.refl_coef()
+        nu_vac = 1.0
+        # No error when nu_vac specified at init or function call
+        nu_at_init = pysnom.Sample(nu_vac=nu_vac, **sample_params)
+        nu_at_init.refl_coef()
 
-        no_k_at_init = pysnom.Sample(**sample_params)
-        no_k_at_init.refl_coef(k_vac=k_vac)
+        no_nu_at_init = pysnom.Sample(**sample_params)
+        no_nu_at_init.refl_coef(nu_vac=nu_vac)
 
-        # Error with no k_vac
-        with pytest.raises(ValueError, match=self.k_vac_None_error):
-            no_k_at_init.refl_coef()
+        # Error with no nu_vac
+        with pytest.raises(ValueError, match=self.nu_vac_None_error):
+            no_nu_at_init.refl_coef()
 
     def test_transfer_matrix_errors_when_theta_and_q(self):
-        sample = pysnom.bulk_sample(eps_sub=10, k_vac=1.0)
+        sample = pysnom.bulk_sample(eps_sub=10, nu_vac=1.0)
         q = theta_in = 0.0
 
         # No error when theta_in or q specified separately
@@ -92,7 +92,7 @@ class TestSample:
             sample.transfer_matrix(q=q, theta_in=theta_in)
 
     def test_transfer_matrix_errors_for_unknown_polarization(self):
-        sample = pysnom.bulk_sample(eps_sub=10, k_vac=1.0)
+        sample = pysnom.bulk_sample(eps_sub=10, nu_vac=1.0)
         # No error for "p" or "s"
         sample.transfer_matrix(polarization="p")
         sample.transfer_matrix(polarization="s")
@@ -141,12 +141,12 @@ class TestSample:
         sample = pysnom.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
-        k_vac = np.ones_like(sample.eps_stack[0], dtype=float)
+        nu_vac = np.ones_like(sample.eps_stack[0], dtype=float)
         assert (
             np.shape(sample.refl_coef_qs())
             == np.shape(sample.trans_coef_qs())
-            == np.shape(sample.refl_coef(k_vac=k_vac))
-            == np.shape(sample.trans_coef(k_vac=k_vac))
+            == np.shape(sample.refl_coef(nu_vac=nu_vac))
+            == np.shape(sample.trans_coef(nu_vac=nu_vac))
             == np.shape(sample.refl_coef_qs_above_surf(z_Q=self.z_Q))
             == np.shape(sample.surf_pot_and_field(z_Q=self.z_Q)[0])
             == np.shape(sample.surf_pot_and_field(z_Q=self.z_Q)[1])
@@ -228,20 +228,22 @@ class TestSample:
         z_image, beta_image = vector_sample_multi.image_depth_and_charge(self.z_Q)
         assert z_image.shape == beta_image.shape == target_shape
 
-    def test_lorentz_perm_A_j_and_k_plasma_errors(self):
+    def test_lorentz_perm_A_j_and_nu_plasma_errors(self):
         with pytest.raises(
-            ValueError, match="`A_j` and `k_plasma` cannot both be None"
+            ValueError, match="`A_j` and `nu_plasma` cannot both be None"
         ):
             pysnom.sample.lorentz_perm(1, 1, 1)
-        with pytest.raises(ValueError, match="Either `A_j` or `k_plasma` must be None"):
-            pysnom.sample.lorentz_perm(1, 1, 1, A_j=1, k_plasma=1)
+        with pytest.raises(
+            ValueError, match="Either `A_j` or `nu_plasma` must be None"
+        ):
+            pysnom.sample.lorentz_perm(1, 1, 1, A_j=1, nu_plasma=1)
 
     def test_drude_perm_is_case_of_lorentz_perm(self):
-        k_vac = np.linspace(1000, 2000, 128) * 1e2
-        k_plasma = 10000e2
+        nu_vac = np.linspace(1000, 2000, 128) * 1e2
+        nu_plasma = 10000e2
         gamma = 1000e2
-        eps_drude = pysnom.sample.drude_perm(k_vac, k_plasma=k_plasma, gamma=gamma)
+        eps_drude = pysnom.sample.drude_perm(nu_vac, nu_plasma=nu_plasma, gamma=gamma)
         eps_lorentz = pysnom.sample.lorentz_perm(
-            k_vac, k_j=0, k_plasma=k_plasma, gamma_j=gamma
+            nu_vac, nu_j=0, nu_plasma=nu_plasma, gamma_j=gamma
         )
         np.testing.assert_allclose(eps_drude, eps_lorentz)

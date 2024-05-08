@@ -102,7 +102,7 @@ To begin with, we'll define a dielectric function for our material (based loosel
    >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 4.2e8, 20e2
    >>> eps_pmma = pysnom.sample.lorentz_perm(
    ...     wavenumber,
-   ...     k_j=centre_wavenumber,
+   ...     nu_j=centre_wavenumber,
    ...     gamma_j=width,
    ...     A_j=strength,
    ...     eps_inf=eps_inf
@@ -120,7 +120,7 @@ Let's visualise it with a quick plot:
    >>> ax.plot(wavenumber, eps_pmma.imag, label="imag")
    >>> ax.set(
    ...     xlim=(wavenumber.max(), wavenumber.min()),
-   ...     xlabel=r"$k$ / m$^{-1}$",
+   ...     xlabel=r"$\nu$ / m$^{-1}$",
    ...     ylabel=r"$\varepsilon$",
    ... )
    >>> ax.legend()
@@ -134,12 +134,12 @@ Let's visualise it with a quick plot:
    plt.close()
 
 Now that we've created our dispersive dielectric function, we can pass it to our :func:`~pysnom.sample.bulk_sample` function.
-We can also give it the wavenumber corresponding to each :math:`\varepsilon` value as the optional argument `k_vac` (which will be useful for some functions which depend on both parameters):
+We can also give it the wavenumber corresponding to each :math:`\varepsilon` value as the optional argument `nu_vac` (which will be useful for some functions which depend on both parameters):
 
 .. plot::
    :context:
 
-   >>> pmma = pysnom.bulk_sample(eps_pmma, k_vac=wavenumber)
+   >>> pmma = pysnom.bulk_sample(eps_pmma, nu_vac=wavenumber)
 
 Let's take a look at some of properties of this new sample:
 
@@ -186,7 +186,7 @@ Let's create another plot to visualise the dielectric function and quasistatic r
    >>> axes[1].plot(wavenumber, beta_pmma.imag)
    >>> axes[1].set(
    ...     xlim=(wavenumber.max(), wavenumber.min()),
-   ...     xlabel=r"$k$ / m$^{-1}$",
+   ...     xlabel=r"$\nu$ / m$^{-1}$",
    ...     ylabel=r"$\beta$"
    ... )
    >>> fig.tight_layout()
@@ -295,7 +295,7 @@ We already defined permitivitties for Si and PMMA above, so we can reuse the sam
    >>> pmma_si = pysnom.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma,),
-   ...     k_vac=wavenumber,
+   ...     nu_vac=wavenumber,
    ... )
 
 Remember that `eps_pmma` is a 128-value ``numpy`` array, but `eps_air` and `eps_si` are scalar values.
@@ -343,7 +343,7 @@ Now we know our arrays broadcast nicely, let's show the advantage of broadcastin
    >>> pmma_si_varied = pysnom.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma_varied,),
-   ...     k_vac=wavenumber,
+   ...     nu_vac=wavenumber,
    ... )
    >>> theta_in = np.deg2rad(70)  # Incident angle of light
    >>> r_p = pmma_si_varied.refl_coef(theta_in=theta_in)
@@ -374,7 +374,7 @@ Let's plot this in 3D to see what this looks like:
    ...     )
    >>> ax.set(
    ...    xlabel=r"$t_{PMMA}$ / nm",
-   ...    ylabel=r"$k$ / cm$^-1$",
+   ...    ylabel=r"$\nu$ / cm$^-1$",
    ...    zlabel=r"$r_p$",
    ... )
    >>> ax.legend((l_real, l_imag), ("real", "imag"))
