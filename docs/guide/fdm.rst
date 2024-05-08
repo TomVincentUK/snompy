@@ -3,7 +3,7 @@
 The finite dipole model
 =======================
 
-In ``pysnom``, there are three different implementations of the finite dipole model (FDM): the *bulk* implementation, the *Hauer* implementation and the *Mester* implementation.
+In ``pysnom``, there are three different implementations of the finite dipole model (FDM): the *bulk* implementation, the *multilayer* implementation and the *charge average* implementation.
 This page gives a description of each one, with a particular focus on the derivation of the bulk FDM, from which the other implementations are derived.
 
 
@@ -191,8 +191,8 @@ In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
 Extending to multilayer samples
 -------------------------------
 
-The Hauer method
-^^^^^^^^^^^^^^^^
+The multilayer method
+^^^^^^^^^^^^^^^^^^^^^
 
 Hauer *et al.* proposed a method to extend the FDM to multilayer samples [2]_.
 In this method, the response of the multilayer sample to a charge :math:`Q_j` is modelled with a single image charge :math:`Q_j'={\beta}_{j} Q_j` at a depth :math:`d_{Q_j'}` below the sample surface.
@@ -200,7 +200,7 @@ In this method, the response of the multilayer sample to a charge :math:`Q_j` is
 The effective depth and reflection coefficient for the charge are chosen to be those that preserve the normal electric field :math:`E_z` and potential :math:`\phi` at the surface of the sample using :func:`pysnom.sample.Sample.image_depth_and_charge`, as:
 
 .. math::
-   :label: hauer_bcs
+   :label: multilayer_bcs
 
     \begin{aligned}
         d_{Q_j'}    & = \left|\frac{\left.{\phi}\right|_{z=0}}{\left.E_z\right|_{z=0}}\right| - z_{Q_j}, \quad \mathrm{and} \\
@@ -222,7 +222,7 @@ Here :math:`q` is the in-plane momentum of light, and :math:`\beta(q)` is the ef
 These values can then be inserted into a modified version of equation :eq:`eff_pol_bulk_fdm`, as:
 
 .. math::
-   :label: hauer
+   :label: multilayer
 
    \alpha_{eff}
    \propto 1 + \frac{f_0 \beta_0}{2 (1 - f_1 \beta_1)}.
@@ -236,35 +236,35 @@ The geometry function is also modified in this case to become:
    \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{Q_j'}}\right)}
    {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
 
-In ``pysnom``, equation :eq:`hauer` is provided by the function
-:func:`pysnom.fdm.eff_pol`, with the argument `method="Hauer"`.
+In ``pysnom``, equation :eq:`multilayer` is provided by the function
+:func:`pysnom.fdm.eff_pol`, with the argument `method="multi"`.
 
-The Mester method
-^^^^^^^^^^^^^^^^^
+The charge average method
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Mester *et al.* proposed another multilayer FDM method [3]_.
 
 In this implementation, the geometry function used is the same as for the bulk FDM method, however an alternative expression for the quasistatic reflection coefficient is used, which is derived from the ratio of the fields at the height of the probe:
 
 .. math::
-   :label: beta_mester
+   :label: beta_Q_ave
 
     \overline{\beta} = \frac{\int_0^{\infty} \beta(q) q e^{-2 z_{Q_a} q} dq}{\int_0^{\infty} q e^{-2 z_{Q_a} q} dq}
 
 
 The height :math:`z_{Q_a}` here is the height of a single representative test charge :math:`Q_a`, whose position within the tip is chosen empirically.
-Equation :eq:`beta_mester` is implemented in ``pysnom`` as :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`.
+Equation :eq:`beta_Q_ave` is implemented in ``pysnom`` as :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`.
 
 This can then be inserted into another modified version of equation :eq:`eff_pol_bulk_fdm`, as:
 
 .. math::
-   :label: mester
+   :label: Q_ave
 
    \alpha_{eff}
    \propto 1 + \frac{f_0 \overline{\beta}}{2 (1 - f_1 \overline{\beta})}.
 
-In ``pysnom``, equation :eq:`mester` is provided by the function
-:func:`pysnom.fdm.eff_pol`, with the argument `method="Mester"`.
+In ``pysnom``, equation :eq:`Q_ave` is provided by the function
+:func:`pysnom.fdm.eff_pol`, with the argument `method="Q_ave"`.
 
 Demodulating the FDM
 --------------------

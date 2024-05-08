@@ -47,7 +47,7 @@ class Defaults:
 
     d_Qa : float, default 1.4
         Depth of a single representative charge within the tip. Specified
-        in units of the tip radius. Used by the Mester implementation of
+        in units of the tip radius. Used by the "Q_ave" implementation of
         the finite dipole model to calculate the effective quasistatic
         reflection coefficient for the tip.
 

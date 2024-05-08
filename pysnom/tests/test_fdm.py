@@ -8,8 +8,8 @@ class TestFDM:
     multilayer_sample_for_bulk_error = (
         "`method`='bulk' cannot be used for multilayer samples."
     )
-    unknown_method_error = "`method` must be one of `bulk`, `Hauer`, or `Mester`."
-    unknown_method_taylor_error = "`method` must be one of `bulk`, or `Mester`."
+    unknown_method_error = "`method` must be one of `bulk`, `multi`, or `Q_ave`."
+    unknown_method_taylor_error = "`method` must be one of `bulk`, or `Q_ave`."
 
     def test_eff_pol_error_bulk_used_for_multilayer_sample(self, scalar_sample_multi):
         with pytest.raises(ValueError, match=self.multilayer_sample_for_bulk_error):

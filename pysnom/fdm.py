@@ -153,16 +153,16 @@ def eff_pol(
         the tip radius.
     d_Qa : float
         Depth of a single representative charge within the tip. Specified
-        in units of the tip radius. Used by the Mester implementation of
+        in units of the tip radius. Used by the "Q_ave" implementation of
         the finite dipole model to calculate the effective quasistatic
         reflection coefficient for the tip.
     n_lag : int
-        The order of the Gauss-Laguerre integration used by the "Hauer" and
-        "Mester" methods.
-    method : {"bulk", "Hauer", "Mester"}
+        The order of the Gauss-Laguerre integration used by the "multi" and
+        "Q_ave" methods.
+    method : {"bulk", "multi", "Q_ave"}
         The method of the finite dipole model to use. See Notes for the
         description of each method. Defaults to "bulk" for bulk samples and
-        "Hauer" otherwise.
+        "multi" otherwise.
 
     Returns
     -------
@@ -196,7 +196,7 @@ def eff_pol(
     `d_Q0` or `d_Q1` (for the numerator or denominator), `r_tip`, `L_tip`,
     and `g_factor`.
 
-    Method "Hauer" is the multilayer Hauer method given in reference [1]_.
+    Method "multi" is the multilayer Hauer method given in reference [1]_.
     Here, :math:`\beta_j`, is the relative charge of an image of charge
     :math:`Q_j` below the sample at depth :math:`d_{Q_j'}` below the
     surface. :math:`\beta_j` and :math:`d_{Q_j'}` are calculated from
@@ -205,12 +205,12 @@ def eff_pol(
     `z_tip`, `d_image` (:math:`d_{Q_j'}`), `r_tip`, `L_tip`, and
     `g_factor`.
 
-    Method "Mester" is described in reference [2]_. Here
-    :math:`\beta_0 = \beta_1 = \overline{\beta}`, the effective reflection
-    coefficient for a test charge :math:`Q_a`, evaluated at the position of
-    the charge itself, which is calculated from
-    :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`. The definition of
-    :math:`f_j` is the same as for the bulk Hauer method.
+    Method "Q_ave" is  the charge average method described by Mester et al.
+    in reference [2]_. Here :math:`\beta_0 = \beta_1 = \overline{\beta}`,
+    the effective reflection coefficient for a test charge :math:`Q_a`,
+    evaluated at the position of the charge itself, which is calculated
+    from :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`. The
+    definition of :math:`f_j` is the same as for the bulk Hauer method.
 
 
     References
@@ -232,7 +232,7 @@ def eff_pol(
 
     # Default to one of the Hauer methods based on sample type.
     if method is None:
-        method = "Hauer" if sample.multilayer else "bulk"
+        method = "multi" if sample.multilayer else "bulk"
 
     if method == "bulk":
         if sample.multilayer:
@@ -241,7 +241,7 @@ def eff_pol(
 
         f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
         f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
-    elif method == "Hauer":
+    elif method == "multi":
         z_Q0 = z_tip + r_tip * d_Q0
         z_Q1 = z_tip + r_tip * d_Q1
         z_im0, beta_0 = sample.image_depth_and_charge(z_Q0, n_lag)
@@ -249,14 +249,14 @@ def eff_pol(
 
         f_0 = geom_func_multi(z_tip, z_im0, r_tip, L_tip, g_factor)
         f_1 = geom_func_multi(z_tip, z_im1, r_tip, L_tip, g_factor)
-    elif method == "Mester":
+    elif method == "Q_ave":
         z_Qa = z_tip + r_tip * d_Qa
         beta_0 = beta_1 = sample.refl_coef_qs_above_surf(z_Qa, n_lag)
 
         f_0 = geom_func(z_tip, d_Q0, r_tip, L_tip, g_factor)
         f_1 = geom_func(z_tip, d_Q1, r_tip, L_tip, g_factor)
     else:
-        raise ValueError("`method` must be one of `bulk`, `Hauer`, or `Mester`.")
+        raise ValueError("`method` must be one of `bulk`, `multi`, or `Q_ave`.")
 
     alpha_eff = 1 + (beta_0 * f_0) / (2 * (1 - beta_1 * f_1))
 
@@ -588,13 +588,13 @@ def eff_pol_n_taylor(
         the tip radius.
     d_Qa : float
         Depth of a single representative charge within the tip. Specified
-        in units of the tip radius. Used by the Mester implementation of
+        in units of the tip radius. Used by the "Q_ave" implementation of
         the finite dipole model to calculate the effective quasistatic
         reflection coefficient for the tip.
     n_lag : int
-        The order of the Gauss-Laguerre integration used by the "Hauer" and
-        "Mester" methods.
-    method : {"bulk", "Mester"}
+        The order of the Gauss-Laguerre integration used by the "multi" and
+        "Q_ave" methods.
+    method : {"bulk", "Q_ave"}
         The method of the finite dipole model to use. See :func:`eff_pol`
         for descriptions of the different methods.
     n_trapz : int
@@ -636,17 +636,17 @@ def eff_pol_n_taylor(
 
     # Choose method based on sample type.
     if method is None:
-        method = "Mester" if sample.multilayer else "bulk"
+        method = "Q_ave" if sample.multilayer else "bulk"
 
     if method == "bulk":
         if sample.multilayer:
             raise ValueError("`method`='bulk' cannot be used for multilayer samples.")
         beta = sample.refl_coef_qs()
-    elif method == "Mester":
+    elif method == "Q_ave":
         z_Qa = z_tip + r_tip * d_Qa
         beta = sample.refl_coef_qs_above_surf(z_Qa, n_lag)
     else:
-        raise ValueError("`method` must be one of `bulk`, or `Mester`.")
+        raise ValueError("`method` must be one of `bulk`, or `Q_ave`.")
 
     j_taylor = _pad_for_broadcasting(
         np.arange(n_tayl), (z_tip, A_tip, n, beta, r_tip, L_tip, g_factor, d_Q0, d_Q1)

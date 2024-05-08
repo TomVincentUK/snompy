@@ -12,7 +12,7 @@ n = 3  # Harmonic for demodulation
 theta_in = np.deg2rad(60)  # Light angle of incidence
 c_r = 0.3  # Experimental weighting factor
 nu_vac = np.linspace(1680, 1800, 128) * 1e2  # Vacuum wavenumber
-method = "Mester"  # The FDM method to use
+method = "Q_ave"  # The FDM method to use
 
 # Semi-infinite superstrate and substrate
 eps_air = 1.0

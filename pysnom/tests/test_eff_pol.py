@@ -7,13 +7,13 @@ import pysnom
 class TestEffPol:
     model_and_kwargs = [
         (pysnom.fdm, {"method": "bulk"}),
-        (pysnom.fdm, {"method": "Hauer"}),
-        (pysnom.fdm, {"method": "Mester"}),
+        (pysnom.fdm, {"method": "multi"}),
+        (pysnom.fdm, {"method": "Q_ave"}),
         (pysnom.pdm, {}),
     ]
     taylor_model_and_kwargs = [
         (pysnom.fdm, {"method": "bulk"}),
-        (pysnom.fdm, {"method": "Mester"}),
+        (pysnom.fdm, {"method": "Q_ave"}),
     ]
     inverse_model = [pysnom.fdm, pysnom.pdm]
 
@@ -100,7 +100,7 @@ class TestEffPol:
         )
         np.testing.assert_allclose(
             pysnom.fdm.eff_pol_n(method="bulk", **params),
-            pysnom.fdm.eff_pol_n(method="Hauer", **params),
+            pysnom.fdm.eff_pol_n(method="multi", **params),
             rtol=1e-4,
         )
 
