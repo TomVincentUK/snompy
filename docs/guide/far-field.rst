@@ -125,7 +125,7 @@ First let's create a model for the permitivitty (based loosely on [2]_):
    >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 4.2e8, 20e2
    >>> eps_pmma = pysnom.sample.lorentz_perm(
    ...     wavenumber,
-   ...     k_j=centre_wavenumber,
+   ...     nu_j=centre_wavenumber,
    ...     gamma_j=width,
    ...     A_j=strength,
    ...     eps_inf=eps_inf
@@ -142,7 +142,7 @@ Let's make it 500 nm thick, and we'll define the environment to be air with :mat
    >>> pmma_si = pysnom.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma,),
-   ...     k_vac=wavenumber,
+   ...     nu_vac=wavenumber,
    ... )
 
 We'll use the same values for :math:`c_r` and :math:`\theta_{in}` that we used for our reference (this is important so it's a fair comparison).
@@ -207,7 +207,7 @@ First we'll set up our axes and define some colours:
    >>> ls_corr, ls_uncorr = "-.", ":"
    >>> fig, axes = plt.subplots(nrows=3, sharex=True)
    >>> axes[-1].set(
-   ...    xlabel=r"$k$ / cm$^{-1}$",
+   ...    xlabel=r"$\nu$ / cm$^{-1}$",
    ...    xlim=(wavenumber_per_cm.max(), wavenumber_per_cm.min()),
    ... )
 
