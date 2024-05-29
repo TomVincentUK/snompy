@@ -14,21 +14,10 @@ The rest of this guide will take you through the workings of the two models, and
 Installation
 ------------
 
-Currently, this project is still in development, and not yet public.
-So to install ``pysnom`` you'll need to clone the git repository to your local environment then install in development mode like::
-
-   git clone https://github.com/TomVincentUK/pysnom.git
-   cd pysnom
-   pip install -e .
-
-When the project goes public, I'll upload it to PyPI.
-When I do, the installation should look like::
+Installation via ``pip``::
 
    pip install pysnom
 
-Eventually, I'll also look into adding it to ``conda-forge``, so it can be installed like::
-
-   conda install -c conda-forge pysnom
 
 Useful third-party packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
