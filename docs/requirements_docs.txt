@@ -1,6 +1,7 @@
 matplotlib
 numpydoc
 pydata-sphinx-theme==0.13.3
+scipy
 sphinx
 sphinx-autobuild
 sphinx-design

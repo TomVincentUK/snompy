@@ -8,6 +8,7 @@ A Python package for modelling scanning near-field optical microscopy measuremen
 
    User guide <guide/index>
    API reference <API/index>
+   Examples <examples/index>
    Development <development>
    FAQ <FAQ>
 
