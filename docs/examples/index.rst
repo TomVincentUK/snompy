@@ -10,3 +10,4 @@ Here you can browse through a set of example scripts showing how to perform comm
 
    si_approach
    t_dependent_spectra
+   inversion
