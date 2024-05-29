@@ -62,9 +62,6 @@ A Python package for modelling scanning near-field optical microscopy measuremen
 
 Cite us
 -------
-When we release this package, we'll accompany it with a paper showcasing its use.
-I'll add a reference to that paper here and ask people to cite it if they use the code.
-
-Acknowledgements
-----------------
-``pysnom`` was supported by ...
+This package is open source and free to use.
+We only ask that you cite our original paper, to acknowledge the time and effort that went into developing ``pysnom``.
+**Look out for our preprint article coming very soon.**

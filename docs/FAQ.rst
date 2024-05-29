@@ -27,24 +27,12 @@ Frequently asked questions
     Perhaps, if your project is interesting and aligns with our research then we're open to new opportunities for collaboration.
     Feel free to contact the authors privately if you're interested in working with us on modelling SNOM experiments.
 
-.. admonition:: I'd like to see a certain feature. Can you add it?
+.. admonition:: I want to contribute to ``pysnom``. How can I help?
     :class:  dropdown admonition-faq
 
-    Possibly.
-    We're always happy to discuss ways to improve this code.
-    The section :doc:`development` gives details of how to raise feature requests.
-
-.. admonition:: Which FDM implementation should I use?
-    :class:  dropdown admonition-faq
-
-    The authors of ``pysnom`` don't advocate for any particular implementation over another.
-    We stress that, despite their differences, all the FDM implementations included in ``pysnom`` have shown good agreement with experimental results in literature.
-    However we agree that more work can be done to determine which models are most applicable for different sample types and geometries.
-    If you're interested in using ``pysnom`` to help with that work, then please let us know!
-    We'll be very happy to help.
-
+    See the section :ref:`development` for details.
 
 .. admonition:: My question isn't here. How can I get help?
     :class:  dropdown admonition-faq
 
-    [DO WE HAVE A GROUP EMAIL ADDRESS]?
+    If you have any other questions, feel free to start a discussion on the `pysnom Discussions channel <https://github.com/TomVincentUK/pysnom/discussions>`_.
