@@ -44,7 +44,7 @@ Approach curve on silicon
 
 This example uses both the FDM and PDM  to calculate the decay of the SNOM amplitude, :math:`s_n \propto \alpha_{eff, n}`, for different demodulation harmonics, :math:`n` as the SNOM tip is moved in the :math:`z` direction, away from a sample of bulk silicon.
 
-.. plot:: guide/intro/approach.py
+.. plot:: examples/scripts/si_approach.py
    :align: center
 
 Thickness-dependent PMMA spectra
@@ -53,10 +53,10 @@ Thickness-dependent PMMA spectra
 This more involved example uses the a multilayer FDM to simulate a SNOM spectrum from a thin layer of `poly(methyl methacrylate) <https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)>`_ (PMMA) on silicon, for different thicknesses of PMMA, and normalises the signal to a reference spectrum taken from bulk gold.
 It also includes the effects of the far-field reflection coefficient of the sample on the observed SNOM spectra.
 
-.. plot:: guide/intro/spectra.py
+.. plot:: examples/scripts/t_dependent_spectra.py
    :align: center
 
-(The dielectric function of PMMA in the above example was based on reference [1]_, and the dielectric function of gold was taken from reference [2]_).
+(The dielectric function of PMMA in the above example was based roughly on reference [1]_, and the dielectric function of gold was taken from reference [2]_).
 
 
 References
