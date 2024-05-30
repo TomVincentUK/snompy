@@ -1,1 +1,1 @@
-.. automodule:: pysnom.pdm
+.. automodule:: snompy.pdm

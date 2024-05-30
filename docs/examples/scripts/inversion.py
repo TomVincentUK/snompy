@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib.ticker import StrMethodFormatter
 from scipy.optimize import minimize
 
-import pysnom
+import snompy
 
 
 def minimization_function(eps_re_im, alpha_eff_n, fdm_params):
@@ -34,7 +34,7 @@ def minimization_function(eps_re_im, alpha_eff_n, fdm_params):
     `scipy.optimize.minimize` only works on real arrays).
     """
     eps = eps_re_im[0] + 1j * np.abs(eps_re_im[1])
-    alpha_eff_n_test = pysnom.fdm.eff_pol_n(pysnom.bulk_sample(eps), **fdm_params)
+    alpha_eff_n_test = snompy.fdm.eff_pol_n(snompy.bulk_sample(eps), **fdm_params)
     return np.abs(alpha_eff_n - alpha_eff_n_test)
 
 
@@ -89,29 +89,29 @@ eps_air = 1.0
 eps_inf = 2
 eps_sub = (
     # Weak oscillator:
-    pysnom.sample.lorentz_perm(nu_vac, nu_j=1750e2, gamma_j=50e2, A_j=1e9, eps_inf=0)
+    snompy.sample.lorentz_perm(nu_vac, nu_j=1750e2, gamma_j=50e2, A_j=1e9, eps_inf=0)
     # Strong oscillator:
-    + pysnom.sample.lorentz_perm(
+    + snompy.sample.lorentz_perm(
         nu_vac, nu_j=1250e2, gamma_j=100e2, A_j=10e9, eps_inf=0
     )
     + eps_inf
 )
-beta = pysnom.sample.refl_coef_qs_single(eps_air, eps_sub)
+beta = snompy.sample.refl_coef_qs_single(eps_air, eps_sub)
 invalid_beta = np.abs(beta) >= 1
 
 # Simulate a SNOM measurement
-alpha_eff_sub = pysnom.fdm.eff_pol_n(pysnom.bulk_sample(eps_sub), **fdm_params)
+alpha_eff_sub = snompy.fdm.eff_pol_n(snompy.bulk_sample(eps_sub), **fdm_params)
 
 # Normalise to a Si reference
 eps_ref = 11.7  # Si dielectric function
-alpha_eff_ref = pysnom.fdm.eff_pol_n(pysnom.bulk_sample(eps_ref), **fdm_params)
+alpha_eff_ref = snompy.fdm.eff_pol_n(snompy.bulk_sample(eps_ref), **fdm_params)
 eta = alpha_eff_sub / alpha_eff_ref
 
 # Recover original signal using scipy and using built-in method
-beta_recovered_taylor = pysnom.fdm.refl_coef_qs_from_eff_pol_n(
+beta_recovered_taylor = snompy.fdm.refl_coef_qs_from_eff_pol_n(
     alpha_eff_sub, **fdm_params, reject_negative_eps_imag=True
 )
-eps_recovered_taylor = pysnom.sample.permitivitty(beta_recovered_taylor, eps_i=eps_air)
+eps_recovered_taylor = snompy.sample.permitivitty(beta_recovered_taylor, eps_i=eps_air)
 eps_recovered_scipy = invert_by_minimization(
     alpha_eff_sub, np.ones_like(eps_sub) * eps_sub.mean(), fdm_params
 )
@@ -125,10 +125,10 @@ alpha_eff_noisy = alpha_eff_sub + np.abs(alpha_eff_sub) * noise_level * (
 eta_noisy = alpha_eff_noisy / alpha_eff_ref
 
 # Recover from noisy signal
-beta_recovered_taylor_noisy = pysnom.fdm.refl_coef_qs_from_eff_pol_n(
+beta_recovered_taylor_noisy = snompy.fdm.refl_coef_qs_from_eff_pol_n(
     alpha_eff_noisy, **fdm_params, reject_negative_eps_imag=True
 )
-eps_recovered_taylor_noisy = pysnom.sample.permitivitty(
+eps_recovered_taylor_noisy = snompy.sample.permitivitty(
     beta_recovered_taylor_noisy, eps_i=eps_air
 )
 eps_minimized_scipy_noisy = invert_by_minimization(

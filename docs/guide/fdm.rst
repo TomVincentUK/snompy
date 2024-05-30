@@ -3,7 +3,7 @@
 The finite dipole model
 =======================
 
-In ``pysnom``, there are three different implementations of the finite dipole model (FDM): the *bulk* implementation, the *multilayer* implementation and the *charge average* implementation.
+In ``snompy``, there are three different implementations of the finite dipole model (FDM): the *bulk* implementation, the *multilayer* implementation and the *charge average* implementation.
 This page gives a description of each one, with a particular focus on the derivation of the bulk FDM, from which the other implementations are derived.
 
 
@@ -111,8 +111,8 @@ where :math:`\varepsilon_{env}` is the permitivitty of thee nvironment
 (:math:`\varepsilon_{env} = 1` for air or vacuum), and
 :math:`\varepsilon_{sub}` is the permitivitty of the sample (the subscript
 "sub" here is short for substrate).
-In ``pysnom``, equation :eq:`beta` is provided by the function
-:func:`pysnom.sample.Sample.refl_coef_qs`.
+In ``snompy``, equation :eq:`beta` is provided by the function
+:func:`snompy.sample.Sample.refl_coef_qs`.
 
 The charge :math:`Q_0'` acts back on the tip and induces a further
 polarization, which we can model as another point charge :math:`Q_1`, at a
@@ -163,8 +163,8 @@ They are given by the formula
 
 where :math:`g \approx 0.7` is an empirical factor that describes how much
 of the induced charge is relevant for the near-field interaction.
-In ``pysnom``, equation :eq:`f_j_bulk` is provided by the function
-:func:`pysnom.fdm.geom_func`.
+In ``snompy``, equation :eq:`f_j_bulk` is provided by the function
+:func:`snompy.fdm.geom_func`.
 
 The charges :math:`Q_1` and :math:`-Q_1` form another dipole
 
@@ -185,8 +185,8 @@ the total induced dipole, as
    \left(1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}\right)
    \propto 1 + \frac{f_0 \beta}{2 (1 - f_1 \beta)}.
 
-In ``pysnom``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
-:func:`pysnom.fdm.eff_pol`, with the argument `method="bulk"`.
+In ``snompy``, equation :eq:`eff_pol_bulk_fdm` is provided by the function
+:func:`snompy.fdm.eff_pol`, with the argument `method="bulk"`.
 
 Extending to multilayer samples
 -------------------------------
@@ -197,7 +197,7 @@ The multilayer method
 Hauer *et al.* proposed a method to extend the FDM to multilayer samples [2]_.
 In this method, the response of the multilayer sample to a charge :math:`Q_j` is modelled with a single image charge :math:`Q_j'={\beta}_{j} Q_j` at a depth :math:`d_{Q_j'}` below the sample surface.
 
-The effective depth and reflection coefficient for the charge are chosen to be those that preserve the normal electric field :math:`E_z` and potential :math:`\phi` at the surface of the sample using :func:`pysnom.sample.Sample.image_depth_and_charge`, as:
+The effective depth and reflection coefficient for the charge are chosen to be those that preserve the normal electric field :math:`E_z` and potential :math:`\phi` at the surface of the sample using :func:`snompy.sample.Sample.image_depth_and_charge`, as:
 
 .. math::
    :label: multilayer_bcs
@@ -207,7 +207,7 @@ The effective depth and reflection coefficient for the charge are chosen to be t
         {\beta}_{j} & = \frac{\left(\left.{\phi}\right|_{z=0}\right)^2}{\left.E_z\right|_{z=0}}
     \end{aligned}
 
-The potential and field can be calculated using :func:`pysnom.sample.Sample.surf_pot_and_field`, from:
+The potential and field can be calculated using :func:`snompy.sample.Sample.surf_pot_and_field`, from:
 
 .. math::
    :label: phi_E
@@ -217,7 +217,7 @@ The potential and field can be calculated using :func:`pysnom.sample.Sample.surf
         \left.E_z\right|_{z=0}       & = \int_0^{\infty} \beta(q) q e^{-2 z_{Q_j} q} dq
     \end{aligned}
 
-Here :math:`q` is the in-plane momentum of light, and :math:`\beta(q)` is the effective quasistatic reflection coefficient for the surface, calculated using :func:`pysnom.sample.Sample.refl_coef_qs`.
+Here :math:`q` is the in-plane momentum of light, and :math:`\beta(q)` is the effective quasistatic reflection coefficient for the surface, calculated using :func:`snompy.sample.Sample.refl_coef_qs`.
 
 These values can then be inserted into a modified version of equation :eq:`eff_pol_bulk_fdm`, as:
 
@@ -236,8 +236,8 @@ The geometry function is also modified in this case to become:
    \frac{\ln\left(\frac{4 L_{tip}}{r_{tip} + 2 z_{tip} + 2 d_{Q_j'}}\right)}
    {\ln\left(\frac{4 L_{tip}}{r_{tip}}\right)},
 
-In ``pysnom``, equation :eq:`multilayer` is provided by the function
-:func:`pysnom.fdm.eff_pol`, with the argument `method="multi"`.
+In ``snompy``, equation :eq:`multilayer` is provided by the function
+:func:`snompy.fdm.eff_pol`, with the argument `method="multi"`.
 
 The charge average method
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -253,7 +253,7 @@ In this implementation, the geometry function used is the same as for the bulk F
 
 
 The height :math:`z_{Q_a}` here is the height of a single representative test charge :math:`Q_a`, whose position within the tip is chosen empirically.
-Equation :eq:`beta_Q_ave` is implemented in ``pysnom`` as :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`.
+Equation :eq:`beta_Q_ave` is implemented in ``snompy`` as :func:`snompy.sample.Sample.refl_coef_qs_above_surf`.
 
 This can then be inserted into another modified version of equation :eq:`eff_pol_bulk_fdm`, as:
 
@@ -263,8 +263,8 @@ This can then be inserted into another modified version of equation :eq:`eff_pol
    \alpha_{eff}
    \propto 1 + \frac{f_0 \overline{\beta}}{2 (1 - f_1 \overline{\beta})}.
 
-In ``pysnom``, equation :eq:`Q_ave` is provided by the function
-:func:`pysnom.fdm.eff_pol`, with the argument `method="Q_ave"`.
+In ``snompy``, equation :eq:`Q_ave` is provided by the function
+:func:`snompy.fdm.eff_pol`, with the argument `method="Q_ave"`.
 
 Demodulating the FDM
 --------------------
@@ -292,8 +292,8 @@ with amplitude and phase
 
 This is explained in detail on the dedicated page :ref:`demodulation`.
 
-In ``pysnom``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
-function :func:`pysnom.fdm.eff_pol_n`.
+In ``snompy``, :math:`\alpha_{eff, n}` for bulk FDM is provided by the
+function :func:`snompy.fdm.eff_pol_n`.
 
 References
 ----------

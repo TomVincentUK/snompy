@@ -3,7 +3,7 @@
 Basics of SNOM modelling
 ========================
 
-This page covers the basic information that you'll need to understand the models in ``pysnom``.
+This page covers the basic information that you'll need to understand the models in ``snompy``.
 It starts with a description of the tip-sample interaction, and how we can use effective polarizability to model SNOM scattering.
 Then it introduces signal demodulation, the process which allows the tiny near-field signals to be distinguished from the huge background signal in real SNOM experiments.
 Then finally it describes signal normalization, which we need to make quantitative comparisons between modelled and experimental data.
@@ -38,7 +38,7 @@ The right-hand side of the equation is made from two parts:
 
    The value of :math:`\alpha_{eff}` is challenging to model, and depends on many factors, including the dielectric function of the sample, the shape of the tip, and the distance between the tip and sample.
 
-   The main task of ``pysnom`` is to calculate :math:`\alpha_{eff}` using different methods (see :ref:`FDM <fdm>` and :ref:`PDM <pdm>` for details).
+   The main task of ``snompy`` is to calculate :math:`\alpha_{eff}` using different methods (see :ref:`FDM <fdm>` and :ref:`PDM <pdm>` for details).
 
 *  A **far-field factor**, :math:`(1 + c_r r)^2`.
    Here :math:`r` is the Fresnel reflection coefficient for far-field light, and :math:`c_r` is an additional empirical factor that describes the detected strength of the reflected light compared to the incident light (this factor can vary based on the microscope setup but will be constant throughout an experiment).
@@ -46,7 +46,7 @@ The right-hand side of the equation is made from two parts:
    As shown by the diagram above, the :math:`(1 + c_r r)` term appears because the tip is illuminated both directly and through reflection from the sample surface.
    The scattered light is also detected directly and by reflection, which means the total contribution from the far field appears twice, as :math:`(1 + c_r r) (1 + c_r r) = (1 + c_r r)^2`.
 
-   See :ref:`far-field` for details of how to calculate this term using ``pysnom``.
+   See :ref:`far-field` for details of how to calculate this term using ``snompy``.
 
    .. hint::
       .. _far_field_warning:
@@ -104,7 +104,7 @@ with amplitude and phase
 In these equations a subscript :math:`n` indicates that a signal is demodulated at the :math:`n^\text{th}` harmonic.
 
 For modelling SNOM signals, the practical difference here is that we must calculate the demodulated effective polarizability, :math:`\alpha_{eff, n}`, instead of just :math:`\alpha_{eff}`.
-``pysnom`` has the ability to calculate both of these quantities, as well as a function which can be used to simulate lock-in measurements of arbitrary functions (see the page :ref:`Demodulation <demodulation>` for more details).
+``snompy`` has the ability to calculate both of these quantities, as well as a function which can be used to simulate lock-in measurements of arbitrary functions (see the page :ref:`Demodulation <demodulation>` for more details).
 
 .. _normalization:
 

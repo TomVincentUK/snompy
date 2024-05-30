@@ -3,7 +3,7 @@
 Examples
 ========
 
-Here you can browse through a set of example scripts showing how to perform common tasks in ``pysnom``.
+Here you can browse through a set of example scripts showing how to perform common tasks in ``snompy``.
 
 .. toctree::
    :maxdepth: 1

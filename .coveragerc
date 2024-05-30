@@ -2,4 +2,4 @@
 omit =
     setup.py
     versioneer.py
-    pysnom/_version.py
+    snompy/_version.py

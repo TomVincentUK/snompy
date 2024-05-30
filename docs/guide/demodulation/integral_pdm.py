@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import pysnom
+import snompy
 
 # Set some experimental parameters for an oscillating AFM probe
 n = 3
@@ -11,14 +11,14 @@ z_bottom = 10e-9  # 10 nm from sample at bottom of oscillation
 # Material parameters
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 eps_env = 1  # Vacuum/air permitivitty
-refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
+refl_coef_qs = snompy.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Find z_tip as a function of theta
 theta = np.linspace(-np.pi, np.pi, 512)
 z_tip = z_bottom + A_tip * (1 + np.cos(theta))
 
 # Calculate the effective polarizability
-alpha_eff = pysnom.pdm.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
+alpha_eff = snompy.pdm.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
 
 # Generate a complex sinusoidal envelope
 envelope = np.exp(1j * n * theta)

@@ -1,6 +1,6 @@
 import numpy as np
 
-import pysnom
+import snompy
 
 
 class TestDemod:
@@ -8,7 +8,7 @@ class TestDemod:
         def constant_function(x):
             return np.ones_like(x)
 
-        result = pysnom.demodulate.demod(
+        result = snompy.demodulate.demod(
             f_x=constant_function, x_0=0, x_amplitude=1, n=np.arange(3)
         )
         np.testing.assert_almost_equal(result, np.array([1, 0, 0]))
@@ -17,7 +17,7 @@ class TestDemod:
         def linear_function(x):
             return 2 * x
 
-        result = pysnom.demodulate.demod(
+        result = snompy.demodulate.demod(
             f_x=linear_function, x_0=0, x_amplitude=1, n=np.arange(3)
         )
         np.testing.assert_almost_equal(result, [0, 1, 0])
@@ -34,7 +34,7 @@ class TestDemod:
         c = np.arange(6)[:, np.newaxis, np.newaxis, np.newaxis, np.newaxis]
         target_shape = (x_0 + x_amplitude + n + a + b + c).shape
 
-        result = pysnom.demodulate.demod(
+        result = snompy.demodulate.demod(
             f_x=function_with_args,
             x_0=x_0,
             x_amplitude=x_amplitude,

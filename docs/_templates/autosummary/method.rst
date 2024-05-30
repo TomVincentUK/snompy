@@ -6,4 +6,4 @@
 
 method
 
-.. auto{{ objtype }}:: {{ fullname | replace("pysnom.", "pysnom::") }}
+.. auto{{ objtype }}:: {{ fullname | replace("snompy.", "snompy::") }}

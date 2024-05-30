@@ -1,6 +1,6 @@
 include README.md
 include requirements.txt
-graft pysnom
+graft snompy
 recursive-exclude * *.py[co]
 include versioneer.py
-include pysnom/_version.py
+include snompy/_version.py

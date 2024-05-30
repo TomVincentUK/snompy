@@ -1,8 +1,8 @@
 """
-Finite dipole model (:mod:`pysnom.fdm`)
+Finite dipole model (:mod:`snompy.fdm`)
 =======================================
 
-.. currentmodule:: pysnom.fdm
+.. currentmodule:: snompy.fdm
 
 This module provides functions for simulating the results of scanning
 near-field optical microscopy (SNOM) experiments by calculating the
@@ -65,7 +65,7 @@ def eff_pol_n(sample, A_tip, n, z_tip=None, n_trapz=None, **kwargs):
 
     Parameters
     ----------
-    sample : :class:`pysnom.sample.Sample`
+    sample : :class:`snompy.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     A_tip : float
@@ -76,7 +76,7 @@ def eff_pol_n(sample, A_tip, n, z_tip=None, n_trapz=None, **kwargs):
     z_tip : float
         Height of the tip above the sample.
     n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        The number of intervals used by :func:`snompy.demodulate.demod` for
         the trapezium-method integration.
     **kwargs : dict, optional
         Extra keyword arguments are passed to :func:`eff_pol`.
@@ -89,7 +89,7 @@ def eff_pol_n(sample, A_tip, n, z_tip=None, n_trapz=None, **kwargs):
     See also
     --------
     eff_pol : The unmodulated/demodulated version of this function.
-    pysnom.demodulate.demod :
+    snompy.demodulate.demod :
         The function used here for demodulation.
 
     """
@@ -129,7 +129,7 @@ def eff_pol(
 
     Parameters
     ----------
-    sample : :class:`pysnom.sample.Sample`
+    sample : :class:`snompy.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     z_tip : float
@@ -191,7 +191,7 @@ def eff_pol(
     Method "bulk" is the bulk Hauer method given in reference [1]_. Here,
     :math:`\beta_0 = \beta_1 = \beta`, the momentum independent quasistatic
     reflection coefficient of the sample, which is calculated from
-    :func:`pysnom.sample.Sample.refl_coef_qs` (with argument `q = 0`).
+    :func:`snompy.sample.Sample.refl_coef_qs` (with argument `q = 0`).
     :math:`f_j` is given by :func:`geom_func`, with arguments `z_tip`,
     `d_Q0` or `d_Q1` (for the numerator or denominator), `r_tip`, `L_tip`,
     and `g_factor`.
@@ -200,7 +200,7 @@ def eff_pol(
     Here, :math:`\beta_j`, is the relative charge of an image of charge
     :math:`Q_j` below the sample at depth :math:`d_{Q_j'}` below the
     surface. :math:`\beta_j` and :math:`d_{Q_j'}` are calculated from
-    :func:`pysnom.sample.Sample.image_depth_and_charge`.
+    :func:`snompy.sample.Sample.image_depth_and_charge`.
     :math:`f_j` is given by :func:`geom_func_multi`, with arguments
     `z_tip`, `d_image` (:math:`d_{Q_j'}`), `r_tip`, `L_tip`, and
     `g_factor`.
@@ -209,7 +209,7 @@ def eff_pol(
     in reference [2]_. Here :math:`\beta_0 = \beta_1 = \overline{\beta}`,
     the effective reflection coefficient for a test charge :math:`Q_a`,
     evaluated at the position of the charge itself, which is calculated
-    from :func:`pysnom.sample.Sample.refl_coef_qs_above_surf`. The
+    from :func:`snompy.sample.Sample.refl_coef_qs_above_surf`. The
     definition of :math:`f_j` is the same as for the bulk Hauer method.
 
 
@@ -483,7 +483,7 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
         Depth of an induced charge 1 within the tip. Specified in units of
         the tip radius.
     n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        The number of intervals used by :func:`snompy.demodulate.demod` for
         the trapezium-method integration.
 
     Returns
@@ -494,7 +494,7 @@ def taylor_coef(z_tip, j_taylor, A_tip, n, r_tip, L_tip, g_factor, d_Q0, d_Q1, n
 
     See also
     --------
-    pysnom.demodulate.demod :
+    snompy.demodulate.demod :
         The function used here for demodulation.
 
     Notes
@@ -559,7 +559,7 @@ def eff_pol_n_taylor(
 
     Parameters
     ----------
-    sample : :class:`pysnom.sample.Sample`
+    sample : :class:`snompy.sample.Sample`
         Object representing a layered sample with a semi-infinite substrate
         and superstrate.
     A_tip : float
@@ -598,7 +598,7 @@ def eff_pol_n_taylor(
         The method of the finite dipole model to use. See :func:`eff_pol`
         for descriptions of the different methods.
     n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        The number of intervals used by :func:`snompy.demodulate.demod` for
         the trapezium-method integration.
     n_tayl : int
         Maximum power index for the Taylor series in `beta`.
@@ -612,7 +612,7 @@ def eff_pol_n_taylor(
     See also
     --------
     eff_pol_n : The non-Taylor series version of this function.
-    pysnom.demodulate.demod :
+    snompy.demodulate.demod :
         The function used here for demodulation.
 
     Notes
@@ -710,7 +710,7 @@ def refl_coef_qs_from_eff_pol_n(
         Depth of an induced charge 1 within the tip. Specified in units of
         the tip radius.
     n_trapz : int
-        The number of intervals used by :func:`pysnom.demodulate.demod` for
+        The number of intervals used by :func:`snompy.demodulate.demod` for
         the trapezium-method integration.
     n_tayl : int
         Maximum power index for the Taylor series in `beta`.

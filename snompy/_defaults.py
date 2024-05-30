@@ -3,11 +3,11 @@ import numpy as np
 
 class Defaults:
     """
-    Default values (:class:`pysnom.defaults`)
+    Default values (:class:`snompy.defaults`)
     =========================================
 
     A class holding default values used by various functions in
-    ``pysnom``.
+    ``snompy``.
 
     Sample-related
     --------------
@@ -39,7 +39,7 @@ class Defaults:
     .. note::
         When not specified by the user, the default for `d_Q0` is
         calculated from `r_tip` and `L_tip` at execution time. There is
-        therefore no value `pysnom.defaults.d_Q0`.
+        therefore no value `snompy.defaults.d_Q0`.
 
     d_Q1 : float, default 0.5
         Depth of an induced charge 1 within the tip. Specified in units
@@ -55,7 +55,7 @@ class Defaults:
     --------------------
     n_trapz : int, default 32
         The number of intervals to use for the trapezium-method
-        integration used by `pysnom.demodulate.demod`.
+        integration used by `snompy.demodulate.demod`.
 
     Momentum integral-related
     -------------------------

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import BoundaryNorm
 
-import pysnom
+import snompy
 
 # Set some experimental parameters for an oscillating AFM probe
 tapping_freq = 2 * np.pi * 250e3  # 250 kHz tapping frequency
@@ -13,19 +13,19 @@ periods = 3  # Number of oscillations to show
 # Material parameters
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 eps_env = 1  # Vacuum/air permitivitty
-refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
+refl_coef_qs = snompy.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Find z_tip as a function of t
 t = np.linspace(-periods * np.pi / tapping_freq, periods * np.pi / tapping_freq, 512)
 z_tip = z_bottom + A_tip * (1 + np.cos(tapping_freq * t))
 
 # Calculate the effective polarizability
-alpha_eff = pysnom.pdm.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
+alpha_eff = snompy.pdm.eff_pol(z_tip=z_tip, beta=refl_coef_qs)
 
 # Demodulation
 n_max = 5
 harmonics = np.arange(n_max + 1)
-components = pysnom.pdm.eff_pol_n(
+components = snompy.pdm.eff_pol_n(
     z_tip=z_bottom, A_tip=A_tip, n=harmonics, beta=refl_coef_qs
 )
 waves = [components[n] * np.exp(1j * t * tapping_freq * n) for n in harmonics]

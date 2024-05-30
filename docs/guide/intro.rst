@@ -3,10 +3,10 @@
 Introduction
 ============
 
-The main purpose of ``pysnom`` is to provide functions to calculate the effective polarizability, :math:`\alpha_{eff}`, of a SNOM tip and a sample, which can be used to predict contrast in SNOM measurements.
+The main purpose of ``snompy`` is to provide functions to calculate the effective polarizability, :math:`\alpha_{eff}`, of a SNOM tip and a sample, which can be used to predict contrast in SNOM measurements.
 It also contains other useful features for SNOM modelling, such as an implementation of the transfer matrix method for calculating far-field reflection coefficients of multilayer samples, and code for simulating lock-in amplifier demodulation of arbitrary functions.
 
-Below on this page are some example scripts, showing idiomatic usage of ``pysnom``.
+Below on this page are some example scripts, showing idiomatic usage of ``snompy``.
 If you already know how the finite dipole model (FDM) or point dipole model (PDM) works, these might be enough to get started with this package.
 You can also refer to the detailed explanations of the functions used in the :doc:`../API/index`.
 The rest of this guide will take you through the workings of the two models, and also give tips on how the models can be used to help analyse SNOM data.
@@ -16,13 +16,13 @@ Installation
 
 Installation via ``pip``::
 
-   pip install pysnom
+   pip install snompy
 
 
 Useful third-party packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The examples in this guide rely heavily on ``numpy``, a Python package for eficient numerical computation, which should be installed automatically when you install ``pysnom``.
+The examples in this guide rely heavily on ``numpy``, a Python package for eficient numerical computation, which should be installed automatically when you install ``snompy``.
 To follow along, it might also be helpful to install ``matplotlib``, a Python package for data visualisation, and ``scipy``, a Python package for scientific computation.
 These can be installed like::
 
@@ -35,7 +35,7 @@ or for ``conda`` users::
 Usage examples
 --------------
 
-The examples on this page are intended to give a taste of what ``pysnom`` can do, as well as to model idiomatic use of the package.
+The examples on this page are intended to give a taste of what ``snompy`` can do, as well as to model idiomatic use of the package.
 We've deliberately left out detailed explanations from this section, so don't worry if you don't understand what's going on here yet!
 The following pages of this guide should take you through the concepts needed to understand these scripts.
 

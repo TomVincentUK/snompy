@@ -1,1 +1,1 @@
-.. automodule:: pysnom.defaults
+.. automodule:: snompy.defaults

@@ -1,8 +1,8 @@
 """
-Demodulation (:mod:`pysnom.demodulate`)
+Demodulation (:mod:`snompy.demodulate`)
 =======================================
 
-.. currentmodule:: pysnom.demodulate
+.. currentmodule:: snompy.demodulate
 
 This module provides a function to simulate lock-in amplifier measurements
 of arbitrary functions.
