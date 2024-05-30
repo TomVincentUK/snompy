@@ -1,4 +1,4 @@
-pysnom
+snompy
 ======
 A Python package for modelling scanning near-field optical microscopy measurements.
 
@@ -23,7 +23,7 @@ A Python package for modelling scanning near-field optical microscopy measuremen
       User guide
       ^^^^^^^^^^
 
-      Start here for a friendly introduction to ``pysnom``, including explanations of how the models work, and examples showing how to use them.
+      Start here for a friendly introduction to ``snompy``, including explanations of how the models work, and examples showing how to use them.
 
     .. grid-item-card::
       :img-top: _static/api_image.svg
@@ -33,7 +33,7 @@ A Python package for modelling scanning near-field optical microscopy measuremen
       API reference
       ^^^^^^^^^^^^^
 
-      Here you can find a detailed guide to the functions in ``pysnom``.
+      Here you can find a detailed guide to the functions in ``snompy``.
       You might want to check the user guide first if you're a new user.
 
     .. grid-item-card::
@@ -46,7 +46,7 @@ A Python package for modelling scanning near-field optical microscopy measuremen
 
       Is something missing?
       Have you spotted a bug?
-      Click here for details on how to raise feature requests, or contribute to ``pysnom``.
+      Click here for details on how to raise feature requests, or contribute to ``snompy``.
 
 
     .. grid-item-card::
@@ -57,12 +57,12 @@ A Python package for modelling scanning near-field optical microscopy measuremen
       FAQ
       ^^^
 
-      Look here for some answers to common questions about ``pysnom``.
+      Look here for some answers to common questions about ``snompy``.
 
 .. _cite:
 
 Cite us
 -------
 This package is open source and free to use.
-We only ask that you cite our original paper, to acknowledge the time and effort that went into developing ``pysnom``.
+We only ask that you cite our original paper, to acknowledge the time and effort that went into developing ``snompy``.
 **Look out for our preprint article coming very soon.**

@@ -2,7 +2,7 @@ import math
 
 from cycler import cycler
 
-project = "pysnom"
+project = "snompy"
 copyright = "2024, Tom Vincent"
 author = "Tom Vincent"
 
@@ -20,18 +20,18 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
-html_logo = "_static/pysnom_logo.svg"
-html_favicon = "_static/pysnom_favicon.svg"
+html_logo = "_static/snompy_logo.svg"
+html_favicon = "_static/snompy_favicon.svg"
 
 html_theme_options = {
-    "github_url": "https://github.com/TomVincentUK/pysnom",
+    "github_url": "https://github.com/TomVincentUK/snompy",
     "secondary_sidebar_items": ["page-toc"],
     "navbar_end": ["navbar-icon-links"],
     "footer_start": ["copyright"],
     "footer_end": [],
     "logo": {
-        "image_light": "pysnom_logo.svg",
-        "image_dark": "pysnom_logo.svg",
+        "image_light": "snompy_logo.svg",
+        "image_dark": "snompy_logo.svg",
     },  # Not sure why this is needed, but it errors without
 }
 

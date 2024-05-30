@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import Normalize
 
-import pysnom
+import snompy
 
 # Set some experimental parameters
 A_tip = 20e-9  # AFM tip tapping amplitude
@@ -19,29 +19,29 @@ eps_air = 1.0
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 
 # Very simplified model of PMMA dielectric function based on ref [1] below
-eps_pmma = pysnom.sample.lorentz_perm(
+eps_pmma = snompy.sample.lorentz_perm(
     nu_vac, nu_j=1738e2, gamma_j=20e2, A_j=4.2e8, eps_inf=2
 )
 t_pmma = np.geomspace(1, 35, 32) * 1e-9  # A range of thicknesses
-sample_pmma = pysnom.Sample(
+sample_pmma = snompy.Sample(
     eps_stack=(eps_air, eps_pmma, eps_Si),
     t_stack=(t_pmma[:, np.newaxis],),
     nu_vac=nu_vac,
 )
 
 # Model of Au dielectric function from ref [2] below
-eps_Au = pysnom.sample.drude_perm(nu_vac, nu_plasma=7.25e6, gamma=2.16e4)
-sample_Au = pysnom.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, nu_vac=nu_vac)
+eps_Au = snompy.sample.drude_perm(nu_vac, nu_plasma=7.25e6, gamma=2.16e4)
+sample_Au = snompy.bulk_sample(eps_sub=eps_Au, eps_env=eps_air, nu_vac=nu_vac)
 
 # Measurement
-alpha_eff_pmma = pysnom.fdm.eff_pol_n(
+alpha_eff_pmma = snompy.fdm.eff_pol_n(
     sample=sample_pmma, A_tip=A_tip, n=n, r_tip=r_tip, L_tip=L_tip, method=method
 )
 r_coef_pmma = sample_pmma.refl_coef(theta_in=theta_in)
 sigma_pmma = (1 + c_r * r_coef_pmma) ** 2 * alpha_eff_pmma
 
 # Gold reference
-alpha_eff_Au = pysnom.fdm.eff_pol_n(
+alpha_eff_Au = snompy.fdm.eff_pol_n(
     sample=sample_Au, A_tip=A_tip, n=n, r_tip=r_tip, L_tip=L_tip, method=method
 )
 r_coef_Au = sample_Au.refl_coef(theta_in=theta_in)

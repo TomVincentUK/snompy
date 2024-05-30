@@ -3,13 +3,13 @@
 Working with samples
 ====================
 
-Samples in ``pysnom`` are represented by instances of the :class:`~pysnom.sample.Sample` class.
-This page gives an overview of how samples are modelled in the :ref:`finite dipole model  (FDM) <fdm>` and :ref:`point dipole model (PDM) <pdm>`, with examples of how to create different types of :class:`~pysnom.sample.Sample` object in ``pysnom``.
+Samples in ``snompy`` are represented by instances of the :class:`~snompy.sample.Sample` class.
+This page gives an overview of how samples are modelled in the :ref:`finite dipole model  (FDM) <fdm>` and :ref:`point dipole model (PDM) <pdm>`, with examples of how to create different types of :class:`~snompy.sample.Sample` object in ``snompy``.
 
 .. note::
    The way that different kinds of material interact with light can be described by their `relative permittivity <https://en.wikipedia.org/wiki/Relative_permittivity>`_, :math:`\varepsilon`, which relates their absolute permittivity to the `vacuum permittivity <https://en.wikipedia.org/wiki/Vacuum_permittivity>`_, :math:`\varepsilon_{0}`.
 
-   In the documentation for ``pysnom``, we will always use the term permittivity, to refer to the *relative*, not absolute, permitivitty.
+   In the documentation for ``snompy``, we will always use the term permittivity, to refer to the *relative*, not absolute, permitivitty.
 
 Bulk samples
 ------------
@@ -34,7 +34,7 @@ The image below shows a cross-section of a simple bulk sample.
 Creating bulk samples
 ^^^^^^^^^^^^^^^^^^^^^
 
-In ``pysnom``, bulk samples can be created with the :func:`~pysnom.sample.bulk_sample` function.
+In ``snompy``, bulk samples can be created with the :func:`~snompy.sample.bulk_sample` function.
 
 Let's create a Si substrate as a first example.
 The permitivitty of Si in the mid-infrared (IR) is :math:`\varepsilon = 11.7` [1]_, so we can create our sample as:
@@ -42,9 +42,9 @@ The permitivitty of Si in the mid-infrared (IR) is :math:`\varepsilon = 11.7` [1
 .. plot::
    :context:
 
-   >>> import pysnom
+   >>> import snompy
    >>> eps_si = 11.7
-   >>> si = pysnom.bulk_sample(eps_si)
+   >>> si = snompy.bulk_sample(eps_si)
 
 Let's take a look at some of the properties of the object we've just made:
 
@@ -52,19 +52,19 @@ Let's take a look at some of the properties of the object we've just made:
    :context:
 
    >>> type(si)
-   <class 'pysnom.sample.Sample'>
+   <class 'snompy.sample.Sample'>
    >>> si.eps_stack
    array([ 1. +0.j, 11.7+0.j])
 
-We can see that :func:`~pysnom.sample.bulk_sample` creates an instance of the :class:`~pysnom.sample.Sample` class.
+We can see that :func:`~snompy.sample.bulk_sample` creates an instance of the :class:`~snompy.sample.Sample` class.
 The layers of the sample are represented by a complex array of :math:`\varepsilon` values called `eps_stack`, which for our simple bulk sample has just two elements.
 The first of these corresponds to the environment, and the second to the substrate.
 
 .. hint::
 
-   We didn't have to specify the environment dielectric here, as we just used the default value of 1, but if needed :func:`~pysnom.bulk_sample` has an optional argument `eps_env`.
+   We didn't have to specify the environment dielectric here, as we just used the default value of 1, but if needed :func:`~snompy.bulk_sample` has an optional argument `eps_env`.
 
-We can recover the quasistatic reflection coefficient of the sample using the function :func:`~pysnom.sample.Sample.refl_coef_qs`:
+We can recover the quasistatic reflection coefficient of the sample using the function :func:`~snompy.sample.Sample.refl_coef_qs`:
 
 .. plot::
    :context:
@@ -79,7 +79,7 @@ This can be done easily like:
 .. plot::
    :context:
 
-   >>> si_from_beta = pysnom.bulk_sample(beta=beta_si)
+   >>> si_from_beta = snompy.bulk_sample(beta=beta_si)
    >>> si_from_beta.eps_stack
    array([ 1. +0.j, 11.7+0.j])
 
@@ -100,7 +100,7 @@ To begin with, we'll define a dielectric function for our material (based loosel
    >>> import numpy as np
    >>> wavenumber = np.linspace(1680, 1800, 128) * 1e2  # In units of m^-1
    >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 4.2e8, 20e2
-   >>> eps_pmma = pysnom.sample.lorentz_perm(
+   >>> eps_pmma = snompy.sample.lorentz_perm(
    ...     wavenumber,
    ...     nu_j=centre_wavenumber,
    ...     gamma_j=width,
@@ -133,13 +133,13 @@ Let's visualise it with a quick plot:
 
    plt.close()
 
-Now that we've created our dispersive dielectric function, we can pass it to our :func:`~pysnom.sample.bulk_sample` function.
+Now that we've created our dispersive dielectric function, we can pass it to our :func:`~snompy.sample.bulk_sample` function.
 We can also give it the wavenumber corresponding to each :math:`\varepsilon` value as the optional argument `nu_vac` (which will be useful for some functions which depend on both parameters):
 
 .. plot::
    :context:
 
-   >>> pmma = pysnom.bulk_sample(eps_pmma, nu_vac=wavenumber)
+   >>> pmma = snompy.bulk_sample(eps_pmma, nu_vac=wavenumber)
 
 Let's take a look at some of properties of this new sample:
 
@@ -201,7 +201,7 @@ Let's create another plot to visualise the dielectric function and quasistatic r
 Multilayer samples
 ------------------
 
-Many samples can't be modelled simply as an infinite substrate so ``pysnom`` also supports multilayer samples, with more than two materials.
+Many samples can't be modelled simply as an infinite substrate so ``snompy`` also supports multilayer samples, with more than two materials.
 Like bulk samples, these are infinite in the :math:`x` and :math:`y` directions.
 A multilayer sample with a number of layers, :math:`n_{\varepsilon}`, is made of:
 
@@ -234,7 +234,7 @@ The image below shows a cross-section of a multilayer sample with :math:`n_{\var
 Creating multilayer samples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In ``pysnom``, multilayer samples can be created by directly initializing an instance of the :class:`~pysnom.sample.Sample` class.
+In ``snompy``, multilayer samples can be created by directly initializing an instance of the :class:`~snompy.sample.Sample` class.
 
 Let's create sample of 100 nm of Si, suspended over air as a first example.
 
@@ -243,15 +243,15 @@ Let's create sample of 100 nm of Si, suspended over air as a first example.
 
    >>> t_si = 100e-9
    >>> eps_air = 1.0
-   >>> suspended_si = pysnom.Sample(
+   >>> suspended_si = snompy.Sample(
    ...     eps_stack=(eps_air, eps_si, eps_air),
    ...     t_stack=(t_si,)
    ... )
 
 .. note::
 
-   Even though `t_stack` has only one value here, we still must pass a list rather than a single value to the :class:`~pysnom.sample.Sample` object.
-   That's because ``pysnom`` always uses the first axis of `t_stack` (and `eps_stack` and `beta_stack`) to store the different layers of the stack.
+   Even though `t_stack` has only one value here, we still must pass a list rather than a single value to the :class:`~snompy.sample.Sample` object.
+   That's because ``snompy`` always uses the first axis of `t_stack` (and `eps_stack` and `beta_stack`) to store the different layers of the stack.
 
    The top and bottom dielectric layers in `eps_stack` have no finite thickness, so `eps_stack` must always be 2 longer than `t_stack` along the first axis.
 
@@ -283,7 +283,7 @@ This makes it clear that bulk samples are actually just a special case of multil
 Creating dispersive samples with varying thickness
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the section on bulk samples above, we showed how you can create a single :class:`~pysnom.sample.Sample` object with an array of permitivitties to represent a dispersive sample.
+In the section on bulk samples above, we showed how you can create a single :class:`~snompy.sample.Sample` object with an array of permitivitties to represent a dispersive sample.
 
 Let's show the same process for multilayer samples, by creating a thin layer of 50 nm of PMMA on Si.
 We already defined permitivitties for Si and PMMA above, so we can reuse the same values here:
@@ -292,7 +292,7 @@ We already defined permitivitties for Si and PMMA above, so we can reuse the sam
    :context:
 
    >>> t_pmma = 50e-9
-   >>> pmma_si = pysnom.Sample(
+   >>> pmma_si = snompy.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma,),
    ...     nu_vac=wavenumber,
@@ -316,12 +316,12 @@ Let's compare the shape of the resulting `eps_stack` with the shapes of the inpu
            [11.7       +0.j        , 11.7       +0.j        ,
             11.7       +0.j        , 11.7       +0.j        ]])
 
-We can see that ``pysnom`` automatically pads the input permitivitties so that each layer of the stack has the same shape.
+We can see that ``snompy`` automatically pads the input permitivitties so that each layer of the stack has the same shape.
 This same process also works for `beta_stack` and `t_stack`.
 
 What if we want to also vary the thickness of the PMMA?
-As we did for the permitivitty, we can create a single :class:`pysnom.sample.Sample` object with a range of thickness values.
-In fact, ``pysnom`` takes advantage of `numpy broadcasting <https://numpy.org/doc/stable/user/basics.broadcasting.html>`_, meaning that one sample can have both a range of thickness values and a range of permitivitties, as long as all the input arrays broadcast nicely with each other.
+As we did for the permitivitty, we can create a single :class:`snompy.sample.Sample` object with a range of thickness values.
+In fact, ``snompy`` takes advantage of `numpy broadcasting <https://numpy.org/doc/stable/user/basics.broadcasting.html>`_, meaning that one sample can have both a range of thickness values and a range of permitivitties, as long as all the input arrays broadcast nicely with each other.
 
 We can check whether two arrays broadcast nicely by adding them together.
 If we don't get an error, the shape of the resulting array should tell us our broadcast shape:
@@ -340,7 +340,7 @@ Now we know our arrays broadcast nicely, let's show the advantage of broadcastin
 .. plot::
    :context:
 
-   >>> pmma_si_varied = pysnom.Sample(
+   >>> pmma_si_varied = snompy.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma_varied,),
    ...     nu_vac=wavenumber,
@@ -391,7 +391,7 @@ Momentum-dependence
 ^^^^^^^^^^^^^^^^^^^
 
 For multilayer samples, calculating the effective quasistatic reflection coefficient from the whole stack becomes more complicated, as it depends on the in-plane momentum, :math:`q`, of the incident light.
-This can be accounted for with the optional argument `q` to :func:`~pysnom.sample.Sample.refl_coef_qs`.
+This can be accounted for with the optional argument `q` to :func:`~snompy.sample.Sample.refl_coef_qs`.
 
 To show this, let's plot :math:`\beta` as a function of :math:`q` for both our bulk and suspended Si samples:
 
@@ -413,7 +413,7 @@ To show this, let's plot :math:`\beta` as a function of :math:`q` for both our b
    >>> fig.tight_layout()
    >>> plt.show()
 
-For this reason, the models of effective polarizability in ``pysnom`` (the :ref:`FDM <fdm>` and :ref:`PDM <pdm>`) have different methods for bulk and multilayer samples.
+For this reason, the models of effective polarizability in ``snompy`` (the :ref:`FDM <fdm>` and :ref:`PDM <pdm>`) have different methods for bulk and multilayer samples.
 
 References
 ----------

@@ -4,7 +4,7 @@ The point dipole model
 ======================
 
 The point dipole model (PDM) is an older alternative to the :ref:`fdm` which typically has less quantitative agreement with experiment [1]_.
-However, it has some advantages in that it is conceptually simpler and can account for the dielectric function of the AFM tip, so it is also featured in ``pysnom``.
+However, it has some advantages in that it is conceptually simpler and can account for the dielectric function of the AFM tip, so it is also featured in ``snompy``.
 
 Principles of the point dipole model
 -------------------------------------
@@ -15,7 +15,7 @@ In the PDM, the tip is first modelled as a dielectric sphere whose response to e
    :align: center
 
 The effective polarizability is then derived from the interaction with that dipole and an image dipole.
-In ``pysnom`` it can be calculated using :func:`pysnom.pdm.eff_pol`, which implements:
+In ``snompy`` it can be calculated using :func:`snompy.pdm.eff_pol`, which implements:
 
 .. math::
    :label: pdm

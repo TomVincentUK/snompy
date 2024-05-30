@@ -1,11 +1,11 @@
 """
-Sample properties (:mod:`pysnom.sample`)
+Sample properties (:mod:`snompy.sample`)
 ========================================
 
-.. currentmodule:: pysnom.sample
+.. currentmodule:: snompy.sample
 
 This module provides a class to represent layered and bulk samples within
-``pysnom``, and functions for converting between reflection coefficients
+``snompy``, and functions for converting between reflection coefficients
 and permitivitties.
 
 Classes
@@ -559,7 +559,7 @@ class Sample:
         In this function the Laguerre weights and roots are found using
         :func:`numpy.polynomial.laguerre.laggauss` and the
         momentum-dependent reflection coefficient is found using
-        :func:`pysnom.sample.Sample.refl_coef_qs`.
+        :func:`snompy.sample.Sample.refl_coef_qs`.
 
         References
         ----------
@@ -694,7 +694,7 @@ class Sample:
         In this function the Laguerre weights and roots are found using
         :func:`numpy.polynomial.laguerre.laggauss` and the
         momentum-dependent reflection coefficient is found using
-        :func:`pysnom.sample.Sample.refl_coef_qs`.
+        :func:`snompy.sample.Sample.refl_coef_qs`.
 
         References
         ----------
@@ -814,11 +814,11 @@ def bulk_sample(eps_sub=None, beta=None, eps_env=None, **kwargs):
     eps_env : array_like
         Dielectric function of the environment.
     **kwargs : dict, optional
-        Extra keyword arguments are passed to :func:`pysnom.sample.Sample`.
+        Extra keyword arguments are passed to :func:`snompy.sample.Sample`.
 
     Returns
     -------
-    sample : :class:`pysnom.sample.Sample`
+    sample : :class:`snompy.sample.Sample`
         Object representing the sample.
 
     """

@@ -1,1 +1,1 @@
-.. automodule:: pysnom.fdm
+.. automodule:: snompy.fdm

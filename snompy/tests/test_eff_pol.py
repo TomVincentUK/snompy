@@ -1,21 +1,21 @@
 import numpy as np
 import pytest
 
-import pysnom
+import snompy
 
 
 class TestEffPol:
     model_and_kwargs = [
-        (pysnom.fdm, {"method": "bulk"}),
-        (pysnom.fdm, {"method": "multi"}),
-        (pysnom.fdm, {"method": "Q_ave"}),
-        (pysnom.pdm, {}),
+        (snompy.fdm, {"method": "bulk"}),
+        (snompy.fdm, {"method": "multi"}),
+        (snompy.fdm, {"method": "Q_ave"}),
+        (snompy.pdm, {}),
     ]
     taylor_model_and_kwargs = [
-        (pysnom.fdm, {"method": "bulk"}),
-        (pysnom.fdm, {"method": "Q_ave"}),
+        (snompy.fdm, {"method": "bulk"}),
+        (snompy.fdm, {"method": "Q_ave"}),
     ]
-    inverse_model = [pysnom.fdm, pysnom.pdm]
+    inverse_model = [snompy.fdm, snompy.pdm]
 
     # eff_pol
 
@@ -99,8 +99,8 @@ class TestEffPol:
             sample=vector_sample_bulk, **vector_AFM_params | vector_tapping_params
         )
         np.testing.assert_allclose(
-            pysnom.fdm.eff_pol_n(method="bulk", **params),
-            pysnom.fdm.eff_pol_n(method="multi", **params),
+            snompy.fdm.eff_pol_n(method="bulk", **params),
+            snompy.fdm.eff_pol_n(method="multi", **params),
             rtol=1e-4,
         )
 
@@ -167,7 +167,7 @@ class TestEffPol:
         beta_in = np.linspace(0.9, 0.1, n_test_beta) * np.exp(
             1j * np.linspace(0, np.pi, n_test_beta)
         )
-        sample = pysnom.bulk_sample(beta=beta_in)
+        sample = snompy.bulk_sample(beta=beta_in)
 
         alpha_eff = model.eff_pol(sample=sample, **vector_AFM_params)
         beta_out = model.refl_coef_qs_from_eff_pol(
@@ -186,7 +186,7 @@ class TestEffPol:
             1j * np.linspace(0, np.pi, n_test_beta)
         )
         beta_in = np.hstack([beta_in, -0.5 + 0.5j])  # a case with multiple solutions
-        sample = pysnom.bulk_sample(beta=beta_in)
+        sample = snompy.bulk_sample(beta=beta_in)
 
         alpha_eff_n = model.eff_pol_n_taylor(
             sample=sample, **vector_AFM_params | vector_tapping_params
@@ -207,7 +207,7 @@ class TestEffPol:
         self, model, vector_AFM_params, vector_tapping_params
     ):
         eps_in = np.array([10 + 1j, 10 - 1j])  # 1 valid, 1 invalid
-        sample = pysnom.bulk_sample(eps_in)
+        sample = snompy.bulk_sample(eps_in)
 
         alpha_eff_n = model.eff_pol_n_taylor(
             sample=sample, **vector_AFM_params | vector_tapping_params
@@ -217,7 +217,7 @@ class TestEffPol:
             reject_negative_eps_imag=True,
             **vector_AFM_params | vector_tapping_params
         )
-        eps_out = pysnom.sample.permitivitty(beta_out)
+        eps_out = snompy.sample.permitivitty(beta_out)
 
         assert (eps_out.imag >= 0).all()
 
@@ -226,7 +226,7 @@ class TestEffPol:
         self, model, vector_AFM_params, vector_tapping_params
     ):
         eps_in = np.array([10 + 10j, 0.1 + 0.1j])  # 1 valid, 1 invalid
-        sample = pysnom.bulk_sample(eps_in)
+        sample = snompy.bulk_sample(eps_in)
 
         alpha_eff_n = model.eff_pol_n_taylor(
             sample=sample, **vector_AFM_params | vector_tapping_params
@@ -236,6 +236,6 @@ class TestEffPol:
             reject_subvacuum_eps_abs=True,
             **vector_AFM_params | vector_tapping_params
         )
-        eps_out = pysnom.sample.permitivitty(beta_out)
+        eps_out = snompy.sample.permitivitty(beta_out)
 
         assert (np.abs(eps_out) >= 1).all()

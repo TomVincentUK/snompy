@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import pysnom
+import snompy
 
 # Set some experimental parameters for an AFM approach curve
 z_tip = np.linspace(0, 60e-9, 512)  # Define an approach curve
@@ -11,13 +11,13 @@ harmonics = np.array([2, 3, 4])  # Harmonics for demodulation
 # Material parameters
 eps_Si = 11.7  # Si permitivitty in the mid-infrared
 eps_env = 1  # Vacuum/air permitivitty
-refl_coef_qs = pysnom.reflection.refl_coef_qs(eps_env, eps_Si)
+refl_coef_qs = snompy.reflection.refl_coef_qs(eps_env, eps_Si)
 
 # Calculate the effective polarizability using demod
 # offset by tapping amplitude so oscillation doesn't intersect with sample
 z_shift = z_tip + A_tip
-alpha_eff_demod = pysnom.demodulate.demod(
-    f_x=pysnom.pdm.eff_pol,
+alpha_eff_demod = snompy.demodulate.demod(
+    f_x=snompy.pdm.eff_pol,
     x_0=z_shift[:, np.newaxis],  # newaxis added for array broadcasting
     x_amplitude=A_tip,
     n=harmonics,
@@ -25,7 +25,7 @@ alpha_eff_demod = pysnom.demodulate.demod(
 )
 
 # Calculate the effective polarizability directly
-alpha_eff_direct = pysnom.pdm.eff_pol_n(
+alpha_eff_direct = snompy.pdm.eff_pol_n(
     z_tip=z_tip[:, np.newaxis],  # newaxis added for array broadcasting
     A_tip=A_tip,
     n=harmonics,

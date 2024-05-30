@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as fh:
     requirements = [line.strip() for line in fh]
 
 setuptools.setup(
-    name="pysnom",
+    name="snompy",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     author="Tom Vincent",

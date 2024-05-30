@@ -18,7 +18,7 @@ We showed that the detected SNOM signal, :math:`\sigma_n`, depends on the effect
 
 where :math:`r` is the the far-field, Fresnel reflection coefficient and :math:`c_r` is an empirical factor that describes the detected strength of the reflected light compared to the incident light.
 
-On this page, we'll provide some background on what the far-field, Fresnel reflection coefficient is, and give an example of how it can be calculated using ``pysnom``.
+On this page, we'll provide some background on what the far-field, Fresnel reflection coefficient is, and give an example of how it can be calculated using ``snompy``.
 
 Fresnel reflection coefficient
 ------------------------------
@@ -65,26 +65,26 @@ Multilayer samples
 ^^^^^^^^^^^^^^^^^^
 
 For multilayer samples, calculating the reflection coefficient becomes more complicated, as we must account for reflections from multiple surfaces.
-In ``pysnom`` we use the `transfer matrix method <https://en.wikipedia.org/wiki/Transfer-matrix_method_(optics)>`_ to calculate reflection and transmission coefficients from multilayer samples [1]_.
+In ``snompy`` we use the `transfer matrix method <https://en.wikipedia.org/wiki/Transfer-matrix_method_(optics)>`_ to calculate reflection and transmission coefficients from multilayer samples [1]_.
 
 Accounting for far-field in SNOM simulations
 --------------------------------------------
 
-The most common use for the far-field reflection coefficient in ``pysnom`` is to calculate the far-field factor :math:`(1 + c_r r)^2` (as in equation :eq:`demod_scatter_recap`).
+The most common use for the far-field reflection coefficient in ``snompy`` is to calculate the far-field factor :math:`(1 + c_r r)^2` (as in equation :eq:`demod_scatter_recap`).
 In this section we'll show a worked example, by simulating a SNOM spectrum from a layer of `poly(methyl methacrylate) <https://en.wikipedia.org/wiki/Poly(methyl_methacrylate)>`_ (PMMA) on Si.
 
 Far-field factor from a bulk reference
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We'll :ref:`normalize our spectrum <normalization>` to bulk Si.
-Let's start by creating a :class:`~pysnom.sample.Sample` object for our reference (see :ref:`sample` for a guide to sample creation):
+Let's start by creating a :class:`~snompy.sample.Sample` object for our reference (see :ref:`sample` for a guide to sample creation):
 
 .. plot::
    :context:
 
-   >>> import pysnom
+   >>> import snompy
    >>> eps_si = 11.7
-   >>> si = pysnom.bulk_sample(eps_si)
+   >>> si = snompy.bulk_sample(eps_si)
 
 The single permitivitty value :math:`\varepsilon = 11.7` for Si, is relatively constant across most of the mid-infrared [2]_.
 
@@ -109,7 +109,7 @@ We'll need to define some experimental constants here:
 
 .. note::
 
-   The method :func:`~pysnom.sample.Sample.refl_coef` has an optional argument `polarization` which can be either `"s"` or `"p"`.
+   The method :func:`~snompy.sample.Sample.refl_coef` has an optional argument `polarization` which can be either `"s"` or `"p"`.
    Here we use the default p polarization which is most common for SNOM experiments.
 
 Far-field factor from a dispersive sample
@@ -123,7 +123,7 @@ First let's create a model for the permitivitty (based loosely on [2]_):
 
    >>> wavenumber = np.linspace(1680, 1800, 128) * 1e2  # In units of m^-1
    >>> eps_inf, centre_wavenumber, strength, width = 2, 1738e2, 4.2e8, 20e2
-   >>> eps_pmma = pysnom.sample.lorentz_perm(
+   >>> eps_pmma = snompy.sample.lorentz_perm(
    ...     wavenumber,
    ...     nu_j=centre_wavenumber,
    ...     gamma_j=width,
@@ -132,14 +132,14 @@ First let's create a model for the permitivitty (based loosely on [2]_):
    ... )
 
 Now we can create our sample.
-Let's make it 500 nm thick, and we'll define the environment to be air with :math:`\varepsilon_{env} = 1` (this was done automatically for Si by :func:`~pysnom.sample.bulk_sample` above).
+Let's make it 500 nm thick, and we'll define the environment to be air with :math:`\varepsilon_{env} = 1` (this was done automatically for Si by :func:`~snompy.sample.bulk_sample` above).
 
 .. plot::
    :context:
 
    >>> eps_air = 1.0
    >>> t_pmma = 500e-9
-   >>> pmma_si = pysnom.Sample(
+   >>> pmma_si = snompy.Sample(
    ...     eps_stack=(eps_air, eps_pmma, eps_si),
    ...     t_stack=(t_pmma,),
    ...     nu_vac=wavenumber,
@@ -180,8 +180,8 @@ We'll also create an array `eta_uncorr`, which will show the results if we didn'
    :context:
 
    >>> fdm_params = dict(A_tip=20e-9, n=3)
-   >>> alpha_eff_si = pysnom.fdm.eff_pol_n(sample=si, **fdm_params)
-   >>> alpha_eff_pmma_si = pysnom.fdm.eff_pol_n(
+   >>> alpha_eff_si = snompy.fdm.eff_pol_n(sample=si, **fdm_params)
+   >>> alpha_eff_pmma_si = snompy.fdm.eff_pol_n(
    ...     sample=pmma_si,
    ...     **fdm_params,
    ... )

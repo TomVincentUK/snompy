@@ -1,1 +1,1 @@
-.. automodule:: pysnom.sample
+.. automodule:: snompy.sample

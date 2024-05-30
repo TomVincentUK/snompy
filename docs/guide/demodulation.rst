@@ -4,11 +4,11 @@ Demodulation
 ============
 
 SNOM relies heavily on `lock-in amplifier <https://en.wikipedia.org/wiki/Lock-in_amplifier>`_ demodulation of various :math:`z_{tip}` -dependent signals at different harmonics, :math:`n`, of an AFM tip's tapping frequency.
-For this reason ``pysnom`` features code to simulate lock-in measurements of arbitrary functions.
-In most cases, you can ignore this, and rely on versions of the ``pysnom`` functions that have this functionality built-in.
-For example :func:`pysnom.fdm.eff_pol_n` is a modulated and demodulated version of :func:`pysnom.fdm.eff_pol`, so you don't need to worry about simulating the demodulation in your own code.
+For this reason ``snompy`` features code to simulate lock-in measurements of arbitrary functions.
+In most cases, you can ignore this, and rely on versions of the ``snompy`` functions that have this functionality built-in.
+For example :func:`snompy.fdm.eff_pol_n` is a modulated and demodulated version of :func:`snompy.fdm.eff_pol`, so you don't need to worry about simulating the demodulation in your own code.
 
-This section describes how lock-in measurements are simulated in ``pysnom``, and also how you can use the demodulation functionality on arbitrary functions that aren't included in the package.
+This section describes how lock-in measurements are simulated in ``snompy``, and also how you can use the demodulation functionality on arbitrary functions that aren't included in the package.
 
 Lock-in amplifier simulation
 ----------------------------
@@ -30,7 +30,7 @@ We can then simulate demodulation of :math:`f(\theta)` at different harmonics, :
 
    \frac{1}{2 \pi} \int_{-\pi}^{\pi} f(\theta) e^{-i \theta n} d{\theta}
 
-In ``pysnom`` this process is implemented by the function :func:`pysnom.demodulate.demod`.
+In ``snompy`` this process is implemented by the function :func:`snompy.demodulate.demod`.
 
 Adapting the process for AFM
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

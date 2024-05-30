@@ -1,1 +1,1 @@
-.. automodule:: pysnom.demodulate
+.. automodule:: snompy.demodulate

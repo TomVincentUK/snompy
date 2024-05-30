@@ -5,12 +5,12 @@ Development
 
 Is something missing?
 Have you spotted a bug?
-Read on for details on how to raise feature requests, or contribute to ``pysnom``.
+Read on for details on how to raise feature requests, or contribute to ``snompy``.
 
 Feature requests
 ----------------
 
-Feature requests and bug reports can be submitted by raising an issue on the `pysnom GitHub repository <https://github.com/TomVincentUK/pysnom/issues>`_.
+Feature requests and bug reports can be submitted by raising an issue on the `snompy GitHub repository <https://github.com/TomVincentUK/snompy/issues>`_.
 
 Development process
 -------------------
@@ -23,26 +23,26 @@ If you're new to this process, or you need a little more guidance, you can follo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * **Fork the repository.**
-  Go to the `pysnom repository <https://github.com/TomVincentUK/pysnom>`_
+  Go to the `snompy repository <https://github.com/TomVincentUK/snompy>`_
   and click the "fork" button to create your own copy of the project.
 
 * **Clone the repository.**
   Open a terminal in the directory where you'd like the project to be stored, then clone the project to your local computer::
 
-    git clone https://github.com/your-username/pysnom.git
+    git clone https://github.com/your-username/snompy.git
 
 * **Link your local copy to the main repository.**
   Change the directory to your newly created local repository::
 
-    cd pysnom
+    cd snompy
 
   Now, add the upstream repository::
 
-    git remote add upstream https://github.com/TomVincentUK/pysnom.git
+    git remote add upstream https://github.com/TomVincentUK/snompy.git
 
   Then, ``git remote -v`` will show two remote repositories named:
 
-    - ``upstream``, which refers to the ``pysnom`` repository
+    - ``upstream``, which refers to the ``snompy`` repository
     - ``origin``, which refers to your personal fork
 
 * **Update your repository.**
@@ -55,15 +55,15 @@ If you're new to this process, or you need a little more guidance, you can follo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * **Create a fresh environment.**
-  We recommend starting with a clean Python environment or virtual environment, to make sure that none of your existing Python packages interfere with ``pysnom``.
+  We recommend starting with a clean Python environment or virtual environment, to make sure that none of your existing Python packages interfere with ``snompy``.
   It's common to use tools like `venv <https://docs.python.org/3/library/venv.html>`_ or `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands>`_ to do this.
 
-* **Install pysnom.**
-  In your clean environment, navigate to the pysnom repository and install pysnom and its dependencies to your Python environment::
+* **Install snompy.**
+  In your clean environment, navigate to the snompy repository and install snompy and its dependencies to your Python environment::
 
     pip install -e .
 
-  This command tells `pip` to install ``pysnom`` using the `setup.py` file in the repository's root directory.
+  This command tells `pip` to install ``snompy`` using the `setup.py` file in the repository's root directory.
   The `-e` flag means it will be installed in development mode, so that changes to the code will show up straight away.
 
 * **Set up formatting tools.**
@@ -79,7 +79,7 @@ If you're new to this process, or you need a little more guidance, you can follo
   You might also want to set up your text editor to automatically format your code when you save.
 
 * **Set up testing.**
-  On top of format checks, ``pysnom`` also has a suite of tests which run using ``pytest`` to check everything is working.
+  On top of format checks, ``snompy`` also has a suite of tests which run using ``pytest`` to check everything is working.
   Your contributions won't be accepted unless all the tests pass, so we recommend that you setup your environment so you can run the tests on your own computer before you submit your changes::
 
     pip install -r requirements_test.txt
@@ -92,7 +92,7 @@ If you're new to this process, or you need a little more guidance, you can follo
   It will also report the proportion of code lines executed during the tests, which should ideally be 100%.
 
 * **Set up documentation tools.**
-  All the features in ``pysnom`` should be documented, so if your edit adds a new feature, or changes how other users will interact with the package, we ask that you also add changes to the documentation to explain it.
+  All the features in ``snompy`` should be documented, so if your edit adds a new feature, or changes how other users will interact with the package, we ask that you also add changes to the documentation to explain it.
   To do this we recommend building the documentation on your own computer.
   We use the package ``sphinx`` to build our documentation.
   You can install this like::
@@ -117,9 +117,9 @@ If you're new to this process, or you need a little more guidance, you can follo
   Use ``git add`` and ``git commit`` with descriptive commit messages.
 
 * **Create tests first.**
-  All features in ``pysnom`` should be tested to check they work, so we encourage using `test-driven development <https://en.wikipedia.org/wiki/Test-driven_development>`_.
+  All features in ``snompy`` should be tested to check they work, so we encourage using `test-driven development <https://en.wikipedia.org/wiki/Test-driven_development>`_.
   This means the first step when adding a new feature should usually be to create at least one test which will only pass when the new feature works correctly.
-  Your new test should be added to the existing test suite in `./pysnom/tests`.
+  Your new test should be added to the existing test suite in `./snompy/tests`.
   You can find out how to write good tests by following the `pytest documentation <https://pytest.org/>`_.
   Once your test is created, run the test suite by typing::
 
@@ -169,8 +169,8 @@ If you're new to this process, or you need a little more guidance, you can follo
 
   The tests must pass for us to merge your changes, so we recommend checking on your own computer before submitting a pull request.
 
-* **The pysnom team will review your pull request**.
-  A pull request must be approved by at least one pysnom team member before merging.
+* **The snompy team will review your pull request**.
+  A pull request must be approved by at least one snompy team member before merging.
   If it fits the scope of the project, makes a meaningful contribution, and doesn't break any existing functionality, we will approve it.
   (If you're interested in becoming a team member, feel free to send us a message and we'll be happy to discuss).
 

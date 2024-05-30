@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from scipy.integrate import quad_vec
 
-import pysnom
+import snompy
 
 
 class TestSample:
@@ -46,33 +46,33 @@ class TestSample:
     # Input tests
     def test_error_when_no_eps_or_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            pysnom.Sample()
+            snompy.Sample()
 
     def test_error_when_both_eps_and_beta(self):
         with pytest.raises(ValueError, match=self.eps_beta_input_error):
-            pysnom.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
+            snompy.Sample(eps_stack=(1, 10), beta_stack=(0.5,))
 
     def test_error_when_eps_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            pysnom.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
+            snompy.Sample(eps_stack=(1, 2, 3, 4, 5), t_stack=(1,))
 
     def test_error_when_beta_t_incompatible(self):
         with pytest.raises(ValueError, match=self.eps_beta_t_incompatible_error):
-            pysnom.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
+            snompy.Sample(beta_stack=(0.5, 0.5, 0.5, 0.5, 0.5), t_stack=(1,))
 
     def test_transfer_matrix_no_errors_when_bulk_no_nu_vac(self):
         eps_sub = 10
-        no_nu_at_init = pysnom.bulk_sample(eps_sub=eps_sub)
+        no_nu_at_init = snompy.bulk_sample(eps_sub=eps_sub)
         no_nu_at_init.refl_coef()
 
     def test_transfer_matrix_errors_when_multilayer_no_nu_vac(self):
         sample_params = dict(eps_stack=(1, 2, 10), t_stack=(50e-9,))
         nu_vac = 1.0
         # No error when nu_vac specified at init or function call
-        nu_at_init = pysnom.Sample(nu_vac=nu_vac, **sample_params)
+        nu_at_init = snompy.Sample(nu_vac=nu_vac, **sample_params)
         nu_at_init.refl_coef()
 
-        no_nu_at_init = pysnom.Sample(**sample_params)
+        no_nu_at_init = snompy.Sample(**sample_params)
         no_nu_at_init.refl_coef(nu_vac=nu_vac)
 
         # Error with no nu_vac
@@ -80,7 +80,7 @@ class TestSample:
             no_nu_at_init.refl_coef()
 
     def test_transfer_matrix_errors_when_theta_and_q(self):
-        sample = pysnom.bulk_sample(eps_sub=10, nu_vac=1.0)
+        sample = snompy.bulk_sample(eps_sub=10, nu_vac=1.0)
         q = theta_in = 0.0
 
         # No error when theta_in or q specified separately
@@ -92,7 +92,7 @@ class TestSample:
             sample.transfer_matrix(q=q, theta_in=theta_in)
 
     def test_transfer_matrix_errors_for_unknown_polarization(self):
-        sample = pysnom.bulk_sample(eps_sub=10, nu_vac=1.0)
+        sample = snompy.bulk_sample(eps_sub=10, nu_vac=1.0)
         # No error for "p" or "s"
         sample.transfer_matrix(polarization="p")
         sample.transfer_matrix(polarization="s")
@@ -104,41 +104,41 @@ class TestSample:
     # Behaviour tests
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_multilayer_flag(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.Sample(
+        sample = snompy.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         assert sample.multilayer == (np.shape(sample.t_stack)[0] > 0)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_eps_beta_conversion_reversible(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.Sample(
+        sample = snompy.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         if eps_stack is not None:
-            from_beta = pysnom.Sample(beta_stack=sample.beta_stack, t_stack=t_stack)
+            from_beta = snompy.Sample(beta_stack=sample.beta_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_beta.eps_stack)
         if beta_stack is not None:
-            from_eps = pysnom.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
+            from_eps = snompy.Sample(eps_stack=sample.eps_stack, t_stack=t_stack)
             np.testing.assert_array_almost_equal(sample.eps_stack, from_eps.eps_stack)
 
     @pytest.mark.parametrize("eps_i", np.linspace(0.9, 1.1, 3))
     def test_eps_beta_single_conversion_reversible(self, eps_i):
         eps_in = 2 + 1j
-        eps_out = pysnom.sample.permitivitty(
-            beta=pysnom.sample.refl_coef_qs_single(eps_i=eps_i, eps_j=eps_in),
+        eps_out = snompy.sample.permitivitty(
+            beta=snompy.sample.refl_coef_qs_single(eps_i=eps_i, eps_j=eps_in),
             eps_i=eps_i,
         )
         np.testing.assert_allclose(eps_in, eps_out)
 
         beta_in = 0.5 + 0.5j
-        beta_out = pysnom.sample.refl_coef_qs_single(
-            eps_j=pysnom.sample.permitivitty(beta_in, eps_i=eps_i), eps_i=eps_i
+        beta_out = snompy.sample.refl_coef_qs_single(
+            eps_j=snompy.sample.permitivitty(beta_in, eps_i=eps_i), eps_i=eps_i
         )
         np.testing.assert_allclose(beta_in, beta_out)
 
     @pytest.mark.parametrize(valid_inputs_kw, valid_inputs)
     def test_outputs_correct_shape(self, eps_stack, beta_stack, t_stack):
-        sample = pysnom.Sample(
+        sample = snompy.Sample(
             eps_stack=eps_stack, beta_stack=beta_stack, t_stack=t_stack
         )
         nu_vac = np.ones_like(sample.eps_stack[0], dtype=float)
@@ -232,18 +232,18 @@ class TestSample:
         with pytest.raises(
             ValueError, match="`A_j` and `nu_plasma` cannot both be None"
         ):
-            pysnom.sample.lorentz_perm(1, 1, 1)
+            snompy.sample.lorentz_perm(1, 1, 1)
         with pytest.raises(
             ValueError, match="Either `A_j` or `nu_plasma` must be None"
         ):
-            pysnom.sample.lorentz_perm(1, 1, 1, A_j=1, nu_plasma=1)
+            snompy.sample.lorentz_perm(1, 1, 1, A_j=1, nu_plasma=1)
 
     def test_drude_perm_is_case_of_lorentz_perm(self):
         nu_vac = np.linspace(1000, 2000, 128) * 1e2
         nu_plasma = 10000e2
         gamma = 1000e2
-        eps_drude = pysnom.sample.drude_perm(nu_vac, nu_plasma=nu_plasma, gamma=gamma)
-        eps_lorentz = pysnom.sample.lorentz_perm(
+        eps_drude = snompy.sample.drude_perm(nu_vac, nu_plasma=nu_plasma, gamma=gamma)
+        eps_lorentz = snompy.sample.lorentz_perm(
             nu_vac, nu_j=0, nu_plasma=nu_plasma, gamma_j=gamma
         )
         np.testing.assert_allclose(eps_drude, eps_lorentz)

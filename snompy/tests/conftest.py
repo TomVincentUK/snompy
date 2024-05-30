@@ -1,30 +1,30 @@
 import numpy as np
 import pytest
 
-import pysnom
+import snompy
 
 
 @pytest.fixture
 def scalar_sample_bulk():
-    return pysnom.bulk_sample(2 + 1j)
+    return snompy.bulk_sample(2 + 1j)
 
 
 @pytest.fixture
 def scalar_sample_multi():
-    return pysnom.Sample(eps_stack=(1, 1.5, 2 + 1j, 10), t_stack=(20e-9, 50e-9))
+    return snompy.Sample(eps_stack=(1, 1.5, 2 + 1j, 10), t_stack=(20e-9, 50e-9))
 
 
 @pytest.fixture
 def vector_sample_bulk():
     # Dispersive medium
-    eps_substrate = pysnom.sample.lorentz_perm(
+    eps_substrate = snompy.sample.lorentz_perm(
         nu_vac=np.linspace(1680, 1780, 128) * 1e2,
         nu_j=1738e2,
         gamma_j=20e2,
         A_j=14e-3,
         eps_inf=2,
     )
-    return pysnom.bulk_sample(eps_substrate)
+    return snompy.bulk_sample(eps_substrate)
 
 
 @pytest.fixture
@@ -33,7 +33,7 @@ def vector_sample_multi():
     eps_env = 1
     eps_top = 1.5
     eps_substrate = 11.7
-    eps_middle = pysnom.sample.lorentz_perm(
+    eps_middle = snompy.sample.lorentz_perm(
         nu_vac=np.linspace(1680, 1780, 128) * 1e2,
         nu_j=1738e2,
         gamma_j=20e2,
@@ -42,7 +42,7 @@ def vector_sample_multi():
     )
     t_top = 20e-9
     t_middle = np.geomspace(10, 100, 32)[:, np.newaxis] * 1e-9
-    return pysnom.Sample(
+    return snompy.Sample(
         eps_stack=(eps_env, eps_top, eps_middle, eps_substrate),
         t_stack=(t_top, t_middle),
     )
