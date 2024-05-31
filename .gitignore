@@ -1,7 +1,3 @@
-# My additions
-docs/API/generated/
-*.png
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
