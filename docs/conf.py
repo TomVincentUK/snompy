@@ -1,6 +1,10 @@
 import math
+import os
+import sys
 
 from cycler import cycler
+
+sys.path.insert(0, os.path.abspath(".."))
 
 project = "snompy"
 copyright = "2024, Tom Vincent"
@@ -16,7 +20,6 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
 ]
 
-templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
