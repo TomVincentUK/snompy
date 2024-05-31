@@ -1,5 +1,6 @@
-snompy
-======
+.. image:: docs/_static/snompy_logo.svg
+   :width: 600  
+   :alt: snompy logo
 
 .. image:: https://img.shields.io/pypi/v/snompy
    :alt: PyPI - Version
