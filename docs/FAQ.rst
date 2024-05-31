@@ -6,7 +6,7 @@ Frequently asked questions
 .. admonition:: Who are the authors of ``snompy``?
     :class:  dropdown admonition-faq
 
-    ``snompy`` was developed by Tom Vincent at the University of Manchester's `Terahertz Characterization Group <https://allthingsterahertz.com/>`_, with significant contributions from Daniel Johnson, Xinyun Liu, Nathaniel Huang, Lars Mester and Jessica Boland.
+    ``snompy`` was developed by Tom Vincent at The University of Manchester's `Terahertz Characterization Group <https://allthingsterahertz.com/>`_, with significant contributions from Daniel Johnson, Xinyun Liu, Nathaniel Huang, Lars Mester and Jessica Boland.
 
 .. admonition:: Can I use ``snompy`` in my publication?
     :class:  dropdown admonition-faq
