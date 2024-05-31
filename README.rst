@@ -1,6 +1,9 @@
 snompy
 ======
 
+.. image:: https://img.shields.io/pypi/v/snompy
+   :alt: PyPI - Version
+
 A Python package for modelling scanning near-field optical microscopy measurements.
 
 Overview
