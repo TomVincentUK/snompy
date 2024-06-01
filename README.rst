@@ -17,9 +17,14 @@ For more details, including tutorials and example scripts, see the `snompy docum
 Installation
 ------------
 
-.. code-block:: bash
+Using pip::
 
    pip install snompy
+
+Using conda::
+
+   conda install -c conda-forge snompy
+
 
 Cite us
 -------
