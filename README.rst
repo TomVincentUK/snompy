@@ -17,11 +17,11 @@ For more details, including tutorials and example scripts, see the `snompy docum
 Installation
 ------------
 
-Using pip::
+Using ``pip``::
 
    pip install snompy
 
-Using conda::
+Using ``conda``::
 
    conda install -c conda-forge snompy
 
