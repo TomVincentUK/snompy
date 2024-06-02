@@ -14,9 +14,13 @@ The rest of this guide will take you through the workings of the two models, and
 Installation
 ------------
 
-Installation via ``pip``::
+Using ``pip``::
 
    pip install snompy
+
+Using ``conda``::
+
+   conda install -c conda-forge snompy
 
 
 Useful third-party packages
