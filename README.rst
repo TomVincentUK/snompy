@@ -2,8 +2,12 @@
    :width: 600
    :alt: snompy logo
 
-.. image:: https://img.shields.io/pypi/v/snompy
+|pypi| |conda-forge|
+
+.. |pypi| image:: https://img.shields.io/pypi/v/snompy
    :alt: PyPI - Version
+.. |conda-forge| image:: https://img.shields.io/conda/v/conda-forge/snompy?label=conda-forge
+   :alt: Conda Version
 
 A Python package for modelling scanning near-field optical microscopy measurements.
 
