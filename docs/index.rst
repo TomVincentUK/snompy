@@ -64,5 +64,8 @@ A Python package for modelling scanning near-field optical microscopy measuremen
 Cite us
 -------
 This package is open source and free to use.
-We only ask that you cite our original paper, to acknowledge the time and effort that went into developing ``snompy``.
-**Look out for our preprint article coming very soon.**
+We only ask that you cite our accompanying paper, to acknowledge the time and effort that went into developing ``snompy``.
+You can download our pre-print article `here <https://arxiv.org/abs/2405.20948>`_, and cite it as:
+    Tom Vincent, Xinyun Liu, Daniel Johnson, Lars Mester, Nathaniel Huang, Olga Kazakova, Rainer Hillenbrand, and Jessica Louise Boland, *snompy: a package for modelling scattering-type scanning near-field optical microscopy*, arXiv:2405.20948 [cond-mat.mtrl-sci], https://arxiv.org/abs/2405.20948 (2024).
+
+Keep an eye out for our journal publication, which is coming soon.

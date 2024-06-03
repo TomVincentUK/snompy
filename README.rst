@@ -1,5 +1,5 @@
 .. image:: docs/_static/snompy_logo.svg
-   :width: 600  
+   :width: 600
    :alt: snompy logo
 
 .. image:: https://img.shields.io/pypi/v/snompy
@@ -28,5 +28,6 @@ Using ``conda``::
 
 Cite us
 -------
-This package is open source and free to use. We only ask that you cite our original paper, to acknowledge the time and effort that went into developing snompy.
-**Look out for our preprint article coming very soon.**
+This package is open source and free to use.
+We only ask that you cite our paper, to acknowledge the time and effort that went into developing ``snompy``.
+Please see the section `Cite us <https://snompy.readthedocs.io/en/latest/index.html#cite>`_ from the snompy documentation for details on how.
