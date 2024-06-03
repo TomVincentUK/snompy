@@ -174,6 +174,25 @@ If you're new to this process, or you need a little more guidance, you can follo
   If it fits the scope of the project, makes a meaningful contribution, and doesn't break any existing functionality, we will approve it.
   (If you're interested in becoming a team member, feel free to send us a message and we'll be happy to discuss).
 
+.. _releasing:
+
+Releasing
+---------
+
+Releases are published automatically when a tag is pushed to GitHub.
+
+.. code-block:: bash
+
+   # Set next version number
+   export RELEASE=x.x.x
+
+   # Create tags
+   git commit --allow-empty -m "Release $RELEASE"
+   git tag -a $RELEASE -m "Version $RELEASE"
+
+   # Push
+   git push upstream --tags
+
 .. _style_guide:
 
 Style guide
