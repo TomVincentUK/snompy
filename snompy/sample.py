@@ -856,12 +856,14 @@ def refl_coef_qs_single(eps_i, eps_j):
     --------
     Works with real inputs:
 
-    >>> refl_coef_qs_single(1, 3)
+    >>> beta = refl_coef_qs_single(1, 3)
+    >>> beta.item()
     0.5
 
     Works with complex inputs:
 
-    >>> refl_coef_qs_single(1, 1 + 1j)
+    >>> beta = refl_coef_qs_single(1, 1 + 1j)
+    >>> beta.item()
     (0.2+0.4j)
 
     Performs vectorised operations:
