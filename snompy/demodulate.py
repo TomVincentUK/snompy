@@ -19,6 +19,12 @@ import numpy as np
 from ._defaults import defaults
 from ._utils import _pad_for_broadcasting
 
+# Numpy renamed trapezium integration in version 2.0.0
+try:
+    trapezoid = np.trapezoid
+except AttributeError:  # pragma: no cover
+    trapezoid = np.trapz
+
 
 def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
     r"""Simulate a lock-in amplifier measurement by modulating the input of
@@ -71,12 +77,14 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
     --------
     Works with complex functions:
 
-    >>> demod(lambda x: (1 + 2j) * x**2, 0, 1, 2)
+    >>> result = demod(lambda x: (1 + 2j) * x**2, 0, 1, 2)
+    >>> result.item()
     (0.25+0.50j)
 
     Accepts extra arguments to `f_x`:
 
-    >>> demod(lambda x, m, c: m * x + c, 0, 1, 1, f_args=(1, 1j))
+    >>> result = demod(lambda x, m, c: m * x + c, 0, 1, 1, f_args=(1, 1j))
+    >>> result.item()
     (0.5+0.0j)
 
     Broadcastable inputs:
@@ -101,4 +109,4 @@ def demod(f_x, x_0, x_amplitude, n, f_args=(), n_trapz=None, **kwargs):
     integrand = f_x(x_0 + np.cos(theta) * x_amplitude, *f_args, **kwargs) * np.exp(
         -1j * n * theta
     )
-    return np.trapz(integrand, axis=0) / (n_trapz)
+    return trapezoid(integrand, axis=0) / (n_trapz)
